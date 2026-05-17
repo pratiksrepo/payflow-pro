@@ -1,0 +1,6 @@
+@PayFlow.NotificationService_HostAddress = http://localhost:5163
+
+GET {{PayFlow.NotificationService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

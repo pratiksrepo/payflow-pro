@@ -1,0 +1,6 @@
+@PayFlow.ApiGateway_HostAddress = http://localhost:5087
+
+GET {{PayFlow.ApiGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

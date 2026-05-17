@@ -1,0 +1,27 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build folders
+bin/
+obj/
+
+# Logs
+*.log
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+
+# Env
+.env
+
+# OS
+Thumbs.db
+.DS_Store
