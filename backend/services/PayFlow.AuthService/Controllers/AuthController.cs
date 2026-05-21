@@ -1,39 +1,81 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
+using PayFlow.AuthService.Models;
 using PayFlow.AuthService.Services;
 
 namespace PayFlow.AuthService.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AuthManager _authService;
+    private readonly AuthDbContext _context;
 
-    public AuthController(AuthManager authService)
+    private readonly TokenService _tokenService;
+
+    public AuthController(
+        AuthDbContext context,
+        TokenService tokenService)
     {
-        _authService = authService;
+        _context = context;
+        _tokenService = tokenService;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var result = await _authService.RegisterAsync(request);
+        var exists = await _context.Users
+            .AnyAsync(u => u.Email == request.Email);
 
-        if (result == null)
+        if (exists)
+        {
             return BadRequest("User already exists");
+        }
 
-        return Ok(result);
+        var user = new User
+        {
+            FullName = request.FullName,
+            Email = request.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+        };
+
+        _context.Users.Add(user);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "User registered successfully"
+        });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var result = await _authService.LoginAsync(request);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-        if (result == null)
-            return Unauthorized();
+        if (user == null)
+        {
+            return Unauthorized("Invalid credentials");
+        }
 
-        return Ok(result);
+        var validPassword = BCrypt.Net.BCrypt.Verify(
+            request.Password,
+            user.PasswordHash);
+
+        if (!validPassword)
+        {
+            return Unauthorized("Invalid credentials");
+        }
+
+        var token = _tokenService.CreateToken(user.Email);
+
+        return Ok(new
+        {
+            token
+        });
     }
 }

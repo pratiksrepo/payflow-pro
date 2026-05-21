@@ -11,8 +11,8 @@ using PayFlow.AuthService.Data;
 
 namespace PayFlow.AuthService.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20260517160451_InitialCreate")]
+    [DbContext(typeof(AuthDbContext))]
+    [Migration("20260521020602_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -30,9 +30,6 @@ namespace PayFlow.AuthService.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()

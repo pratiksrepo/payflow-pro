@@ -7,11 +7,11 @@ namespace PayFlow.AuthService.Services;
 
 public class AuthManager
 {
-    private readonly AppDbContext _context;
+    private readonly AuthDbContext _context;
     private readonly JwtService _jwtService;
 
     public AuthManager(
-        AppDbContext context,
+        AuthDbContext context,
         JwtService jwtService)
     {
         _context = context;
