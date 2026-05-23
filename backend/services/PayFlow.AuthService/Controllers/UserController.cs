@@ -4,28 +4,20 @@ using System.Security.Claims;
 
 namespace payflow.authservice.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class UserController : ControllerBase
     {
-        [Authorize]
         [HttpGet("profile")]
+        [Authorize]
         public IActionResult GetProfile()
         {
-            var email =
-                User.FindFirst(ClaimTypes.Email)?.Value;
-
-            var userId =
-                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var fullName =
-                User.FindFirst(ClaimTypes.Name)?.Value;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
             return Ok(new
             {
-                UserId = userId,
-                Email = email,
-                FullName = fullName
+                Message = "Protected API Accessed Successfully",
+                Email = email
             });
         }
     }
