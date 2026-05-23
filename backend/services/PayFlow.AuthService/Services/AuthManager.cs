@@ -8,14 +8,14 @@ namespace PayFlow.AuthService.Services;
 public class AuthManager
 {
     private readonly AuthDbContext _context;
-    private readonly JwtService _jwtService;
+    private readonly TokenService _tokenService;
 
     public AuthManager(
         AuthDbContext context,
-        JwtService jwtService)
+        TokenService tokenService)
     {
         _context = context;
-        _jwtService = jwtService;
+        _tokenService = tokenService;
     }
 
     public async Task<AuthResponse?> RegisterAsync(RegisterRequest request)
@@ -37,7 +37,7 @@ public class AuthManager
 
         await _context.SaveChangesAsync();
 
-        var token = _jwtService.GenerateToken(user);
+        var token = _tokenService.CreateToken(user);
 
         return new AuthResponse
         {
@@ -62,7 +62,7 @@ public class AuthManager
         if (!valid)
             return null;
 
-        var token = _jwtService.GenerateToken(user);
+        var token = _tokenService.CreateToken(user);
 
         return new AuthResponse
         {

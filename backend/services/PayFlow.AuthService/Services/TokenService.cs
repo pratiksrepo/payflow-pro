@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using PayFlow.AuthService.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,12 +15,14 @@ public class TokenService
         _configuration = configuration;
     }
 
-    public string CreateToken(string email)
+    public string CreateToken(User user)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.Email, email)
-        };
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.FullName)
+    };
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(

@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
             return Unauthorized("Invalid credentials");
         }
 
-        var token = _tokenService.CreateToken(user.Email);
+        var token = _tokenService.CreateToken(user);
 
         return Ok(new
         {
