@@ -8,17 +8,24 @@ namespace payflow.authservice.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpGet("profile")]
-        [Authorize]
-        public IActionResult GetProfile()
-        {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        //[HttpGet("profile")]
+        //[Authorize]
+        //public IActionResult GetProfile()
+        //{
+        //    var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            return Ok(new
-            {
-                Message = "Protected API Accessed Successfully",
-                Email = email
-            });
+        //    return Ok(new
+        //    {
+        //        Message = "Protected API Accessed Successfully",
+        //        Email = email
+        //    });
+        //}
+
+        [Authorize]
+        [HttpGet("profile")]
+        public IActionResult Profile()
+        {
+            return Ok("Authorized user");
         }
     }
 }

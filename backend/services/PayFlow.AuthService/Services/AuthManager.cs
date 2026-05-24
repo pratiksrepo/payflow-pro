@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AuthService.Services;
+using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Models;
@@ -37,11 +38,11 @@ public class AuthManager
 
         await _context.SaveChangesAsync();
 
-        var token = _tokenService.CreateToken(user);
+        var token = _tokenService.CreateAccessToken(user);
 
         return new AuthResponse
         {
-            Token = token,
+            AccessToken = token,
             Email = user.Email
         };
     }
@@ -62,11 +63,11 @@ public class AuthManager
         if (!valid)
             return null;
 
-        var token = _tokenService.CreateToken(user);
+        var token = _tokenService.CreateAccessToken(user);
 
         return new AuthResponse
         {
-            Token = token,
+            AccessToken = token,
             Email = user.Email
         };
     }

@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthService.DTOs;
+using AuthService.Models;
+using AuthService.Services;
+using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Models;
 using PayFlow.AuthService.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace PayFlow.AuthService.Controllers;
 
@@ -15,6 +19,8 @@ public class AuthController : ControllerBase
     private readonly AuthDbContext _context;
 
     private readonly TokenService _tokenService;
+
+
 
     public AuthController(
         AuthDbContext context,
@@ -40,7 +46,7 @@ public class AuthController : ControllerBase
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = request.Role
+            Role = "User"
         };
 
         _context.Users.Add(user);
@@ -57,27 +63,38 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login(LoginRequest request)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+            .FirstOrDefaultAsync(x => x.Email == request.Email);
 
         if (user == null)
-        {
-            return Unauthorized("Invalid credentials");
-        }
+            return Unauthorized("Invalid email or password");
 
-        var validPassword = BCrypt.Net.BCrypt.Verify(
+        bool validPassword = BCrypt.Net.BCrypt.Verify(
             request.Password,
-            user.PasswordHash);
+            user.PasswordHash
+        );
 
         if (!validPassword)
-        {
-            return Unauthorized("Invalid credentials");
-        }
+            return Unauthorized("Invalid email or password");
 
-        var token = _tokenService.CreateToken(user);
+        var accessToken = _tokenService.CreateAccessToken(user);
 
-        return Ok(new
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        var refreshTokenEntity = new RefreshToken
         {
-            token
+            Token = refreshToken,
+            Expires = DateTime.UtcNow.AddDays(7),
+            UserId = user.Id
+        };
+
+        _context.RefreshTokens.Add(refreshTokenEntity);
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new AuthResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         });
     }
 
@@ -94,5 +111,34 @@ public class AuthController : ControllerBase
     public IActionResult UserOnly()
     {
         return Ok("Welcome User");
+    }
+
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken(
+    RefreshTokenRequestDto request)
+    {
+        var storedToken = await _context.RefreshTokens
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x =>
+                x.Token == request.RefreshToken);
+
+        if (storedToken == null)
+            return Unauthorized("Invalid refresh token");
+
+        if (storedToken.IsRevoked)
+            return Unauthorized("Token revoked");
+
+        if (storedToken.Expires < DateTime.UtcNow)
+            return Unauthorized("Token expired");
+
+        var newAccessToken =
+            _tokenService.CreateAccessToken(storedToken.User);
+
+        return Ok(new AuthResponse
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = storedToken.Token
+        });
     }
 }
