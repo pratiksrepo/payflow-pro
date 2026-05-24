@@ -4,6 +4,7 @@ using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Models;
 using PayFlow.AuthService.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PayFlow.AuthService.Controllers;
 
@@ -38,7 +39,8 @@ public class AuthController : ControllerBase
         {
             FullName = request.FullName,
             Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            Role = request.Role
         };
 
         _context.Users.Add(user);
@@ -77,5 +79,20 @@ public class AuthController : ControllerBase
         {
             token
         });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin")]
+    public IActionResult AdminOnly()
+    {
+        return Ok("Welcome Admin");
+    }
+
+
+    [Authorize(Roles = "User")]
+    [HttpGet("user")]
+    public IActionResult UserOnly()
+    {
+        return Ok("Welcome User");
     }
 }
