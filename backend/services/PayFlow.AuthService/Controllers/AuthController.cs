@@ -20,14 +20,17 @@ public class AuthController : ControllerBase
 
     private readonly TokenService _tokenService;
 
+    private readonly EmailService _emailService;
 
 
     public AuthController(
         AuthDbContext context,
-        TokenService tokenService)
+        TokenService tokenService,
+        EmailService emailService)
     {
         _context = context;
         _tokenService = tokenService;
+        _emailService = emailService;
     }
 
     [HttpPost("register")]
@@ -46,12 +49,19 @@ public class AuthController : ControllerBase
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = "User"
+            Role = "User",
+            VerificationToken = Guid.NewGuid().ToString()
         };
 
         _context.Users.Add(user);
 
         await _context.SaveChangesAsync();
+
+        await _emailService.SendEmailAsync(
+            user.Email,
+            "Verify Your Email",
+            $"Your verification token is: {user.VerificationToken}"
+        );
 
         return Ok(new
         {
@@ -72,6 +82,11 @@ public class AuthController : ControllerBase
             request.Password,
             user.PasswordHash
         );
+
+        if (!user.EmailVerified)
+        {
+            return Unauthorized("Please verify your email first");
+        }
 
         if (!validPassword)
             return Unauthorized("Invalid email or password");
@@ -140,5 +155,81 @@ public class AuthController : ControllerBase
             AccessToken = newAccessToken,
             RefreshToken = storedToken.Token
         });
+    }
+
+    [HttpGet("verify-email")]
+    public async Task<IActionResult> VerifyEmail(string token)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.VerificationToken == token);
+
+        if (user == null)
+            return BadRequest("Invalid token");
+
+        user.EmailVerified = true;
+
+        user.VerificationToken = null;
+
+        await _context.SaveChangesAsync();
+
+        return Ok("Email verified successfully");
+    }
+
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(
+    ForgotPasswordDto request)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.Email == request.Email);
+
+        if (user == null)
+            return Ok("If account exists, reset email sent");
+
+        user.PasswordResetToken = Guid.NewGuid().ToString();
+
+        user.PasswordResetTokenExpires =
+            DateTime.UtcNow.AddHours(1);
+
+        await _context.SaveChangesAsync();
+
+        await _emailService.SendEmailAsync(
+            user.Email,
+            "Password Reset",
+            $"Your reset token is: {user.PasswordResetToken}"
+        );
+
+        return Ok("Reset email sent");
+    }
+
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(
+    ResetPasswordDto request)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x =>
+                x.PasswordResetToken == request.Token);
+
+        if (user == null)
+            return BadRequest("Invalid token");
+
+        if (user.PasswordResetTokenExpires < DateTime.UtcNow)
+            return BadRequest("Token expired");
+
+        user.PasswordHash =
+            BCrypt.Net.BCrypt.HashPassword(
+                request.NewPassword
+            );
+
+        user.PasswordResetToken = null;
+
+        user.PasswordResetTokenExpires = null;
+
+        await _context.SaveChangesAsync();
+
+        return Ok("Password reset successful");
     }
 }

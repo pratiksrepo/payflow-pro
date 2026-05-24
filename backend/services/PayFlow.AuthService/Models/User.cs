@@ -12,4 +12,12 @@ public class User
 
     public string Role { get; set; } = "User";
 
+    public bool EmailVerified { get; set; } = false;
+
+    public string? VerificationToken { get; set; }
+
+    public string? PasswordResetToken { get; set; }
+
+    public DateTime? PasswordResetTokenExpires { get; set; }
+
 }

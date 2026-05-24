@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.Services;
+using PayFlow.AuthService.Settings;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,8 @@ builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
+
+
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -76,6 +79,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
     });
 
+
+builder.Services.AddScoped<EmailService>();
+
+
+builder.Services.Configure<SettingEmail>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 var app = builder.Build();
 
