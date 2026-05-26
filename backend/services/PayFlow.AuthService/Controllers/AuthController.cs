@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
+using PayFlow.AuthService.Helpers;
 using PayFlow.AuthService.Models;
 using PayFlow.AuthService.Services;
 
@@ -63,9 +64,10 @@ public class AuthController : ControllerBase
             $"Your verification token is: {user.VerificationToken}"
         );
 
-        return Ok(new
+        return Ok(new ApiResponse<object>
         {
-            message = "User registered successfully"
+            Success = true,
+            Message = "User registered successfully"
         });
     }
 
@@ -231,5 +233,11 @@ public class AuthController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok("Password reset successful");
+    }
+
+    [HttpGet("test-error")]
+    public IActionResult TestError()
+    {
+        throw new Exception("Test exception middleware");
     }
 }

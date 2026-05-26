@@ -7,6 +7,7 @@ using PayFlow.AuthService.Data;
 using PayFlow.AuthService.Services;
 using PayFlow.AuthService.Settings;
 using System.Text;
+using PayFlow.AuthService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 
