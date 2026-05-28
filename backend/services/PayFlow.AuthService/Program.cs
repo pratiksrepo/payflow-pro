@@ -1,13 +1,16 @@
 using AuthService.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayFlow.AuthService.Data;
+using PayFlow.AuthService.Middleware;
 using PayFlow.AuthService.Services;
 using PayFlow.AuthService.Settings;
+using PayFlow.AuthService.Validators;
 using System.Text;
-using PayFlow.AuthService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +89,13 @@ builder.Services.AddScoped<EmailService>();
 
 builder.Services.Configure<SettingEmail>(
     builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services
+    .AddFluentValidationAutoValidation();
+
+builder.Services
+    .AddValidatorsFromAssemblyContaining<
+        RegisterRequestValidator>();
 
 var app = builder.Build();
 
