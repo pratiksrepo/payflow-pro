@@ -1,4 +1,3 @@
-using AuthService.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PayFlow.AuthService.Data;
+using PayFlow.AuthService.Interfaces;
 using PayFlow.AuthService.Middleware;
+using PayFlow.AuthService.Repositories;
 using PayFlow.AuthService.Services;
 using PayFlow.AuthService.Settings;
 using PayFlow.AuthService.Validators;
@@ -96,6 +97,14 @@ builder.Services
 builder.Services
     .AddValidatorsFromAssemblyContaining<
         RegisterRequestValidator>();
+
+builder.Services.AddScoped<
+    IUserRepository,
+    UserRepository>();
+
+builder.Services.AddScoped<
+    IAuthService,
+    PayFlow.AuthService.Services.AuthService>();
 
 var app = builder.Build();
 

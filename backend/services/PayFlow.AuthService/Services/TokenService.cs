@@ -6,7 +6,7 @@ using AuthService.Models;
 using Microsoft.IdentityModel.Tokens;
 using PayFlow.AuthService.Models;
 
-namespace AuthService.Services;
+namespace PayFlow.AuthService.Services;
 
 public class TokenService
 {

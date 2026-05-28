@@ -1,6 +1,5 @@
 ﻿using AuthService.DTOs;
 using AuthService.Models;
-using AuthService.Services;
 using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Helpers;
+using PayFlow.AuthService.Interfaces;
 using PayFlow.AuthService.Models;
 using PayFlow.AuthService.Services;
 
@@ -17,102 +17,60 @@ namespace PayFlow.AuthService.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly IAuthService _authService;
+
+    private readonly EmailService _emailService;
+
     private readonly AuthDbContext _context;
 
     private readonly TokenService _tokenService;
 
-    private readonly EmailService _emailService;
-
 
     public AuthController(
+        IAuthService authService,
+        EmailService emailService,
         AuthDbContext context,
-        TokenService tokenService,
-        EmailService emailService)
+        TokenService tokenService)
     {
+        _authService = authService;
+        _emailService = emailService;
         _context = context;
         _tokenService = tokenService;
-        _emailService = emailService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(
+       RegisterRequest request)
     {
-        var exists = await _context.Users
-            .AnyAsync(u => u.Email == request.Email);
+        var result =
+            await _authService.RegisterAsync(request);
 
-        if (exists)
+        if (result == "User already exists")
         {
-            return BadRequest("User already exists");
+            return BadRequest(result);
         }
-
-        var user = new User
-        {
-            FullName = request.FullName,
-            Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = "User",
-            VerificationToken = Guid.NewGuid().ToString()
-        };
-
-        _context.Users.Add(user);
-
-        await _context.SaveChangesAsync();
-
-        await _emailService.SendEmailAsync(
-            user.Email,
-            "Verify Your Email",
-            $"Your verification token is: {user.VerificationToken}"
-        );
 
         return Ok(new ApiResponse<object>
         {
             Success = true,
-            Message = "User registered successfully"
+            Message = result
         });
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> Login(
+       LoginRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(x => x.Email == request.Email);
+        var response =
+            await _authService.LoginAsync(request);
 
-        if (user == null)
-            return Unauthorized("Invalid email or password");
-
-        bool validPassword = BCrypt.Net.BCrypt.Verify(
-            request.Password,
-            user.PasswordHash
-        );
-
-        if (!user.EmailVerified)
+        if (response == null)
         {
-            return Unauthorized("Please verify your email first");
+            return Unauthorized(
+                "Invalid credentials or email not verified");
         }
 
-        if (!validPassword)
-            return Unauthorized("Invalid email or password");
-
-        var accessToken = _tokenService.CreateAccessToken(user);
-
-        var refreshToken = _tokenService.GenerateRefreshToken();
-
-        var refreshTokenEntity = new RefreshToken
-        {
-            Token = refreshToken,
-            Expires = DateTime.UtcNow.AddDays(7),
-            UserId = user.Id
-        };
-
-        _context.RefreshTokens.Add(refreshTokenEntity);
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new AuthResponse
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        });
+        return Ok(response);
     }
 
     [Authorize(Roles = "Admin")]
@@ -160,20 +118,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("verify-email")]
-    public async Task<IActionResult> VerifyEmail(string token)
+    public async Task<IActionResult> VerifyEmail(
+       string token)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(x =>
-                x.VerificationToken == token);
+        var verified =
+            await _authService.VerifyEmailAsync(token);
 
-        if (user == null)
+        if (!verified)
+        {
             return BadRequest("Invalid token");
-
-        user.EmailVerified = true;
-
-        user.VerificationToken = null;
-
-        await _context.SaveChangesAsync();
+        }
 
         return Ok("Email verified successfully");
     }

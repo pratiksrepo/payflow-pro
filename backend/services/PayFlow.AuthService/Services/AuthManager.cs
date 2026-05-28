@@ -1,5 +1,4 @@
-﻿using AuthService.Services;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Models;
