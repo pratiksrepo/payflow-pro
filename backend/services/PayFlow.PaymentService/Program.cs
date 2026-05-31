@@ -1,9 +1,20 @@
 using Microsoft.EntityFrameworkCore;
 using PayFlow.PaymentService.Data;
-
+using PayFlow.PaymentService.Interfaces;
+using PayFlow.PaymentService.Repositories;
+using PayFlow.PaymentService.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddScoped<
+    IPaymentRepository,
+    PaymentRepository>();
+
+builder.Services.AddScoped<
+    IPaymentService,
+    PaymentService>();
 
 // Add services to the container.
 
