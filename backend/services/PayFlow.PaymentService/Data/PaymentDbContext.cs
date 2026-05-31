@@ -13,4 +13,8 @@ public class PaymentDbContext : DbContext
 
     public DbSet<Payment> Payments =>
         Set<Payment>();
+
+
+    public DbSet<PaymentStateHistory> PaymentStateHistories =>
+    Set<PaymentStateHistory>();
 }
