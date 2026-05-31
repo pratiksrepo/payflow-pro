@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
-using PayFlow.AuthService.Models;
+
 
 namespace PayFlow.AuthService.Services;
 

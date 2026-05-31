@@ -1,7 +1,8 @@
-﻿using BCrypt.Net;
+﻿using AuthService.Models;
+using BCrypt.Net;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Interfaces;
-using PayFlow.AuthService.Models;
+
 
 namespace PayFlow.AuthService.Services;
 
@@ -86,6 +87,15 @@ public class AuthService : IAuthService
 
         var refreshToken =
             _tokenService.GenerateRefreshToken();
+
+        user.RefreshTokens.Add(new RefreshToken
+        {
+            Token = refreshToken,
+            Expires = DateTime.UtcNow.AddDays(7),
+            UserId = user.Id
+        });
+
+        await _userRepository.SaveChangesAsync();
 
         return new AuthResponse
         {

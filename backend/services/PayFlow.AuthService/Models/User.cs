@@ -1,4 +1,4 @@
-﻿namespace PayFlow.AuthService.Models;
+﻿using AuthService.Models;
 
 public class User
 {
@@ -20,4 +20,6 @@ public class User
 
     public DateTime? PasswordResetTokenExpires { get; set; }
 
+    public List<RefreshToken> RefreshTokens { get; set; }
+        = new();
 }

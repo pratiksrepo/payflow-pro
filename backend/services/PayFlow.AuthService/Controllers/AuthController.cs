@@ -8,8 +8,9 @@ using PayFlow.AuthService.Data;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Helpers;
 using PayFlow.AuthService.Interfaces;
-using PayFlow.AuthService.Models;
+
 using PayFlow.AuthService.Services;
+
 
 namespace PayFlow.AuthService.Controllers;
 
@@ -70,7 +71,12 @@ public class AuthController : ControllerBase
                 "Invalid credentials or email not verified");
         }
 
-        return Ok(response);
+        return Ok(new ApiResponse<AuthResponse>
+        {
+            Success = true,
+            Message = "Login successful",
+            Data = response
+        });
     }
 
     [Authorize(Roles = "Admin")]
@@ -107,13 +113,32 @@ public class AuthController : ControllerBase
         if (storedToken.Expires < DateTime.UtcNow)
             return Unauthorized("Token expired");
 
+        storedToken.IsRevoked = true;
+
+        var newRefreshToken =
+            _tokenService.GenerateRefreshToken();
+
+        var refreshTokenEntity =
+            new RefreshToken
+            {
+                Token = newRefreshToken,
+                Expires = DateTime.UtcNow.AddDays(7),
+                UserId = storedToken.UserId
+            };
+
+        _context.RefreshTokens.Add(
+            refreshTokenEntity);
+
+        await _context.SaveChangesAsync();
+
         var newAccessToken =
-            _tokenService.CreateAccessToken(storedToken.User);
+            _tokenService.CreateAccessToken(
+                storedToken.User);
 
         return Ok(new AuthResponse
         {
             AccessToken = newAccessToken,
-            RefreshToken = storedToken.Token
+            RefreshToken = newRefreshToken
         });
     }
 
@@ -194,4 +219,4 @@ public class AuthController : ControllerBase
     {
         throw new Exception("Test exception middleware");
     }
-}
+}   
