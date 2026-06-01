@@ -1,4 +1,5 @@
-﻿using PayFlow.PaymentService.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.PaymentService.Data;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;
 
@@ -23,5 +24,27 @@ public class PaymentRepository : IPaymentRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<Payment?> GetByIdAsync(
+        Guid id)
+    {
+        return await _context.Payments
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public Task UpdateAsync(
+        Payment payment)
+    {
+        _context.Payments.Update(payment);
+
+        return Task.CompletedTask;
+    }
+
+    public async Task AddHistoryAsync(
+        PaymentStateHistory history)
+    {
+        await _context.PaymentStateHistories
+            .AddAsync(history);
     }
 }

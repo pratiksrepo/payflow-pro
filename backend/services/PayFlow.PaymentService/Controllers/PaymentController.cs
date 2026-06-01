@@ -26,4 +26,36 @@ public class PaymentController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPut("status")]
+    public async Task<IActionResult>
+    UpdateStatus(
+    UpdatePaymentStatusRequest request)
+    {
+        var success =
+            await _service
+                .UpdateStatusAsync(request);
+
+        if (!success)
+        {
+            return BadRequest(
+                "Invalid payment state transition");
+        }
+
+        return Ok("Status Updated");
+    }
+
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult>
+    GetPayment(Guid id)
+    {
+        var payment =
+            await _service.GetByIdAsync(id);
+
+        if (payment == null)
+            return NotFound();
+
+        return Ok(payment);
+    }
 }

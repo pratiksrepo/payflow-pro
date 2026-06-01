@@ -7,4 +7,11 @@ public interface IPaymentRepository
     Task AddAsync(Payment payment);
 
     Task SaveChangesAsync();
+
+    Task<Payment?> GetByIdAsync(Guid id);
+
+    Task UpdateAsync(Payment payment);
+
+    Task AddHistoryAsync(
+        PaymentStateHistory history);
 }

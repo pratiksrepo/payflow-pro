@@ -1,4 +1,5 @@
 ﻿using PayFlow.PaymentService.DTOs;
+using PayFlow.PaymentService.Helpers;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;
 
@@ -39,5 +40,56 @@ public class PaymentService : IPaymentService
             Amount = payment.Amount,
             Status = payment.Status.ToString()
         };
+    }
+
+    public async Task<bool>
+    UpdateStatusAsync(
+    UpdatePaymentStatusRequest request)
+    {
+        var payment =
+            await _repository.GetByIdAsync(
+                request.PaymentId);
+
+        if (payment == null)
+            return false;
+
+        var oldStatus =
+            payment.Status.ToString();
+
+        var newStatus =
+            Enum.Parse<PaymentStatus>(
+                request.Status);
+
+        if (!PaymentStateValidator
+            .IsValidTransition(
+                payment.Status,
+                newStatus))
+        {
+            return false;
+        }
+
+        payment.Status = newStatus;
+
+        await _repository.UpdateAsync(payment);
+
+        await _repository.AddHistoryAsync(
+            new PaymentStateHistory
+            {
+                PaymentId = payment.Id,
+                OldStatus = oldStatus,
+                NewStatus = request.Status,
+                ChangedAt = DateTime.UtcNow
+            });
+
+        await _repository.SaveChangesAsync();
+
+        return true;
+    }
+
+
+    public async Task<Payment?> GetByIdAsync(Guid id)
+    {
+        return await _repository
+            .GetByIdAsync(id);
     }
 }
