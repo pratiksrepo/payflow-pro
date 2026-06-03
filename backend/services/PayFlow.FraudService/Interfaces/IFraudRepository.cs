@@ -11,4 +11,10 @@ public interface IFraudRepository
         TransactionFingerprint fingerprint);
 
     Task SaveChangesAsync();
+
+    Task AddAnomalyAsync(
+    AnomalyDetectionResult anomaly);
+
+    Task<List<TransactionFingerprint>>
+        GetFingerprintsAsync();
 }

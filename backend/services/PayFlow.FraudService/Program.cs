@@ -25,6 +25,10 @@ builder.Services.AddScoped<
     IFraudRepository,
     FraudRepository>();
 
+builder.Services.AddScoped<
+    IAnomalyDetectionService,
+    AnomalyDetectionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -17,4 +17,9 @@ public class FraudDbContext : DbContext
     public DbSet<TransactionFingerprint>
     TransactionFingerprints =>
         Set<TransactionFingerprint>();
+
+
+    public DbSet<AnomalyDetectionResult>
+    AnomalyDetectionResults =>
+        Set<AnomalyDetectionResult>();
 }

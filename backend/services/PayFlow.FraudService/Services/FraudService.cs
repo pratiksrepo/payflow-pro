@@ -9,11 +9,10 @@ public class FraudService : IFraudService
 
     private readonly IFraudRepository _repository;
 
-    public FraudService(
-    IFraudRepository repository)
-    {
-        _repository = repository;
-    }
+    private readonly
+    IAnomalyDetectionService
+        _anomalyDetectionService;
+
 
     public async Task<FraudCheckResponse>
         CheckFraudAsync(
@@ -42,6 +41,23 @@ public class FraudService : IFraudService
                 _ => "High"
             };
 
+        var isAnomaly =
+        await _anomalyDetectionService
+        .IsAnomalousAsync(
+            request.PaymentId,
+            request.Amount);
+
+        if (isAnomaly)
+        {
+            riskScore += 20;
+        }
+
+        riskScore = Math.Min(riskScore, 100);
+
+        var fingerprints =
+            await _repository
+                .GetFingerprintsAsync();
+
         var fraudCheck =
     new FraudCheck
     {
@@ -54,7 +70,35 @@ public class FraudService : IFraudService
         IsFraudulent = riskScore >= 70,
         CheckedAt = DateTime.UtcNow
     };
+        await _repository
+    .AddAnomalyAsync(
+        new AnomalyDetectionResult
+        {
+            Id = Guid.NewGuid(),
 
+            PaymentId =
+                request.PaymentId,
+
+            Amount =
+                request.Amount,
+
+            AverageAmount =
+                fingerprints.Any()
+                    ? fingerprints.Average(
+                        x => x.Amount)
+                    : 0,
+
+            IsAnomaly =
+                isAnomaly,
+
+            Reason =
+                isAnomaly
+                    ? "Amount exceeds average by 3x"
+                    : "Normal",
+
+            CreatedAt =
+                DateTime.UtcNow
+        });
         await _repository
             .AddFraudCheckAsync(
                 fraudCheck);
@@ -87,6 +131,8 @@ public class FraudService : IFraudService
         await _repository
             .SaveChangesAsync();
 
+
+
         return await Task.FromResult(
             new FraudCheckResponse
             {
@@ -95,7 +141,17 @@ public class FraudService : IFraudService
                 IsFraudulent = riskScore >= 70
             });
 
+    }
 
+    public FraudService(
+    IFraudRepository repository,
+    IAnomalyDetectionService
+        anomalyDetectionService)
+    {
+        _repository = repository;
+
+        _anomalyDetectionService =
+            anomalyDetectionService;
     }
 
 

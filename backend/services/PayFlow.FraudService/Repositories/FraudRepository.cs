@@ -1,4 +1,5 @@
-﻿using PayFlow.FraudService.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PayFlow.FraudService.Data;
 using PayFlow.FraudService.Interfaces;
 using PayFlow.FraudService.Models;
 
@@ -31,5 +32,24 @@ public class FraudRepository : IFraudRepository
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+
+    public async Task AddAnomalyAsync(
+    AnomalyDetectionResult anomaly)
+    {
+        await _context
+            .AnomalyDetectionResults
+            .AddAsync(anomaly);
+    }
+
+
+    public async Task<
+    List<TransactionFingerprint>>
+    GetFingerprintsAsync()
+    {
+        return await _context
+            .TransactionFingerprints
+            .ToListAsync();
     }
 }
