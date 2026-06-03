@@ -7,6 +7,7 @@ using PayFlow.PaymentService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<
     IPaymentRepository,

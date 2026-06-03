@@ -1,4 +1,5 @@
-﻿using PayFlow.PaymentService.DTOs;
+﻿using System.Net.Http.Json;
+using PayFlow.PaymentService.DTOs;
 using PayFlow.PaymentService.Helpers;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;
@@ -9,10 +10,42 @@ public class PaymentService : IPaymentService
 {
     private readonly IPaymentRepository _repository;
 
+    private readonly IHttpClientFactory _httpClientFactory;
+
     public PaymentService(
-        IPaymentRepository repository)
+        IPaymentRepository repository,
+        IHttpClientFactory httpClientFactory)
     {
         _repository = repository;
+
+        _httpClientFactory = httpClientFactory;
+    }
+
+    private async Task<FraudCheckResponse?>
+        CheckFraudAsync(
+        Payment payment)
+    {
+        var client =
+            _httpClientFactory
+                .CreateClient();
+
+        var response =
+            await client.PostAsJsonAsync(
+                "https://localhost:7169/api/fraud/check",
+                new FraudCheckRequest
+                {
+                    PaymentId = payment.Id,
+                    Amount = payment.Amount,
+                    PaymentMethod =
+                        payment.PaymentMethod
+                });
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content
+            .ReadFromJsonAsync<
+                FraudCheckResponse>();
     }
 
     public async Task<PaymentResponse>
@@ -34,6 +67,39 @@ public class PaymentService : IPaymentService
 
         await _repository.SaveChangesAsync();
 
+        var fraudResult =
+            await CheckFraudAsync(payment);
+
+        if (fraudResult != null)
+        {
+            if (fraudResult.RiskScore >= 90)
+            {
+                payment.Status =
+                    PaymentStatus.Failed;
+            }
+            else
+            {
+                payment.Status =
+                    PaymentStatus.Pending;
+            }
+
+            await _repository.UpdateAsync(
+                payment);
+
+            await _repository.AddHistoryAsync(
+                new PaymentStateHistory
+                {
+                    PaymentId = payment.Id,
+                    OldStatus = "Initiated",
+                    NewStatus =
+                        payment.Status.ToString(),
+                    ChangedAt =
+                        DateTime.UtcNow
+                });
+
+            await _repository.SaveChangesAsync();
+        }
+
         return new PaymentResponse
         {
             PaymentId = payment.Id,
@@ -43,8 +109,8 @@ public class PaymentService : IPaymentService
     }
 
     public async Task<bool>
-    UpdateStatusAsync(
-    UpdatePaymentStatusRequest request)
+        UpdateStatusAsync(
+        UpdatePaymentStatusRequest request)
     {
         var payment =
             await _repository.GetByIdAsync(
@@ -70,7 +136,8 @@ public class PaymentService : IPaymentService
 
         payment.Status = newStatus;
 
-        await _repository.UpdateAsync(payment);
+        await _repository.UpdateAsync(
+            payment);
 
         await _repository.AddHistoryAsync(
             new PaymentStateHistory
@@ -86,8 +153,8 @@ public class PaymentService : IPaymentService
         return true;
     }
 
-
-    public async Task<Payment?> GetByIdAsync(Guid id)
+    public async Task<Payment?>
+        GetByIdAsync(Guid id)
     {
         return await _repository
             .GetByIdAsync(id);
