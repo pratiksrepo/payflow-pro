@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PayFlow.FraudService.Data;
 using PayFlow.FraudService.Interfaces;
 using PayFlow.FraudService.Services;
+using PayFlow.FraudService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,10 @@ builder.Services.AddDbContext<FraudDbContext>(options =>
 builder.Services.AddScoped<
     IFraudService,
     FraudService>();
+
+builder.Services.AddScoped<
+    IFraudRepository,
+    FraudRepository>();
 
 var app = builder.Build();
 

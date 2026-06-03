@@ -13,4 +13,8 @@ public class FraudDbContext : DbContext
 
     public DbSet<FraudCheck> FraudChecks =>
         Set<FraudCheck>();
+
+    public DbSet<TransactionFingerprint>
+    TransactionFingerprints =>
+        Set<TransactionFingerprint>();
 }
