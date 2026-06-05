@@ -1,4 +1,4 @@
-﻿namespace PayFlow.PaymentService.DTOs;
+﻿namespace PayFlow.SharedKernel.DTOs;
 
 public class FraudCheckRequest
 {
@@ -6,5 +6,6 @@ public class FraudCheckRequest
 
     public decimal Amount { get; set; }
 
-    public string PaymentMethod { get; set; } = string.Empty;
+    public string PaymentMethod { get; set; }
+        = string.Empty;
 }

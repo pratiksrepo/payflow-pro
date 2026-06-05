@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PayFlow.PaymentService.DTOs;
+using PayFlow.SharedKernel.DTOs;
 using PayFlow.PaymentService.Interfaces;
 
 namespace PayFlow.PaymentService.Controllers;

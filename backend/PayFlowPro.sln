@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11822.322 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{5854FF58-B8C5-05C6-5BF2-ACE42193F22B}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.ApiGateway", "gateway\PayFlow.ApiGateway\PayFlow.ApiGateway.csproj", "{3843F562-52FB-4910-9AB6-91AAE510F0E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.AuthService", "services\PayFlow.AuthService\PayFlow.AuthService.csproj", "{6ACACB6E-4A92-A020-00C8-AB6A16784263}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.SharedKernel", "shared\PayFlow.SharedKernel\PayFlow.SharedKernel.csproj", "{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,18 @@ Global
 		{6ACACB6E-4A92-A020-00C8-AB6A16784263}.Release|x64.Build.0 = Release|Any CPU
 		{6ACACB6E-4A92-A020-00C8-AB6A16784263}.Release|x86.ActiveCfg = Release|Any CPU
 		{6ACACB6E-4A92-A020-00C8-AB6A16784263}.Release|x86.Build.0 = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x64.Build.0 = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

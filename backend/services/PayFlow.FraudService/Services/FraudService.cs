@@ -1,4 +1,4 @@
-﻿using PayFlow.FraudService.DTOs;
+﻿using PayFlow.SharedKernel.DTOs;
 using PayFlow.FraudService.Interfaces;
 using PayFlow.FraudService.Models;
 

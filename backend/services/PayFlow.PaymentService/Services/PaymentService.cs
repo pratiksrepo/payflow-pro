@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using PayFlow.PaymentService.DTOs;
+using PayFlow.SharedKernel.DTOs;
 using PayFlow.PaymentService.Helpers;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;

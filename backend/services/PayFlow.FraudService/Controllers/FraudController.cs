@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PayFlow.FraudService.DTOs;
+using PayFlow.SharedKernel.DTOs;
 using PayFlow.FraudService.Interfaces;
 
 namespace PayFlow.FraudService.Controllers;

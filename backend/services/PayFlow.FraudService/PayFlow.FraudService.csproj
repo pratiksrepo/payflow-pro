@@ -17,8 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\" />
     <Folder Include="Helpers\" />
     <Folder Include="Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared\PayFlow.SharedKernel\PayFlow.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>
