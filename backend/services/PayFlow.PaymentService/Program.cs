@@ -3,6 +3,7 @@ using PayFlow.PaymentService.Data;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Repositories;
 using PayFlow.PaymentService.Services;
+using PayFlow.SharedKernel.Events;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PaymentDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<
+    IEventPublisher,
+    EventPublisher>();
 
 var app = builder.Build();
 

@@ -1,9 +1,10 @@
-﻿using System.Net.Http.Json;
-using PayFlow.PaymentService.DTOs;
-using PayFlow.SharedKernel.DTOs;
+﻿using PayFlow.PaymentService.DTOs;
 using PayFlow.PaymentService.Helpers;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;
+using PayFlow.SharedKernel.DTOs;
+using PayFlow.SharedKernel.Events;
+using System.Net.Http.Json;
 
 namespace PayFlow.PaymentService.Services;
 
@@ -12,6 +13,10 @@ public class PaymentService : IPaymentService
     private readonly IPaymentRepository _repository;
 
     private readonly IHttpClientFactory _httpClientFactory;
+
+    private readonly IEventPublisher
+    _eventPublisher;
+
 
     public PaymentService(
         IPaymentRepository repository,
@@ -67,6 +72,23 @@ public class PaymentService : IPaymentService
         await _repository.AddAsync(payment);
 
         await _repository.SaveChangesAsync();
+
+        await _eventPublisher
+    .PublishAsync(
+        new PaymentCreatedEvent
+        {
+            PaymentId =
+                payment.Id,
+
+            UserId =
+                payment.UserId,
+
+            Amount =
+                payment.Amount,
+
+            PaymentMethod =
+                payment.PaymentMethod
+        });
 
         var fraudResult =
             await CheckFraudAsync(payment);
@@ -159,5 +181,19 @@ public class PaymentService : IPaymentService
     {
         return await _repository
             .GetByIdAsync(id);
+    }
+
+    public PaymentService(
+    IPaymentRepository repository,
+    IHttpClientFactory httpClientFactory,
+    IEventPublisher eventPublisher)
+    {
+        _repository = repository;
+
+        _httpClientFactory =
+            httpClientFactory;
+
+        _eventPublisher =
+            eventPublisher;
     }
 }
