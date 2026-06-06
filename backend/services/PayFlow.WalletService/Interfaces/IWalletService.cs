@@ -12,7 +12,7 @@ public interface IWalletService
         CreditAsync(
             CreditWalletRequest request);
 
-    Task<bool>
+    Task<DebitWalletResponse>
         DebitAsync(
             DebitWalletRequest request);
 

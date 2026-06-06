@@ -54,6 +54,39 @@ public class PaymentService : IPaymentService
                 FraudCheckResponse>();
     }
 
+    private async Task<
+    DebitWalletResponse?>
+    DebitWalletAsync(
+    Payment payment)
+    {
+        var client =
+            _httpClientFactory
+                .CreateClient();
+
+        var response =
+            await client.PostAsJsonAsync(
+                "https://localhost:7224/api/wallet/debit",
+                new DebitWalletRequest
+                {
+                    UserId =
+                        payment.UserId,
+
+                    Amount =
+                        payment.Amount
+                });
+
+        if (!response
+            .IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        return await response
+            .Content
+            .ReadFromJsonAsync<
+                DebitWalletResponse>();
+    }
+
     public async Task<PaymentResponse>
         CreatePaymentAsync(
         CreatePaymentRequest request)
@@ -95,32 +128,53 @@ public class PaymentService : IPaymentService
 
         if (fraudResult != null)
         {
-            if (fraudResult.RiskScore >= 90)
+            if (fraudResult.IsFraudulent)
             {
                 payment.Status =
                     PaymentStatus.Failed;
             }
             else
             {
-                payment.Status =
-                    PaymentStatus.Pending;
+                var walletResult =
+                    await DebitWalletAsync(
+                        payment);
+
+                if (walletResult == null ||
+                    !walletResult.Success)
+                {
+                    payment.Status =
+                        PaymentStatus.Failed;
+                }
+                else
+                {
+                    payment.Status =
+                        PaymentStatus.Pending;
+                }
             }
 
-            await _repository.UpdateAsync(
-                payment);
+            await _repository
+                .UpdateAsync(payment);
 
-            await _repository.AddHistoryAsync(
-                new PaymentStateHistory
-                {
-                    PaymentId = payment.Id,
-                    OldStatus = "Initiated",
-                    NewStatus =
-                        payment.Status.ToString(),
-                    ChangedAt =
-                        DateTime.UtcNow
-                });
+            await _repository
+                .AddHistoryAsync(
+                    new PaymentStateHistory
+                    {
+                        PaymentId =
+                            payment.Id,
 
-            await _repository.SaveChangesAsync();
+                        OldStatus =
+                            "Initiated",
+
+                        NewStatus =
+                            payment.Status
+                                .ToString(),
+
+                        ChangedAt =
+                            DateTime.UtcNow
+                    });
+
+            await _repository
+                .SaveChangesAsync();
         }
 
         return new PaymentResponse

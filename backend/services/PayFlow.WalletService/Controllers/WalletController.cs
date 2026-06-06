@@ -55,12 +55,13 @@ public class WalletController : ControllerBase
             await _walletService
                 .DebitAsync(request);
 
-        if (!result)
+        if (!result.Success)
+        {
             return BadRequest(
-                "Insufficient balance or wallet not found");
+                result);
+        }
 
-        return Ok(
-            "Amount debited");
+        return Ok(result);
     }
 
     [HttpGet("{userId}")]

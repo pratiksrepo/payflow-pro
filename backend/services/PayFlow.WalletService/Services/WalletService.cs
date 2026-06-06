@@ -73,9 +73,9 @@ public class WalletService
         return true;
     }
 
-    public async Task<bool>
-        DebitAsync(
-        DebitWalletRequest request)
+    public async Task<DebitWalletResponse>
+     DebitAsync(
+     DebitWalletRequest request)
     {
         var wallet =
             await _repository
@@ -83,18 +83,29 @@ public class WalletService
                     request.UserId);
 
         if (wallet == null)
-            return false;
+        {
+            return new DebitWalletResponse
+            {
+                Success = false,
+                Message = "Wallet not found"
+            };
+        }
 
         if (wallet.Balance <
             request.Amount)
         {
-            return false;
+            return new DebitWalletResponse
+            {
+                Success = false,
+                Message =
+                    "Insufficient balance"
+            };
         }
 
         wallet.Balance -= request.Amount;
 
-        await _repository.UpdateAsync(
-            wallet);
+        await _repository
+            .UpdateAsync(wallet);
 
         await _repository
             .AddTransactionAsync(
@@ -109,7 +120,14 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
-        return true;
+        return new DebitWalletResponse
+        {
+            Success = true,
+            Message = "Debited",
+
+            RemainingBalance =
+                wallet.Balance
+        };
     }
 
     public async Task<WalletResponse?>
