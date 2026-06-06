@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PayFlow.WalletService.Data;
+using PayFlow.WalletService.Interfaces;
+using PayFlow.WalletService.Repositories;
+using PayFlow.WalletService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,14 @@ builder.Services.AddDbContext<
             builder.Configuration
                 .GetConnectionString(
                     "DefaultConnection")));
+
+builder.Services.AddScoped<
+    IWalletRepository,
+    WalletRepository>();
+
+builder.Services.AddScoped<
+    IWalletService,
+    WalletService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,133 @@
+﻿using PayFlow.WalletService.DTOs;
+using PayFlow.WalletService.Interfaces;
+using PayFlow.WalletService.Models;
+
+namespace PayFlow.WalletService.Services;
+
+public class WalletService
+    : IWalletService
+{
+    private readonly IWalletRepository
+        _repository;
+
+    public WalletService(
+        IWalletRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<WalletResponse>
+        CreateWalletAsync(
+            CreateWalletRequest request)
+    {
+        var wallet = new Wallet
+        {
+            Id = Guid.NewGuid(),
+            UserId = request.UserId,
+            Balance =
+                request.InitialBalance
+        };
+
+        await _repository.AddAsync(
+            wallet);
+
+        await _repository.SaveChangesAsync();
+
+        return new WalletResponse
+        {
+            WalletId = wallet.Id,
+            Balance = wallet.Balance
+        };
+    }
+
+    public async Task<bool>
+        CreditAsync(
+        CreditWalletRequest request)
+    {
+        var wallet =
+            await _repository
+                .GetByUserIdAsync(
+                    request.UserId);
+
+        if (wallet == null)
+            return false;
+
+        wallet.Balance += request.Amount;
+
+        await _repository.UpdateAsync(
+            wallet);
+
+        await _repository
+            .AddTransactionAsync(
+                new WalletTransaction
+                {
+                    Id = Guid.NewGuid(),
+                    WalletId = wallet.Id,
+                    Amount = request.Amount,
+                    Type = "Credit"
+                });
+
+        await _repository
+            .SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool>
+        DebitAsync(
+        DebitWalletRequest request)
+    {
+        var wallet =
+            await _repository
+                .GetByUserIdAsync(
+                    request.UserId);
+
+        if (wallet == null)
+            return false;
+
+        if (wallet.Balance <
+            request.Amount)
+        {
+            return false;
+        }
+
+        wallet.Balance -= request.Amount;
+
+        await _repository.UpdateAsync(
+            wallet);
+
+        await _repository
+            .AddTransactionAsync(
+                new WalletTransaction
+                {
+                    Id = Guid.NewGuid(),
+                    WalletId = wallet.Id,
+                    Amount = request.Amount,
+                    Type = "Debit"
+                });
+
+        await _repository
+            .SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<WalletResponse?>
+        GetWalletAsync(
+        int userId)
+    {
+        var wallet =
+            await _repository
+                .GetByUserIdAsync(
+                    userId);
+
+        if (wallet == null)
+            return null;
+
+        return new WalletResponse
+        {
+            WalletId = wallet.Id,
+            Balance = wallet.Balance
+        };
+    }
+}

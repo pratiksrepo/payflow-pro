@@ -37,4 +37,30 @@ public class WalletRepository
     {
         await _context.SaveChangesAsync();
     }
+    public async Task UpdateAsync(
+    Wallet wallet)
+    {
+        _context.Wallets.Update(wallet);
+
+        await Task.CompletedTask;
+    }
+
+    public async Task AddTransactionAsync(
+    WalletTransaction transaction)
+    {
+        await _context.WalletTransactions
+            .AddAsync(transaction);
+    }
+
+    public async Task<List<WalletTransaction>>
+    GetTransactionsAsync(
+        Guid walletId)
+    {
+        return await _context
+            .WalletTransactions
+            .Where(x => x.WalletId == walletId)
+            .OrderByDescending(
+                x => x.CreatedAt)
+            .ToListAsync();
+    }
 }

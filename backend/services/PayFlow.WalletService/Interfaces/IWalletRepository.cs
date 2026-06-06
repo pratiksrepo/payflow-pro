@@ -10,4 +10,13 @@ public interface IWalletRepository
         int userId);
 
     Task SaveChangesAsync();
+
+    Task UpdateAsync(Wallet wallet);
+
+    Task AddTransactionAsync(
+        WalletTransaction transaction);
+
+    Task<List<WalletTransaction>>
+        GetTransactionsAsync(
+            Guid walletId);
 }
