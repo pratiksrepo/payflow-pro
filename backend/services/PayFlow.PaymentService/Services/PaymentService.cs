@@ -14,18 +14,8 @@ public class PaymentService : IPaymentService
 
     private readonly IHttpClientFactory _httpClientFactory;
 
-    private readonly IEventPublisher
-    _eventPublisher;
+    private readonly IEventPublisher _eventPublisher;
 
-
-    public PaymentService(
-        IPaymentRepository repository,
-        IHttpClientFactory httpClientFactory)
-    {
-        _repository = repository;
-
-        _httpClientFactory = httpClientFactory;
-    }
 
     private async Task<FraudCheckResponse?>
         CheckFraudAsync(
@@ -87,6 +77,27 @@ public class PaymentService : IPaymentService
                 DebitWalletResponse>();
     }
 
+    private async Task
+    SendNotificationAsync(
+    int userId,
+    string title,
+    string message)
+    {
+        var client =
+            _httpClientFactory
+                .CreateClient();
+
+        await client.PostAsJsonAsync(
+            "https://localhost:7136/api/notification",
+            new CreateNotificationRequest
+            {
+                UserId = userId,
+                Title = title,
+                Message = message,
+                Type = "Payment"
+            });
+    }
+
     public async Task<PaymentResponse>
         CreatePaymentAsync(
         CreatePaymentRequest request)
@@ -128,10 +139,18 @@ public class PaymentService : IPaymentService
 
         if (fraudResult != null)
         {
+            Console.WriteLine(
+    $"RiskScore={fraudResult.RiskScore}, Fraud={fraudResult.IsFraudulent}");
+
             if (fraudResult.IsFraudulent)
             {
                 payment.Status =
                     PaymentStatus.Failed;
+
+                await SendNotificationAsync(
+                    payment.UserId,
+                    "Payment Failed",
+                    $"Payment {payment.Id} failed fraud validation");
             }
             else
             {
@@ -142,15 +161,31 @@ public class PaymentService : IPaymentService
                 if (walletResult == null ||
                     !walletResult.Success)
                 {
+
+                    Console.WriteLine(
+    "WALLET FAILURE BRANCH");
+
                     payment.Status =
                         PaymentStatus.Failed;
+
+                    await SendNotificationAsync(
+                        payment.UserId,
+                        "Payment Failed",
+                        "Insufficient wallet balance");
+
                 }
                 else
                 {
                     payment.Status =
                         PaymentStatus.Pending;
+                    await SendNotificationAsync(
+                    payment.UserId,
+                    "Payment Created",
+                    $"Payment {payment.Id} created successfully");
                 }
             }
+
+
 
             await _repository
                 .UpdateAsync(payment);
