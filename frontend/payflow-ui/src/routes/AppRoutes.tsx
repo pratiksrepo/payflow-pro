@@ -5,26 +5,35 @@ import {
 }
 from "react-router-dom";
 
-import MainLayout
-from "../layouts/MainLayout";
+import LoginPage
+from "../pages/auth/LoginPage";
 
-import DashboardPage
-from "../pages/DashboardPage";
+import RegisterPage
+from "../pages/auth/RegisterPage";
 
 export default function AppRoutes()
 {
     return (
         <BrowserRouter>
-            <MainLayout>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            <DashboardPage />
-                        }
-                    />
-                </Routes>
-            </MainLayout>
+
+            <Routes>
+
+                <Route
+                    path="/"
+                    element={
+                        <LoginPage />
+                    }
+                />
+
+                <Route
+                    path="/register"
+                    element={
+                        <RegisterPage />
+                    }
+                />
+
+            </Routes>
+
         </BrowserRouter>
     );
 }
