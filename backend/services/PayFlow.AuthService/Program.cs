@@ -15,6 +15,19 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "ReactPolicy",
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers();
 
@@ -115,6 +128,11 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+
+app.UseCors(
+    "ReactPolicy");
+
 
 app.UseAuthentication();
 
