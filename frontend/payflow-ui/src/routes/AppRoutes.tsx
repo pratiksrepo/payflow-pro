@@ -15,7 +15,7 @@ import DashboardPage
 from "../pages/DashboardPage";
 
 import DashboardLayout
-from "../layouts/DashboardLayout";
+from "../components/layouts/DashboardLayout";
 
 import ProtectedRoute
 from "./ProtectedRoute";

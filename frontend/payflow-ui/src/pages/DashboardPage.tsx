@@ -1,21 +1,41 @@
 import {
     Box,
+    Grid,
     Paper,
     Typography,
-        List,
+    List,
     ListItem,
     ListItemText
-} from "@mui/material";
+}
+from "@mui/material";
 
 import {
     useEffect,
     useState
-} from "react";
+}
+from "react";
+
+import AccountBalanceWalletIcon
+from "@mui/icons-material/AccountBalanceWallet";
+
+import NotificationsIcon
+from "@mui/icons-material/Notifications";
+
+import SecurityIcon
+from "@mui/icons-material/Security";
+
+import TrendingUpIcon
+from "@mui/icons-material/TrendingUp";
 
 import {
     getWallet
-} from "../services/walletService";
+}
+from "../services/walletService";
 
+import {
+    getNotifications
+}
+from "../services/notificationService";
 
 import {
     getUserId,
@@ -23,257 +43,345 @@ import {
 }
 from "../utils/jwtHelper";
 
-import {
-    getNotifications
+import type {
+    Notification
 }
-from "../services/notificationService";
+from "../types/Notification";
 
-export default function DashboardPage() {
-const [email, setEmail] =
-    useState("");
-
-const [balance, setBalance] =
-    useState(0);
-
-const [
-    notifications,
-    setNotifications
-] = useState<any[]>([]);
-
-const loadDashboard =
-    async () =>
+export default function DashboardPage()
 {
+    const [balance, setBalance] =
+        useState<number>(0);
 
-    console.log(
-    "USER ID:",
-    getUserId());
+    const [email, setEmail] =
+        useState<string>("");
 
-console.log(
-    "EMAIL:",
-    getEmail());
+    const [
+        notifications,
+        setNotifications
+    ] = useState<Notification[]>([]);
 
-    console.log(
-    getUserId());
-    
-    try
+    useEffect(() =>
     {
-        const userId =
-            getUserId();
-
-        if (!userId)
+        const loadDashboard =
+            async () =>
         {
-            return;
-        }
+            try
+            {
+                const userId =
+                    getUserId();
 
-        setEmail(
-            getEmail());
+                if (!userId)
+                {
+                    return;
+                }
 
-        const wallet =
-            await getWallet(
-                userId);
+                setEmail(
+                    getEmail());
 
-        setBalance(
-            wallet.balance);
+                const wallet =
+                    await getWallet(
+                        userId);
 
-        const notificationsData =
-            await getNotifications(
-                userId);
+                setBalance(
+                    wallet.balance);
 
-        setNotifications(
-            notificationsData);
-    }
-    catch (error)
-    {
-        console.error(error);
-    }
-};
+                const notificationData =
+                    await getNotifications(
+                        userId);
 
-useEffect(() =>
-{
-    void loadDashboard();
-}, []);
+                setNotifications(
+                    notificationData);
+            }
+            catch (error)
+            {
+                console.error(
+                    "Dashboard Error:",
+                    error);
+            }
+        };
 
-
-
+        void loadDashboard();
+    }, []);
 
     return (
-        <>
-<Box
-    sx={{
-        mb: 4
-    }}
->
-    <Typography
-        variant="h4"
-        sx={{
-            fontWeight: 700
-        }}
-    >
-        Dashboard
-    </Typography>
+        <Box>
 
-    <Typography
-        color="text.secondary"
-    >
-        Welcome back,
-        {email}
-    </Typography>
-</Box>
+            {/* Welcome Section */}
 
             <Box
                 sx={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit,minmax(280px,1fr))",
-                    gap: 3
+                    mb: 4
                 }}
             >
-                {/* Total Payments */}
-
-                <Paper
-                    elevation={3}
+                <Typography
+                    variant="h3"
                     sx={{
-                        p: 3,
-                        borderRadius: 3
+                        fontWeight: 700
                     }}
                 >
-                    <Typography
-                        color="text.secondary"
-                    >
-                        Total Payments
-                    </Typography>
+                    Welcome Back 👋
+                </Typography>
 
-                    <Typography
-                        variant="h4"
-                        sx={{
-                            fontWeight: 700
-                        }}
-                    >
-                        ₹12,50,000
-                    </Typography>
-                </Paper>
+                <Typography
+                    color="text.secondary"
+                >
+                    {email}
+                </Typography>
+            </Box>
 
-                {/* Wallet Balance */}
+            {/* Statistics Cards */}
 
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 3,
-                        borderRadius: 3
+            <Grid
+                container
+                spacing={3}
+            >
+
+                {/* Wallet */}
+
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
                     }}
                 >
-                    <Typography
-                        color="text.secondary"
-                    >
-                        Wallet Balance
-                    </Typography>
-
-                    <Typography
-                        variant="h4"
+                    <Paper
+                        elevation={4}
                         sx={{
-                            fontWeight: 700
+                            p: 3,
+                            borderRadius: 4,
+                            transition: "0.3s",
+                            "&:hover":
+                            {
+                                transform:
+                                    "translateY(-5px)"
+                            }
                         }}
                     >
-                        ₹{balance}
-                    </Typography>
-                </Paper>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 2
+                            }}
+                        >
+                            <AccountBalanceWalletIcon />
+
+                            <Typography>
+                                Wallet Balance
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 700
+                            }}
+                        >
+                            ₹{balance}
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+                {/* Notifications */}
+
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
+                    }}
+                >
+                    <Paper
+                        elevation={4}
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            transition: "0.3s",
+                            "&:hover":
+                            {
+                                transform:
+                                    "translateY(-5px)"
+                            }
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 2
+                            }}
+                        >
+                            <NotificationsIcon />
+
+                            <Typography>
+                                Notifications
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 700
+                            }}
+                        >
+                            {notifications.length}
+                        </Typography>
+                    </Paper>
+                </Grid>
 
                 {/* Fraud Alerts */}
 
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 3,
-                        borderRadius: 3
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
                     }}
                 >
-                    <Typography
-                        color="text.secondary"
-                    >
-                        Fraud Alerts
-                    </Typography>
-
-                    <Typography
-                        variant="h4"
+                    <Paper
+                        elevation={4}
                         sx={{
-                            fontWeight: 700
+                            p: 3,
+                            borderRadius: 4,
+                            transition: "0.3s",
+                            "&:hover":
+                            {
+                                transform:
+                                    "translateY(-5px)"
+                            }
                         }}
                     >
-                        3
-                    </Typography>
-                </Paper>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 2
+                            }}
+                        >
+                            <SecurityIcon />
+
+                            <Typography>
+                                Fraud Alerts
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 700
+                            }}
+                        >
+                            0
+                        </Typography>
+                    </Paper>
+                </Grid>
 
                 {/* Success Rate */}
 
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 3,
-                        borderRadius: 3
+                <Grid
+                    size={{
+                        xs: 12,
+                        md: 3
                     }}
                 >
-                    <Typography
-                        color="text.secondary"
-                    >
-                        Success Rate
-                    </Typography>
-
-                    <Typography
-                        variant="h4"
+                    <Paper
+                        elevation={4}
                         sx={{
-                            fontWeight: 700
+                            p: 3,
+                            borderRadius: 4,
+                            transition: "0.3s",
+                            "&:hover":
+                            {
+                                transform:
+                                    "translateY(-5px)"
+                            }
                         }}
                     >
-                        98.7%
-                    </Typography>
-                </Paper>
-
-            </Box>
-
-            <Box
-    sx={{
-        mt: 4
-    }}
->
-    <Paper
-        elevation={3}
-        sx={{
-            p: 3,
-            borderRadius: 3
-        }}
-    >
-        <Typography
-            variant="h6"
-            sx={{
-                mb: 2
-            }}
-        >
-            Recent Notifications
-        </Typography>
-
-        <List>
-            {
-                notifications.map(
-                    (notification) => (
-                        <ListItem
-                            key={
-                                notification.id
-                            }
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                mb: 2
+                            }}
                         >
-                            <ListItemText
-                                primary={
-                                    notification.title
+                            <TrendingUpIcon />
+
+                            <Typography>
+                                Success Rate
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 700
+                            }}
+                        >
+                            100%
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+            </Grid>
+
+            {/* Notifications Panel */}
+
+            <Paper
+                elevation={4}
+                sx={{
+                    mt: 4,
+                    p: 3,
+                    borderRadius: 4
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        mb: 2
+                    }}
+                >
+                    Recent Notifications
+                </Typography>
+
+                {
+                    notifications.length === 0
+                        ? (
+                            <Typography
+                                color="text.secondary"
+                            >
+                                No notifications found
+                            </Typography>
+                        )
+                        : (
+                            <List>
+                                {
+                                    notifications.map(
+                                        (item) => (
+                                            <ListItem
+                                                key={
+                                                    item.id
+                                                }
+                                            >
+                                                <ListItemText
+                                                    primary={
+                                                        item.title
+                                                    }
+                                                    secondary={
+                                                        item.message
+                                                    }
+                                                />
+                                            </ListItem>
+                                        ))
                                 }
-                                secondary={
-                                    notification.message
-                                }
-                            />
-                        </ListItem>
-                    ))
-            }
-        </List>
-    </Paper>
-</Box>
-        </>
+                            </List>
+                        )
+                }
+            </Paper>
+
+        </Box>
     );
 }
