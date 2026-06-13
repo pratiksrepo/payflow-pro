@@ -32,15 +32,15 @@ export default function LoginPage()
                 });
 
 localStorage.setItem(
-    "token",
+    "accessToken",
     result.data.accessToken);
 
 localStorage.setItem(
     "refreshToken",
     result.data.refreshToken);
 
-            alert(
-                "Login Success");
+window.location.href =
+    "/dashboard";
         }
 catch (error: unknown)
 {
@@ -73,14 +73,18 @@ catch (error: unknown)
                     <Typography
                         variant="h4"
                         gutterBottom
-                        fontWeight="bold"
+                        sx={{
+                            fontWeight: "bold"
+                        }}
                     >
                         PayFlow Pro
                     </Typography>
 
                     <Typography
                         color="text.secondary"
-                        mb={3}
+                        sx={{
+                            mb: 3
+                        }}
                     >
                         Sign in to continue
                     </Typography>
