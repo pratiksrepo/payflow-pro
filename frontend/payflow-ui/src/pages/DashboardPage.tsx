@@ -15,6 +15,15 @@ import {
 }
 from "react";
 
+import {
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    XAxis,
+    Tooltip
+}
+from "recharts";
+
 import AccountBalanceWalletIcon
 from "@mui/icons-material/AccountBalanceWallet";
 
@@ -47,6 +56,15 @@ import type {
     Notification
 }
 from "../types/Notification";
+
+const chartData = [
+    { month: "Jan", amount: 1200 },
+    { month: "Feb", amount: 2100 },
+    { month: "Mar", amount: 1800 },
+    { month: "Apr", amount: 2800 },
+    { month: "May", amount: 3200 },
+    { month: "Jun", amount: 4200 }
+];
 
 export default function DashboardPage()
 {
@@ -95,9 +113,7 @@ export default function DashboardPage()
             }
             catch (error)
             {
-                console.error(
-                    "Dashboard Error:",
-                    error);
+                console.error(error);
             }
         };
 
@@ -107,38 +123,29 @@ export default function DashboardPage()
     return (
         <Box>
 
-            {/* Welcome Section */}
+            <Typography
+                variant="h3"
+                sx={{
+                    fontWeight: 700,
+                    mb: 1
+                }}
+            >
+                Welcome Back 👋
+            </Typography>
 
-            <Box
+            <Typography
+                color="text.secondary"
                 sx={{
                     mb: 4
                 }}
             >
-                <Typography
-                    variant="h3"
-                    sx={{
-                        fontWeight: 700
-                    }}
-                >
-                    Welcome Back 👋
-                </Typography>
-
-                <Typography
-                    color="text.secondary"
-                >
-                    {email}
-                </Typography>
-            </Box>
-
-            {/* Statistics Cards */}
+                {email}
+            </Typography>
 
             <Grid
                 container
                 spacing={3}
             >
-
-                {/* Wallet */}
-
                 <Grid
                     size={{
                         xs: 12,
@@ -146,32 +153,17 @@ export default function DashboardPage()
                     }}
                 >
                     <Paper
-                        elevation={4}
+                        elevation={2}
                         sx={{
                             p: 3,
-                            borderRadius: 4,
-                            transition: "0.3s",
-                            "&:hover":
-                            {
-                                transform:
-                                    "translateY(-5px)"
-                            }
+                            borderRadius: 4
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                mb: 2
-                            }}
-                        >
-                            <AccountBalanceWalletIcon />
+                        <AccountBalanceWalletIcon />
 
-                            <Typography>
-                                Wallet Balance
-                            </Typography>
-                        </Box>
+                        <Typography>
+                            Wallet Balance
+                        </Typography>
 
                         <Typography
                             variant="h4"
@@ -181,10 +173,14 @@ export default function DashboardPage()
                         >
                             ₹{balance}
                         </Typography>
+
+                        <Typography
+                            color="success.main"
+                        >
+                            +12% this month
+                        </Typography>
                     </Paper>
                 </Grid>
-
-                {/* Notifications */}
 
                 <Grid
                     size={{
@@ -193,32 +189,17 @@ export default function DashboardPage()
                     }}
                 >
                     <Paper
-                        elevation={4}
+                        elevation={2}
                         sx={{
                             p: 3,
-                            borderRadius: 4,
-                            transition: "0.3s",
-                            "&:hover":
-                            {
-                                transform:
-                                    "translateY(-5px)"
-                            }
+                            borderRadius: 4
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                mb: 2
-                            }}
-                        >
-                            <NotificationsIcon />
+                        <NotificationsIcon />
 
-                            <Typography>
-                                Notifications
-                            </Typography>
-                        </Box>
+                        <Typography>
+                            Notifications
+                        </Typography>
 
                         <Typography
                             variant="h4"
@@ -231,8 +212,6 @@ export default function DashboardPage()
                     </Paper>
                 </Grid>
 
-                {/* Fraud Alerts */}
-
                 <Grid
                     size={{
                         xs: 12,
@@ -240,32 +219,17 @@ export default function DashboardPage()
                     }}
                 >
                     <Paper
-                        elevation={4}
+                        elevation={2}
                         sx={{
                             p: 3,
-                            borderRadius: 4,
-                            transition: "0.3s",
-                            "&:hover":
-                            {
-                                transform:
-                                    "translateY(-5px)"
-                            }
+                            borderRadius: 4
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                mb: 2
-                            }}
-                        >
-                            <SecurityIcon />
+                        <SecurityIcon />
 
-                            <Typography>
-                                Fraud Alerts
-                            </Typography>
-                        </Box>
+                        <Typography>
+                            Fraud Alerts
+                        </Typography>
 
                         <Typography
                             variant="h4"
@@ -278,8 +242,6 @@ export default function DashboardPage()
                     </Paper>
                 </Grid>
 
-                {/* Success Rate */}
-
                 <Grid
                     size={{
                         xs: 12,
@@ -287,32 +249,17 @@ export default function DashboardPage()
                     }}
                 >
                     <Paper
-                        elevation={4}
+                        elevation={2}
                         sx={{
                             p: 3,
-                            borderRadius: 4,
-                            transition: "0.3s",
-                            "&:hover":
-                            {
-                                transform:
-                                    "translateY(-5px)"
-                            }
+                            borderRadius: 4
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                mb: 2
-                            }}
-                        >
-                            <TrendingUpIcon />
+                        <TrendingUpIcon />
 
-                            <Typography>
-                                Success Rate
-                            </Typography>
-                        </Box>
+                        <Typography>
+                            Success Rate
+                        </Typography>
 
                         <Typography
                             variant="h4"
@@ -324,13 +271,52 @@ export default function DashboardPage()
                         </Typography>
                     </Paper>
                 </Grid>
-
             </Grid>
 
-            {/* Notifications Panel */}
+            <Paper
+                elevation={2}
+                sx={{
+                    mt: 4,
+                    p: 3,
+                    borderRadius: 4
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        mb: 3
+                    }}
+                >
+                    Transaction Analytics
+                </Typography>
+
+                <Box
+                    sx={{
+                        height: 300
+                    }}
+                >
+                    <ResponsiveContainer>
+                        <AreaChart
+                            data={chartData}
+                        >
+                            <XAxis
+                                dataKey="month"
+                            />
+
+                            <Tooltip />
+
+                            <Area
+                                type="monotone"
+                                dataKey="amount"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </Box>
+            </Paper>
 
             <Paper
-                elevation={4}
+                elevation={2}
                 sx={{
                     mt: 4,
                     p: 3,
@@ -347,39 +333,25 @@ export default function DashboardPage()
                     Recent Notifications
                 </Typography>
 
-                {
-                    notifications.length === 0
-                        ? (
-                            <Typography
-                                color="text.secondary"
-                            >
-                                No notifications found
-                            </Typography>
-                        )
-                        : (
-                            <List>
-                                {
-                                    notifications.map(
-                                        (item) => (
-                                            <ListItem
-                                                key={
-                                                    item.id
-                                                }
-                                            >
-                                                <ListItemText
-                                                    primary={
-                                                        item.title
-                                                    }
-                                                    secondary={
-                                                        item.message
-                                                    }
-                                                />
-                                            </ListItem>
-                                        ))
-                                }
-                            </List>
-                        )
-                }
+                <List>
+                    {
+                        notifications.map(
+                            (item) => (
+                                <ListItem
+                                    key={item.id}
+                                >
+                                    <ListItemText
+                                        primary={
+                                            item.title
+                                        }
+                                        secondary={
+                                            item.message
+                                        }
+                                    />
+                                </ListItem>
+                            ))
+                    }
+                </List>
             </Paper>
 
         </Box>

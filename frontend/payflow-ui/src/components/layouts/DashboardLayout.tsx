@@ -1,73 +1,125 @@
 import {
+    AppBar,
+    Avatar,
+    Badge,
     Box,
     Drawer,
+    IconButton,
     List,
     ListItemButton,
+    ListItemIcon,
     ListItemText,
     Toolbar,
-    Typography,
-    AppBar,
-    Button
-} from "@mui/material";
+    Typography
+}
+from "@mui/material";
 
-import { Outlet }
+import {
+    Outlet,
+    useLocation,
+    useNavigate
+}
 from "react-router-dom";
 
 import DashboardIcon
 from "@mui/icons-material/Dashboard";
 
-import AccountBalanceWalletIcon
-from "@mui/icons-material/AccountBalanceWallet";
-
 import PaymentsIcon
 from "@mui/icons-material/Payments";
 
-import SecurityIcon
-from "@mui/icons-material/Security";
+import AccountBalanceWalletIcon
+from "@mui/icons-material/AccountBalanceWallet";
 
 import NotificationsIcon
 from "@mui/icons-material/Notifications";
 
-const drawerWidth = 240;
+import LogoutIcon
+from "@mui/icons-material/Logout";
+
+const drawerWidth = 260;
 
 export default function DashboardLayout()
 {
+    const navigate =
+        useNavigate();
+
+    const location =
+        useLocation();
+
     const logout = () =>
     {
         localStorage.clear();
 
-        window.location.href = "/";
+        navigate("/");
     };
 
     return (
         <Box
             sx={{
-                display: "flex"
+                display: "flex",
+                minHeight: "100vh",
+                backgroundColor:
+                    "background.default"
             }}
         >
             <AppBar
                 position="fixed"
+                elevation={0}
                 sx={{
-                    zIndex: 1201
+                    backgroundColor:
+                        "background.paper",
+
+                    color:
+                        "text.primary",
+
+                    borderBottom:
+                        "1px solid #E2E8F0",
+
+                    zIndex: 1300
                 }}
             >
                 <Toolbar>
 
-<Typography
-    variant="h6"
-    sx={{
-        fontWeight: 700
-    }}
->
-    PayFlow Pro
-</Typography>
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            fontWeight: 700
+                        }}
+                    >
+                        PayFlow Pro
+                    </Typography>
 
-                    <Button
-                        color="inherit"
+                    <Box
+                        sx={{
+                            flexGrow: 1
+                        }}
+                    />
+
+                    <IconButton>
+                        <Badge
+                            badgeContent={4}
+                            color="error"
+                        >
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+
+                    <Avatar
+                        sx={{
+                            ml: 2
+                        }}
+                    >
+                        P
+                    </Avatar>
+
+                    <IconButton
+                        sx={{
+                            ml: 2
+                        }}
                         onClick={logout}
                     >
-                        Logout
-                    </Button>
+                        <LogoutIcon />
+                    </IconButton>
 
                 </Toolbar>
             </AppBar>
@@ -77,64 +129,107 @@ export default function DashboardLayout()
                 sx={{
                     width: drawerWidth,
                     flexShrink: 0,
+
                     "& .MuiDrawer-paper":
                     {
                         width: drawerWidth,
                         boxSizing:
-                            "border-box"
+                            "border-box",
+
+                        backgroundColor:
+                            "background.paper",
+
+                        borderRight:
+                            "1px solid #E2E8F0"
                     }
                 }}
             >
                 <Toolbar />
 
-<List>
+                <List
+                    sx={{
+                        mt: 2,
+                        px: 2
+                    }}
+                >
+<ListItemButton
+    selected={
+        location.pathname ===
+        "/dashboard/payments"
+    }
+    onClick={() =>
+        navigate("/dashboard/payments")
+    }
+    sx={{
+        borderRadius: 3,
+        mb: 1
+    }}
+>
+    <ListItemIcon>
+        <PaymentsIcon />
+    </ListItemIcon>
 
-    <ListItemButton>
-        <DashboardIcon sx={{ mr: 2 }} />
-        <ListItemText
-            primary="Dashboard" />
-    </ListItemButton>
+    <ListItemText
+        primary="Payments"
+    />
+</ListItemButton>
 
-    <ListItemButton>
-        <PaymentsIcon sx={{ mr: 2 }} />
-        <ListItemText
-            primary="Payments" />
-    </ListItemButton>
+<ListItemButton
+    selected={
+        location.pathname ===
+        "/dashboard/wallet"
+    }
+    onClick={() =>
+        navigate("/dashboard/wallet")
+    }
+    sx={{
+        borderRadius: 3,
+        mb: 1
+    }}
+>
+    <ListItemIcon>
+        <AccountBalanceWalletIcon />
+    </ListItemIcon>
 
-    <ListItemButton>
-        <AccountBalanceWalletIcon sx={{ mr: 2 }} />
-        <ListItemText
-            primary="Wallet" />
-    </ListItemButton>
+    <ListItemText
+        primary="Wallet"
+    />
+</ListItemButton>
 
-    <ListItemButton>
-        <SecurityIcon sx={{ mr: 2 }} />
-        <ListItemText
-            primary="Fraud Monitoring" />
-    </ListItemButton>
+ <ListItemButton
+    selected={
+        location.pathname ===
+        "/dashboard/notifications"
+    }
+    onClick={() =>
+        navigate("/dashboard/notifications")
+    }
+    sx={{
+        borderRadius: 3
+    }}
+>
+    <ListItemIcon>
+        <NotificationsIcon />
+    </ListItemIcon>
 
-    <ListItemButton>
-        <NotificationsIcon sx={{ mr: 2 }} />
-        <ListItemText
-            primary="Notifications" />
-    </ListItemButton>
-
-</List>
-
+    <ListItemText
+        primary="Notifications"
+    />
+</ListItemButton>
+                </List>
             </Drawer>
 
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3
+                    p: 4,
+                    mt: "64px"
                 }}
             >
-                <Toolbar />
-
                 <Outlet />
-
             </Box>
+
         </Box>
     );
 }
