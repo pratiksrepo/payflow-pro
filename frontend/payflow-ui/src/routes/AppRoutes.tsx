@@ -64,22 +64,29 @@ export default function AppRoutes()
                             <DashboardPage />
                         }
                     />
+
+                    <Route
+                        path="payments"
+                        element={
+                            <PaymentsPage />
+                        }
+                    />
+
+                    <Route
+                        path="wallet"
+                        element={
+                            <WalletPage />
+                        }
+                    />
+
+                    <Route
+                        path="notifications"
+                        element={
+                            <NotificationsPage />
+                        }
+                    />
+
                 </Route>
-
-                <Route
-    path="payments"
-    element={<PaymentsPage />}
-/>
-
-<Route
-    path="wallet"
-    element={<WalletPage />}
-/>
-
-<Route
-    path="notifications"
-    element={<NotificationsPage />}
-/>
 
             </Routes>
 
