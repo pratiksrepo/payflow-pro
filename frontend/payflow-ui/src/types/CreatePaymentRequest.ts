@@ -1,8 +1,10 @@
 export interface CreatePaymentRequest
 {
-    senderUserId: number;
-
-    receiverUserId: number;
+    userId: number;
 
     amount: number;
+
+    merchantId: string;
+
+    paymentMethod: string;
 }

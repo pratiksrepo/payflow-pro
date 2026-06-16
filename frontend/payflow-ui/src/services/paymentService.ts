@@ -17,3 +17,17 @@ export const createPayment =
 
     return response.data;
 };
+
+
+export const getPaymentById =
+    async (
+        paymentId: string
+    ) =>
+{
+    const response =
+        await axios.get(
+            `https://localhost:7009/api/Payment/${paymentId}`
+        );
+
+    return response.data;
+};

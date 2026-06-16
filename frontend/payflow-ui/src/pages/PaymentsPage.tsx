@@ -2,6 +2,10 @@ import {
     Alert,
     Box,
     Button,
+    Card,
+    CardContent,
+    Chip,
+    Divider,
     Paper,
     Stack,
     TextField,
@@ -15,7 +19,8 @@ import {
 from "react";
 
 import {
-    createPayment
+    createPayment,
+    getPaymentById
 }
 from "../services/paymentService";
 
@@ -24,25 +29,62 @@ import {
 }
 from "../utils/jwtHelper";
 
+import type
+{
+    Payment
+}
+from "../types/Payment";
+
 export default function PaymentsPage()
 {
-    const [receiverUserId,
-        setReceiverUserId] =
-        useState("");
+    const [
+        amount,
+        setAmount
+    ] = useState("");
 
-    const [amount,
-        setAmount] =
-        useState("");
+    const [
+    createdPayment,
+    setCreatedPayment
+] = useState<{
+    paymentId: string;
+    status: string;
+    amount: number;
+} | null>(null);
 
-    const [success,
-        setSuccess] =
-        useState("");
+    const [
+        merchantId,
+        setMerchantId
+    ] = useState("");
 
-    const [error,
-        setError] =
-        useState("");
+    const [
+        paymentMethod,
+        setPaymentMethod
+    ] = useState("UPI");
 
-    const handleSubmit =
+    const [
+        success,
+        setSuccess
+    ] = useState("");
+
+    const [
+        error,
+        setError
+    ] = useState("");
+
+    const [
+        paymentId,
+        setPaymentId
+    ] = useState("");
+
+    const [
+        payment,
+        setPayment
+    ] =
+        useState<Payment | null>(
+            null
+        );
+
+    const handleCreatePayment =
         async () =>
     {
         try
@@ -50,29 +92,36 @@ export default function PaymentsPage()
             setSuccess("");
             setError("");
 
-            await createPayment({
-                senderUserId:
-                    Number(
-                        getUserId()
-                    ),
+const result =
+    await createPayment({
+        userId:
+            Number(
+                getUserId()
+            ),
 
-                receiverUserId:
-                    Number(
-                        receiverUserId
-                    ),
+        amount:
+            Number(
+                amount
+            ),
 
-                amount:
-                    Number(
-                        amount
-                    )
-            });
+        merchantId,
 
+        paymentMethod
+    });
+
+setCreatedPayment(result);
+setPaymentId(
+    result.paymentId
+);
             setSuccess(
                 "Payment created successfully"
             );
 
-            setReceiverUserId("");
+            
+
             setAmount("");
+            setMerchantId("");
+            setPaymentMethod("UPI");
         }
         catch
         {
@@ -82,71 +131,166 @@ export default function PaymentsPage()
         }
     };
 
+    const handleSearchPayment =
+        async () =>
+    {
+        try
+        {
+            const result =
+                await getPaymentById(
+                    paymentId
+                );
+
+            setPayment(result);
+        }
+        catch
+        {
+            alert(
+                "Payment Not Found"
+            );
+        }
+    };
+
+    const getStatusChip =
+        (
+            status: number
+        ) =>
+    {
+        switch (status)
+        {
+            case 1:
+                return (
+                    <Chip
+                        label="Pending"
+                        color="warning"
+                    />
+                );
+
+            case 2:
+                return (
+                    <Chip
+                        label="Success"
+                        color="success"
+                    />
+                );
+
+            case 3:
+                return (
+                    <Chip
+                        label="Failed"
+                        color="error"
+                    />
+                );
+
+            default:
+                return (
+                    <Chip
+                        label="Unknown"
+                    />
+                );
+        }
+    };
+
     return (
         <Box>
 
             <Typography
                 variant="h4"
-                sx={{
-                    fontWeight: 700,
-                    mb: 1
-                }}
+                fontWeight={700}
+                mb={1}
             >
-                Create Payment
+                Payments
             </Typography>
 
             <Typography
                 color="text.secondary"
-                sx={{
-                    mb: 4
-                }}
+                mb={4}
             >
-                Send money securely
+                Create and track payments
             </Typography>
 
             <Paper
                 sx={{
                     p: 4,
-                    maxWidth: 600
+                    mb: 4,
+                    borderRadius: 4
                 }}
             >
-
-                <Stack
-                    spacing={3}
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    mb={3}
                 >
+                    Create Payment
+                </Typography>
+
+                <Stack spacing={3}>
 
                     {
                         success &&
                         (
-                            <Alert
-                                severity="success"
-                            >
+                            <Alert severity="success">
                                 {success}
                             </Alert>
                         )
+
+
                     }
+
+                                            {
+    createdPayment &&
+    (
+        <Alert
+            severity="info"
+        >
+            <Typography
+                fontWeight={700}
+            >
+                Payment Created
+            </Typography>
+
+            Payment ID:
+            {" "}
+            {
+                createdPayment.paymentId
+            }
+
+            <br />
+
+            Status:
+            {" "}
+            {
+                createdPayment.status
+            }
+
+            <br />
+
+            Amount:
+            {" "}
+            ₹
+            {
+                createdPayment.amount
+            }
+        </Alert>
+    )
+}
 
                     {
                         error &&
                         (
-                            <Alert
-                                severity="error"
-                            >
+                            <Alert severity="error">
                                 {error}
                             </Alert>
                         )
                     }
 
                     <TextField
-                        label="Receiver User Id"
-                        value={
-                            receiverUserId
-                        }
+                        label="Amount"
+                        type="number"
+                        value={amount}
                         onChange={
-                            (
-                                e
-                            ) =>
-                                setReceiverUserId(
+                            (e) =>
+                                setAmount(
                                     e.target.value
                                 )
                         }
@@ -154,14 +298,25 @@ export default function PaymentsPage()
                     />
 
                     <TextField
-                        label="Amount"
-                        type="number"
-                        value={amount}
+                        label="Merchant Id"
+                        value={merchantId}
                         onChange={
-                            (
-                                e
-                            ) =>
-                                setAmount(
+                            (e) =>
+                                setMerchantId(
+                                    e.target.value
+                                )
+                        }
+                        fullWidth
+                    />
+
+                    <TextField
+                        label="Payment Method"
+                        value={
+                            paymentMethod
+                        }
+                        onChange={
+                            (e) =>
+                                setPaymentMethod(
                                     e.target.value
                                 )
                         }
@@ -172,7 +327,7 @@ export default function PaymentsPage()
                         variant="contained"
                         size="large"
                         onClick={
-                            handleSubmit
+                            handleCreatePayment
                         }
                     >
                         Create Payment
@@ -181,6 +336,137 @@ export default function PaymentsPage()
                 </Stack>
 
             </Paper>
+
+            <Paper
+                sx={{
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 4
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    mb={3}
+                >
+                    Track Payment
+                </Typography>
+
+                <Stack spacing={3}>
+
+                    <TextField
+                        label="Payment Id"
+                        value={paymentId}
+                        onChange={
+                            (e) =>
+                                setPaymentId(
+                                    e.target.value
+                                )
+                        }
+                        fullWidth
+                    />
+
+                    <Button
+                        variant="contained"
+                        onClick={
+                            handleSearchPayment
+                        }
+                    >
+                        Search Payment
+                    </Button>
+
+                </Stack>
+
+            </Paper>
+
+            {
+                payment &&
+                (
+                    <Card
+                        sx={{
+                            borderRadius: 4
+                        }}
+                    >
+                        <CardContent>
+
+                            <Typography
+                                variant="h5"
+                                fontWeight={700}
+                                mb={3}
+                            >
+                                Payment Details
+                            </Typography>
+
+                            <Divider
+                                sx={{
+                                    mb: 3
+                                }}
+                            />
+
+                            <Stack spacing={2}>
+
+                                <Typography>
+                                    <strong>ID:</strong>
+                                    {" "}
+                                    {payment.id}
+                                </Typography>
+
+                                <Typography>
+                                    <strong>User:</strong>
+                                    {" "}
+                                    {payment.userId}
+                                </Typography>
+
+                                <Typography>
+                                    <strong>Amount:</strong>
+                                    {" "}
+                                    ₹{payment.amount}
+                                </Typography>
+
+                                <Typography>
+                                    <strong>Merchant:</strong>
+                                    {" "}
+                                    {payment.merchantId}
+                                </Typography>
+
+                                <Typography>
+                                    <strong>Method:</strong>
+                                    {" "}
+                                    {payment.paymentMethod}
+                                </Typography>
+
+                                <Typography>
+                                    <strong>Currency:</strong>
+                                    {" "}
+                                    {payment.currency}
+                                </Typography>
+
+                                <Box>
+                                    {
+                                        getStatusChip(
+                                            payment.status
+                                        )
+                                    }
+                                </Box>
+
+                                <Typography>
+                                    <strong>Created:</strong>
+                                    {" "}
+                                    {
+                                        new Date(
+                                            payment.createdAt
+                                        )
+                                        .toLocaleString()
+                                    }
+                                </Typography>
+
+                            </Stack>
+
+                        </CardContent>
+
+                    </Card>
+                )
+            }
 
         </Box>
     );
