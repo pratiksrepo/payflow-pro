@@ -17,3 +17,25 @@ export async function getWallet(
 
     return response.data;
 }
+
+export async function creditWallet(
+    userId: number,
+    amount: number
+)
+{
+    console.log({
+        UserId: userId,
+        Amount: amount
+    });
+
+    const response =
+        await walletApi.post(
+            "/Wallet/credit",
+            {
+                UserId: userId,
+                Amount: amount
+            }
+        );
+
+    return response.data;
+}
