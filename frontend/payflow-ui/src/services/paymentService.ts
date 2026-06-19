@@ -31,3 +31,18 @@ export const getPaymentById =
 
     return response.data;
 };
+
+export const getPaymentsByUser =
+    async (
+        userId: number
+    ) =>
+{
+    const response =
+        await axios.get(
+            `https://localhost:7009/api/Payment/user/${userId}`
+        );
+
+    return response.data;
+};
+
+

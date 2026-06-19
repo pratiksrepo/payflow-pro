@@ -14,7 +14,8 @@ import {
 from "@mui/material";
 
 import {
-    useState
+    useState,
+    useEffect,
 }
 from "react";
 
@@ -35,8 +36,31 @@ import type
 }
 from "../types/Payment";
 
+import {
+    getPaymentsByUser
+}
+from "../services/paymentService";
+
+import type
+{
+    PaymentHistory
+}
+from "../types/PaymentHistory";
+
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
+}
+from "@mui/material";
+
 export default function PaymentsPage()
 {
+
+
     const [
         amount,
         setAmount
@@ -67,6 +91,16 @@ export default function PaymentsPage()
     ] = useState("");
 
     const [
+    paymentHistory,
+    setPaymentHistory
+] =
+    useState<
+        PaymentHistory[]
+    >([]);
+
+    
+
+    const [
         error,
         setError
     ] = useState("");
@@ -83,6 +117,33 @@ export default function PaymentsPage()
         useState<Payment | null>(
             null
         );
+
+           const loadPaymentHistory =
+        async () =>
+    {
+        try
+        {
+            const result =
+                await getPaymentsByUser(
+                    Number(
+                        getUserId()
+                    )
+                );
+
+            setPaymentHistory(
+                result
+            );
+        }
+        catch (error)
+        {
+            console.log(error);
+        }
+    };
+
+    useEffect(() =>
+    {
+        void loadPaymentHistory();
+    }, []);
 
     const handleCreatePayment =
         async () =>
@@ -110,6 +171,7 @@ const result =
     });
 
 setCreatedPayment(result);
+await loadPaymentHistory();
 setPaymentId(
     result.paymentId
 );
@@ -467,6 +529,118 @@ setPaymentId(
                     </Card>
                 )
             }
+
+            <Paper
+    sx={{
+        p: 4,
+        mt: 4,
+        borderRadius: 4
+    }}
+>
+    <Typography
+        variant="h5"
+        fontWeight={700}
+        mb={3}
+    >
+        Payment History
+    </Typography>
+
+    <TableContainer>
+
+        <Table>
+
+            <TableHead>
+
+                <TableRow>
+
+                    <TableCell>
+                        Amount
+                    </TableCell>
+
+                    <TableCell>
+                        Merchant
+                    </TableCell>
+
+                    <TableCell>
+                        Method
+                    </TableCell>
+
+                                <TableCell>
+                                    Date
+                                </TableCell>
+
+                    <TableCell>
+                        Status
+                    </TableCell>
+
+                </TableRow>
+
+            </TableHead>
+
+            <TableBody>
+
+                {
+                    paymentHistory
+                        .map(
+                            (
+                                payment
+                            ) =>
+                            (
+                                <TableRow
+                                    key={
+                                        payment.id
+                                    }
+                                >
+
+                                    <TableCell>
+                                        ₹
+                                        {
+                                            payment.amount
+                                        }
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {
+                                            payment.merchantId
+                                        }
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {
+                                            payment.paymentMethod
+                                        }
+                                    </TableCell>
+                                    <TableCell>
+{
+    new Date(
+        payment.createdAt
+    ).toLocaleDateString()
+}
+</TableCell>
+<TableCell>
+{
+    payment.status === 2
+        ? "Pending"
+        : payment.status === 5
+        ? "Failed"
+        : payment.status === 3
+        ? "Completed"
+        : payment.status
+}
+</TableCell>
+
+                                </TableRow>
+                            )
+                        )
+                }
+
+            </TableBody>
+
+        </Table>
+
+    </TableContainer>
+
+</Paper>
 
         </Box>
     );
