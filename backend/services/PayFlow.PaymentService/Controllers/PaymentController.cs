@@ -59,4 +59,17 @@ public class PaymentController : ControllerBase
 
         return Ok(payment);
     }
+
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult>
+        GetUserPayments(
+        int userId)
+    {
+        var payments =
+            await _service
+                .GetPaymentsByUserAsync(
+                    userId);
+
+        return Ok(payments);
+    }
 }

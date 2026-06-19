@@ -14,4 +14,8 @@ public interface IPaymentRepository
 
     Task AddHistoryAsync(
         PaymentStateHistory history);
+
+    Task<List<Payment>>
+    GetPaymentsByUserAsync(
+        int userId);
 }

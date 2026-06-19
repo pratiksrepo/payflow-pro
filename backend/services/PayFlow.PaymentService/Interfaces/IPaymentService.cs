@@ -12,4 +12,8 @@ public interface IPaymentService
     UpdatePaymentStatusRequest request);
 
     Task<Payment?> GetByIdAsync(Guid id);
+
+    Task<List<Payment>>
+        GetPaymentsByUserAsync(
+            int userId);
 }

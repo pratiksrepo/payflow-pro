@@ -285,4 +285,14 @@ public class PaymentService : IPaymentService
         _eventPublisher =
             eventPublisher;
     }
+
+
+    public async Task<List<Payment>>
+    GetPaymentsByUserAsync(
+        int userId)
+    {
+        return await _repository
+            .GetPaymentsByUserAsync(
+                userId);
+    }
 }
