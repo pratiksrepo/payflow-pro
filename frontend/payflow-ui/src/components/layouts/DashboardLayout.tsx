@@ -12,48 +12,55 @@ import {
     Toolbar,
     Typography
 }
-from "@mui/material";
+    from "@mui/material";
 
 import {
     Outlet,
     useLocation,
     useNavigate
 }
-from "react-router-dom";
+    from "react-router-dom";
 
 import DashboardIcon
-from "@mui/icons-material/Dashboard";
+    from "@mui/icons-material/Dashboard";
 
 import PaymentsIcon
-from "@mui/icons-material/Payments";
+    from "@mui/icons-material/Payments";
 
 import AccountBalanceWalletIcon
-from "@mui/icons-material/AccountBalanceWallet";
+    from "@mui/icons-material/AccountBalanceWallet";
 
 import NotificationsIcon
-from "@mui/icons-material/Notifications";
+    from "@mui/icons-material/Notifications";
 
 import LogoutIcon
-from "@mui/icons-material/Logout";
+    from "@mui/icons-material/Logout";
+
+import AdminPanelSettingsIcon
+    from "@mui/icons-material/AdminPanelSettings";
+import { getRole } from "../../utils/jwtHelper";
 
 const drawerWidth = 260;
 
-export default function DashboardLayout()
-{
+export default function DashboardLayout() {
     const navigate =
         useNavigate();
 
     const location =
         useLocation();
 
-    const logout = () =>
-    {
+    const logout = () => {
         localStorage.clear();
 
         navigate("/");
     };
 
+    const role =
+        getRole();
+console.log(getRole());
+
     return (
+        
         <Box
             sx={{
                 display: "flex",
@@ -109,7 +116,11 @@ export default function DashboardLayout()
                             ml: 2
                         }}
                     >
-                        P
+                        {
+                            getRole() === "Admin"
+                                ? "A"
+                                : "U"
+                        }
                     </Avatar>
 
                     <IconButton
@@ -152,70 +163,99 @@ export default function DashboardLayout()
                         px: 2
                     }}
                 >
-<ListItemButton
-    selected={
-        location.pathname ===
-        "/dashboard/payments"
-    }
-    onClick={() =>
-        navigate("/dashboard/payments")
-    }
-    sx={{
-        borderRadius: 3,
-        mb: 1
-    }}
->
-    <ListItemIcon>
-        <PaymentsIcon />
-    </ListItemIcon>
+                    <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/payments"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/payments")
+                        }
+                        sx={{
+                            borderRadius: 3,
+                            mb: 1
+                        }}
+                    >
+                        <ListItemIcon>
+                            <PaymentsIcon />
+                        </ListItemIcon>
 
-    <ListItemText
-        primary="Payments"
-    />
-</ListItemButton>
+                        <ListItemText
+                            primary="Payments"
+                        />
+                    </ListItemButton>
 
-<ListItemButton
-    selected={
-        location.pathname ===
-        "/dashboard/wallet"
-    }
-    onClick={() =>
-        navigate("/dashboard/wallet")
-    }
-    sx={{
-        borderRadius: 3,
-        mb: 1
-    }}
->
-    <ListItemIcon>
-        <AccountBalanceWalletIcon />
-    </ListItemIcon>
+                    <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/wallet"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/wallet")
+                        }
+                        sx={{
+                            borderRadius: 3,
+                            mb: 1
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AccountBalanceWalletIcon />
+                        </ListItemIcon>
 
-    <ListItemText
-        primary="Wallet"
-    />
-</ListItemButton>
+                        <ListItemText
+                            primary="Wallet"
+                        />
+                    </ListItemButton>
 
- <ListItemButton
-    selected={
-        location.pathname ===
-        "/dashboard/notifications"
-    }
-    onClick={() =>
-        navigate("/dashboard/notifications")
-    }
-    sx={{
-        borderRadius: 3
-    }}
->
-    <ListItemIcon>
-        <NotificationsIcon />
-    </ListItemIcon>
+                    <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/notifications"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/notifications")
+                        }
+                        sx={{
+                            borderRadius: 3
+                        }}
+                    >
+                        <ListItemIcon>
+                            <NotificationsIcon />
+                        </ListItemIcon>
 
-    <ListItemText
-        primary="Notifications"
-    />
-</ListItemButton>
+                        <ListItemText
+                            primary="Notifications"
+                        />
+                    </ListItemButton>
+
+
+                    {
+                        role === "Admin" && (
+
+                            <ListItemButton
+                                selected={
+                                    location.pathname ===
+                                    "/dashboard/admin"
+                                }
+                                onClick={() =>
+                                    navigate("/dashboard/admin")
+                                }
+                                sx={{
+                                    borderRadius: 3,
+                                    mt: 1
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <AdminPanelSettingsIcon />
+                                </ListItemIcon>
+
+                                <ListItemText
+                                    primary="Admin"
+                                />
+                            </ListItemButton>
+
+                        )
+                    }
                 </List>
             </Drawer>
 

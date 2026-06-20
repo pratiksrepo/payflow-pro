@@ -3,34 +3,40 @@ import {
     Route,
     Routes
 }
-from "react-router-dom";
+    from "react-router-dom";
 
 import LoginPage
-from "../pages/auth/LoginPage";
+    from "../pages/auth/LoginPage";
 
 import RegisterPage
-from "../pages/auth/RegisterPage";
+    from "../pages/auth/RegisterPage";
 
 import DashboardPage
-from "../pages/DashboardPage";
+    from "../pages/DashboardPage";
 
 import DashboardLayout
-from "../components/layouts/DashboardLayout";
+    from "../components/layouts/DashboardLayout";
 
 import ProtectedRoute
-from "./ProtectedRoute";
+    from "./ProtectedRoute";
 
 import PaymentsPage
-from "../pages/PaymentsPage";
+    from "../pages/PaymentsPage";
 
 import WalletPage
-from "../pages/WalletPage";
+    from "../pages/WalletPage";
 
 import NotificationsPage
-from "../pages/NotificationsPage";
+    from "../pages/NotificationsPage";
 
-export default function AppRoutes()
-{
+import AdminDashboardPage
+    from "../pages/AdminDashboardPage";
+import AdminRoute from "./AdminRoute";
+
+import RoleRoute
+    from "./RoleRoute";
+
+export default function AppRoutes() {
     return (
         <BrowserRouter>
 
@@ -83,6 +89,17 @@ export default function AppRoutes()
                         path="notifications"
                         element={
                             <NotificationsPage />
+                        }
+                    />
+
+                    <Route
+                        path="admin"
+                        element={
+                            <RoleRoute
+                                allowedRole="Admin"
+                            >
+                                <AdminDashboardPage />
+                            </RoleRoute>
                         }
                     />
 

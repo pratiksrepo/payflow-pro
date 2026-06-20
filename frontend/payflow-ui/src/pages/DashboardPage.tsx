@@ -69,6 +69,11 @@ import type {
     from "../types/Notification";
 import { getFraudDashboard } from "../services/fraudService";
 
+import {
+    getRole
+}
+    from "../utils/jwtHelper";
+
 export default function DashboardPage() {
     const [email, setEmail] =
         useState("");
@@ -78,6 +83,9 @@ export default function DashboardPage() {
         setWalletBalance
     ] =
         useState(0);
+
+        const role =
+    getRole();
 
     const [
         notifications,
@@ -119,6 +127,8 @@ export default function DashboardPage() {
         fraudDashboard,
         setFraudDashboard
     ] = useState<any>(null);
+
+
 
     const loadDashboardData =
         async () => {
@@ -220,6 +230,7 @@ export default function DashboardPage() {
                     fraud
                 );
 
+
                 setChartData(
                     latestPayments.map(
                         (
@@ -233,9 +244,9 @@ export default function DashboardPage() {
                 );
 
                 console.log(
-    "Chart Loaded",
-    latestPayments
-);
+                    "Chart Loaded",
+                    latestPayments
+                );
             }
             catch (error) {
                 console.error(
@@ -260,6 +271,12 @@ export default function DashboardPage() {
                 }}
             >
                 Welcome Back 👋
+
+                {
+                    role === "Admin"
+                        ? " Admin"
+                        : ""
+                }
             </Typography>
 
             <Typography

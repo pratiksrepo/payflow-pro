@@ -49,3 +49,31 @@ export function getEmail()
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
     ];
 }
+
+export function getRole()
+{
+    const token =
+        localStorage.getItem(
+            "accessToken"
+        );
+
+    if (!token)
+    {
+        return "";
+    }
+
+    const payload =
+        JSON.parse(
+            atob(
+                token.split(".")[1]
+            )
+        );
+
+    return (
+        payload.role ||
+        payload[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] ||
+        ""
+    );
+}
