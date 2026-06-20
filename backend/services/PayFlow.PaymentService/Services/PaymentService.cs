@@ -295,4 +295,13 @@ public class PaymentService : IPaymentService
             .GetPaymentsByUserAsync(
                 userId);
     }
+
+    public async Task<List<PaymentStateHistory>>
+    GetPaymentHistoryAsync(
+        Guid paymentId)
+    {
+        return await _repository
+            .GetHistoryByPaymentIdAsync(
+                paymentId);
+    }
 }

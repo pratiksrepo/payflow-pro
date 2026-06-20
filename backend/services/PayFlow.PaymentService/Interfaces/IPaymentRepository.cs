@@ -18,4 +18,9 @@ public interface IPaymentRepository
     Task<List<Payment>>
     GetPaymentsByUserAsync(
         int userId);
+
+
+    Task<List<PaymentStateHistory>>
+    GetHistoryByPaymentIdAsync(
+        Guid paymentId);
 }

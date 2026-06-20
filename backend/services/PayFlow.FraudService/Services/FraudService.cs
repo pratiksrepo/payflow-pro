@@ -1,6 +1,7 @@
-﻿using PayFlow.SharedKernel.DTOs;
+﻿using PayFlow.FraudService.DTOs;
 using PayFlow.FraudService.Interfaces;
 using PayFlow.FraudService.Models;
+using PayFlow.SharedKernel.DTOs;
 
 namespace PayFlow.FraudService.Services;
 
@@ -152,6 +153,57 @@ public class FraudService : IFraudService
 
         _anomalyDetectionService =
             anomalyDetectionService;
+    }
+
+
+    public async Task<FraudDashboardResponse>
+    GetDashboardAsync()
+    {
+        var checks =
+            await _repository
+                .GetFraudChecksAsync();
+
+        var total =
+            checks.Count;
+
+        var fraud =
+            checks.Count(
+                x => x.IsFraudulent);
+
+        var safe =
+            total - fraud;
+
+        return new FraudDashboardResponse
+        {
+            TotalTransactions =
+                total,
+
+            SafeTransactions =
+                safe,
+
+            FlaggedTransactions =
+                fraud,
+
+            FraudRate =
+                total == 0
+                    ? 0
+                    : Math.Round(
+                        (double)fraud /
+                        total * 100,
+                        2),
+
+            HighRiskCount =
+                checks.Count(
+                    x => x.RiskLevel == "High"),
+
+            MediumRiskCount =
+                checks.Count(
+                    x => x.RiskLevel == "Medium"),
+
+            LowRiskCount =
+                checks.Count(
+                    x => x.RiskLevel == "Low")
+        };
     }
 
 

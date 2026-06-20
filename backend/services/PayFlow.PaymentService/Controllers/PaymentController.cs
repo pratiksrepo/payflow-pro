@@ -72,4 +72,18 @@ public class PaymentController : ControllerBase
 
         return Ok(payments);
     }
+
+
+    [HttpGet("history/{paymentId}")]
+    public async Task<IActionResult>
+    GetHistory(
+    Guid paymentId)
+    {
+        var history =
+            await _service
+                .GetPaymentHistoryAsync(
+                    paymentId);
+
+        return Ok(history);
+    }
 }

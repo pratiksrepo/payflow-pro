@@ -1,4 +1,5 @@
-﻿using PayFlow.FraudService.Models;
+﻿using PayFlow.FraudService.DTOs;
+using PayFlow.FraudService.Models;
 
 namespace PayFlow.FraudService.Interfaces;
 
@@ -17,4 +18,10 @@ public interface IFraudRepository
 
     Task<List<TransactionFingerprint>>
         GetFingerprintsAsync();
+
+    Task<List<FraudCheck>>
+    GetFraudChecksAsync();
+
+    Task<FraudDashboardResponse>
+    GetDashboardAsync();
 }

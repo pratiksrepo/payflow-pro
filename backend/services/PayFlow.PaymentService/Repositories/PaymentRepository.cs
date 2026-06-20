@@ -59,4 +59,17 @@ public class PaymentRepository : IPaymentRepository
                 p.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<List<PaymentStateHistory>>
+    GetHistoryByPaymentIdAsync(
+        Guid paymentId)
+    {
+        return await _context
+            .PaymentStateHistories
+            .Where(x =>
+                x.PaymentId == paymentId)
+            .OrderBy(x =>
+                x.ChangedAt)
+            .ToListAsync();
+    }
 }

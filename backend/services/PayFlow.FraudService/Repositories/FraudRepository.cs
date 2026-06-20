@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PayFlow.FraudService.Data;
+using PayFlow.FraudService.DTOs;
 using PayFlow.FraudService.Interfaces;
 using PayFlow.FraudService.Models;
 
@@ -51,5 +52,18 @@ public class FraudRepository : IFraudRepository
         return await _context
             .TransactionFingerprints
             .ToListAsync();
+    }
+
+    public async Task<List<FraudCheck>>
+    GetFraudChecksAsync()
+    {
+        return await _context
+            .FraudChecks
+            .ToListAsync();
+    }
+
+    public Task<FraudDashboardResponse> GetDashboardAsync()
+    {
+        throw new NotImplementedException();
     }
 }

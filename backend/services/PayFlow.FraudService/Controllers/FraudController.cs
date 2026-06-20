@@ -26,4 +26,16 @@ public class FraudController : ControllerBase
 
         return Ok(result);
     }
+
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult>
+    Dashboard()
+    {
+        var result =
+            await _fraudService
+                .GetDashboardAsync();
+
+        return Ok(result);
+    }
 }
