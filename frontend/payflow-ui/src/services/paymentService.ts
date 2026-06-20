@@ -46,3 +46,17 @@ export const getPaymentsByUser =
 };
 
 
+export const getPaymentHistory =
+    async (
+        paymentId: string
+    ) =>
+{
+    const response =
+        await axios.get(
+            `https://localhost:7009/api/Payment/history/${paymentId}`
+        );
+
+    return response.data;
+};
+
+

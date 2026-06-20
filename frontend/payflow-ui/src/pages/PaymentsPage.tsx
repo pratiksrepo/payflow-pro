@@ -57,6 +57,27 @@ import {
 }
 from "@mui/material";
 
+import {
+    Timeline,
+    TimelineItem,
+    TimelineSeparator,
+    TimelineConnector,
+    TimelineContent,
+    TimelineDot
+}
+from "@mui/lab";
+
+import {
+    getPaymentHistory
+}
+from "../services/paymentService";
+
+import type
+{
+    PaymentHistoryItem
+}
+from "../types/PaymentHistoryItem";
+
 export default function PaymentsPage()
 {
 
@@ -98,7 +119,13 @@ export default function PaymentsPage()
         PaymentHistory[]
     >([]);
 
-    
+    const [
+    paymentTimeline,
+    setPaymentTimeline
+] =
+    useState<
+        PaymentHistoryItem[]
+    >([]);
 
     const [
         error,
@@ -204,6 +231,14 @@ setPaymentId(
                 );
 
             setPayment(result);
+            const history =
+    await getPaymentHistory(
+        paymentId
+    );
+
+setPaymentTimeline(
+    history
+);
         }
         catch
         {
@@ -458,6 +493,79 @@ setPaymentId(
                             >
                                 Payment Details
                             </Typography>
+
+                            <Paper
+    sx={{
+        p: 4,
+        mt: 4,
+        borderRadius: 4
+    }}
+>
+    <Typography
+        variant="h5"
+        sx={{
+            fontWeight: 700,
+            mb: 4
+        }}
+    >
+        Payment Journey
+    </Typography>
+
+    <Box>
+
+        {
+            paymentTimeline.map(
+                (
+                    item
+                ) => (
+                    <Box
+                        key={
+                            item.id
+                        }
+                        sx={{
+                            mb: 3,
+                            pl: 2,
+                            borderLeft:
+                                "4px solid #4CAF50"
+                        }}
+                    >
+
+                        <Typography
+                            fontWeight={700}
+                        >
+                            ✅ {
+                                item.newStatus
+                            }
+                        </Typography>
+
+                        <Typography
+                            color="text.secondary"
+                        >
+                            {
+                                new Date(
+                                    item.changedAt
+                                )
+                                    .toLocaleString()
+                            }
+                        </Typography>
+
+                        <Typography
+                            color="text.secondary"
+                        >
+                            Changed By:
+                            {
+                                item.changedBy
+                            }
+                        </Typography>
+
+                    </Box>
+                )
+            )
+        }
+
+    </Box>
+
+</Paper>
 
                             <Divider
                                 sx={{

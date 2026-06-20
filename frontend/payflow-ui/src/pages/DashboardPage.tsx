@@ -7,13 +7,13 @@ import {
     ListItem,
     ListItemText
 }
-from "@mui/material";
+    from "@mui/material";
 
 import {
     useEffect,
     useState
 }
-from "react";
+    from "react";
 
 import {
     ResponsiveContainer,
@@ -22,54 +22,54 @@ import {
     XAxis,
     Tooltip
 }
-from "recharts";
+    from "recharts";
 
 import AccountBalanceWalletIcon
-from "@mui/icons-material/AccountBalanceWallet";
+    from "@mui/icons-material/AccountBalanceWallet";
 
 import NotificationsIcon
-from "@mui/icons-material/Notifications";
+    from "@mui/icons-material/Notifications";
 
 import SecurityIcon
-from "@mui/icons-material/Security";
+    from "@mui/icons-material/Security";
 
 import TrendingUpIcon
-from "@mui/icons-material/TrendingUp";
+    from "@mui/icons-material/TrendingUp";
 
 import PaymentsIcon
-from "@mui/icons-material/Payments";
+    from "@mui/icons-material/Payments";
 
 import CheckCircleIcon
-from "@mui/icons-material/CheckCircle";
+    from "@mui/icons-material/CheckCircle";
 
 import {
     getWallet
 }
-from "../services/walletService";
+    from "../services/walletService";
 
 import {
     getNotifications
 }
-from "../services/notificationService";
+    from "../services/notificationService";
 
 import {
     getPaymentsByUser
 }
-from "../services/paymentService";
+    from "../services/paymentService";
 
 import {
     getUserId,
     getEmail
 }
-from "../utils/jwtHelper";
+    from "../utils/jwtHelper";
 
 import type {
     Notification
 }
-from "../types/Notification";
+    from "../types/Notification";
+import { getFraudDashboard } from "../services/fraudService";
 
-export default function DashboardPage()
-{
+export default function DashboardPage() {
     const [email, setEmail] =
         useState("");
 
@@ -115,127 +115,141 @@ export default function DashboardPage()
     ] =
         useState<any[]>([]);
 
+    const [
+        fraudDashboard,
+        setFraudDashboard
+    ] = useState<any>(null);
+
     const loadDashboardData =
-        async () =>
-    {
-        try
-        {
-            const userId =
-                Number(
-                    getUserId()
+        async () => {
+            try {
+
+                const userId =
+                    Number(
+                        getUserId()
+                    );
+
+                if (!userId) {
+                    return;
+                }
+
+                setEmail(
+                    getEmail()
                 );
 
-            if (!userId)
-            {
-                return;
-            }
+                const wallet =
+                    await getWallet(
+                        userId
+                    );
 
-            setEmail(
-                getEmail()
-            );
-
-            const wallet =
-                await getWallet(
-                    userId
+                setWalletBalance(
+                    wallet.balance
                 );
 
-            setWalletBalance(
-                wallet.balance
-            );
+                const notificationData =
+                    await getNotifications(
+                        userId
+                    );
 
-            const notificationData =
-                await getNotifications(
-                    userId
+                setNotifications(
+                    notificationData
                 );
 
-            setNotifications(
-                notificationData
-            );
+                const payments =
+                    await getPaymentsByUser(
+                        userId
+                    );
 
-            const payments =
-                await getPaymentsByUser(
-                    userId
+                setTotalPayments(
+                    payments.length
                 );
 
-            setTotalPayments(
-                payments.length
-            );
-
-            const amount =
-                payments.reduce(
-                    (
-                        sum: number,
-                        payment: any
-                    ) =>
-                        sum +
-                        payment.amount,
-                    0
-                );
-
-            setTotalAmount(
-                amount
-            );
-
-            const success =
-                payments.filter(
-                    (
-                        payment: any
-                    ) =>
-                        payment.status === 2
-                ).length;
-
-            const rate =
-                payments.length > 0
-                    ? Math.round(
+                const amount =
+                    payments.reduce(
                         (
-                            success /
-                            payments.length
-                        ) * 100
-                    )
-                    : 0;
+                            sum: number,
+                            payment: any
+                        ) =>
+                            sum +
+                            payment.amount,
+                        0
+                    );
 
-            setSuccessRate(
-                rate
-            );
-
-            const latestPayments =
-                payments.slice(
-                    0,
-                    5
+                setTotalAmount(
+                    amount
                 );
 
-            setRecentPayments(
-                latestPayments
-            );
+                const success =
+                    payments.filter(
+                        (
+                            payment: any
+                        ) =>
+                            payment.status === 2
+                    ).length;
 
-            setChartData(
-                latestPayments.map(
-                    (
-                        payment: any,
-                        index: number
-                    ) => ({
-                        name:
-                            `P${index + 1}`,
-                        amount:
-                            payment.amount
-                    })
-                )
-            );
-        }
-        catch (error)
-        {
-            console.error(
-                error
-            );
-        }
-    };
+                const rate =
+                    payments.length > 0
+                        ? Math.round(
+                            (
+                                success /
+                                payments.length
+                            ) * 100
+                        )
+                        : 0;
 
-    useEffect(() =>
-    {
+                setSuccessRate(
+                    rate
+                );
+
+                const latestPayments =
+                    payments.slice(
+                        0,
+                        5
+                    );
+
+                setRecentPayments(
+                    latestPayments
+                );
+
+
+
+                const fraud =
+                    await getFraudDashboard();
+
+                setFraudDashboard(
+                    fraud
+                );
+
+                setChartData(
+                    latestPayments.map(
+                        (
+                            p: any,
+                            index: number
+                        ) => ({
+                            name: `P${index + 1}`,
+                            amount: p.amount
+                        })
+                    )
+                );
+
+                console.log(
+    "Chart Loaded",
+    latestPayments
+);
+            }
+            catch (error) {
+                console.error(
+                    error
+                );
+            }
+        };
+
+    useEffect(() => {
         void loadDashboardData();
     }, []);
 
     return (
+
         <Box>
 
             <Typography
@@ -262,130 +276,187 @@ export default function DashboardPage()
                 spacing={3}
             >
 
-                <Grid
-                    size={{
-                        xs: 12,
-                        md: 3
-                    }}
-                >
+                <Grid size={{ xs: 12, md: 3 }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             borderRadius: 4,
-                            border:
-                                "1px solid #E2E8F0"
+                            border: "1px solid #E2E8F0"
                         }}
                     >
                         <PaymentsIcon />
 
-                        <Typography
-                            color="text.secondary"
-                        >
+                        <Typography color="text.secondary">
                             Total Payments
                         </Typography>
 
-                        <Typography
-                            variant="h4"
-                            fontWeight={700}
-                        >
+                        <Typography variant="h4" fontWeight={700}>
                             {totalPayments}
                         </Typography>
                     </Paper>
                 </Grid>
 
-                <Grid
-                    size={{
-                        xs: 12,
-                        md: 3
-                    }}
-                >
+                <Grid size={{ xs: 12, md: 3 }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             borderRadius: 4,
-                            border:
-                                "1px solid #E2E8F0"
+                            border: "1px solid #E2E8F0"
                         }}
                     >
                         <TrendingUpIcon />
 
-                        <Typography
-                            color="text.secondary"
-                        >
+                        <Typography color="text.secondary">
                             Total Amount
                         </Typography>
 
-                        <Typography
-                            variant="h4"
-                            fontWeight={700}
-                        >
+                        <Typography variant="h4" fontWeight={700}>
                             ₹{totalAmount}
                         </Typography>
                     </Paper>
                 </Grid>
 
-                <Grid
-                    size={{
-                        xs: 12,
-                        md: 3
-                    }}
-                >
+                <Grid size={{ xs: 12, md: 3 }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             borderRadius: 4,
-                            border:
-                                "1px solid #E2E8F0"
+                            border: "1px solid #E2E8F0"
                         }}
                     >
                         <AccountBalanceWalletIcon />
 
-                        <Typography
-                            color="text.secondary"
-                        >
+                        <Typography color="text.secondary">
                             Wallet Balance
                         </Typography>
 
-                        <Typography
-                            variant="h4"
-                            fontWeight={700}
-                        >
+                        <Typography variant="h4" fontWeight={700}>
                             ₹{walletBalance}
                         </Typography>
                     </Paper>
                 </Grid>
 
-                <Grid
-                    size={{
-                        xs: 12,
-                        md: 3
-                    }}
-                >
+                <Grid size={{ xs: 12, md: 3 }}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 3,
                             borderRadius: 4,
-                            border:
-                                "1px solid #E2E8F0"
+                            border: "1px solid #E2E8F0"
                         }}
                     >
                         <CheckCircleIcon />
 
-                        <Typography
-                            color="text.secondary"
-                        >
+                        <Typography color="text.secondary">
                             Success Rate
+                        </Typography>
+
+                        <Typography variant="h4" fontWeight={700}>
+                            {successRate}%
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+            </Grid>
+
+            <Typography
+                variant="h5"
+                sx={{
+                    fontWeight: 700,
+                    mt: 4,
+                    mb: 2
+                }}
+            >
+                Fraud Analytics
+            </Typography>
+
+            <Grid
+                container
+                spacing={3}
+            >
+                <Grid size={{ xs: 12, md: 3 }}>
+                    <Paper
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            minHeight: 120
+                        }}
+                    >
+                        <Typography color="error">
+                            Fraud Rate
                         </Typography>
 
                         <Typography
                             variant="h4"
                             fontWeight={700}
                         >
-                            {successRate}%
+                            {fraudDashboard?.fraudRate ?? 0}%
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 3 }}>
+                    <Paper
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            minHeight: 120
+                        }}
+                    >
+                        <Typography>
+                            Safe Transactions
+                        </Typography>
+
+                        <Typography
+                            variant="h4"
+                            fontWeight={700}
+                        >
+                            {fraudDashboard?.safeTransactions ?? 0}
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 3 }}>
+                    <Paper
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            minHeight: 120
+                        }}
+                    >
+                        <Typography>
+                            Flagged
+                        </Typography>
+
+                        <Typography
+                            variant="h4"
+                            fontWeight={700}
+                        >
+                            {fraudDashboard?.flaggedTransactions ?? 0}
+                        </Typography>
+                    </Paper>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 3 }}>
+                    <Paper
+                        sx={{
+                            p: 3,
+                            borderRadius: 4,
+                            minHeight: 120
+                        }}
+                    >
+                        <Typography>
+                            High Risk
+                        </Typography>
+
+                        <Typography
+                            variant="h4"
+                            fontWeight={700}
+                        >
+                            {fraudDashboard?.highRiskCount ?? 0}
                         </Typography>
                     </Paper>
                 </Grid>
@@ -412,7 +483,7 @@ export default function DashboardPage()
                 <Box
                     sx={{
                         width: "100%",
-                        height: 350
+                        height: 300
                     }}
                 >
                     <ResponsiveContainer
