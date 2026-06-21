@@ -60,3 +60,36 @@ export const getPaymentHistory =
 };
 
 
+export async function exportPayments()
+{
+    const response =
+        await axios.get(
+            "https://localhost:7009/api/Payment/export",
+            {
+                responseType: "blob"
+            });
+
+    const url =
+        window.URL.createObjectURL(
+            new Blob([response.data])
+        );
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "PaymentReport.xlsx";
+
+    document.body
+        .appendChild(link);
+
+    link.click();
+
+    document.body
+        .removeChild(link);
+
+    window.URL
+        .revokeObjectURL(url);
+}
