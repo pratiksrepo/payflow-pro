@@ -5,6 +5,7 @@ using PayFlow.PaymentService.Models;
 using PayFlow.SharedKernel.DTOs;
 using PayFlow.SharedKernel.Events;
 using System.Net.Http.Json;
+using PayFlow.PaymentService.Reports;
 
 namespace PayFlow.PaymentService.Services;
 
@@ -304,4 +305,18 @@ public class PaymentService : IPaymentService
             .GetHistoryByPaymentIdAsync(
                 paymentId);
     }
+
+
+    public async Task<byte[]>
+    ExportPaymentsAsync()
+    {
+        var payments =
+            await _repository
+                .GetAllPaymentsAsync();
+
+        return PaymentReportGenerator
+            .Generate(payments);
+    }
+
+
 }

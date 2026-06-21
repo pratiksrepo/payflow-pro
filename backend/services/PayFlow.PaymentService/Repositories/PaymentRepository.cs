@@ -72,4 +72,15 @@ public class PaymentRepository : IPaymentRepository
                 x.ChangedAt)
             .ToListAsync();
     }
+
+
+    public async Task<List<Payment>>
+    GetAllPaymentsAsync()
+    {
+        return await _context
+            .Payments
+            .OrderByDescending(
+                p => p.CreatedAt)
+            .ToListAsync();
+    }
 }

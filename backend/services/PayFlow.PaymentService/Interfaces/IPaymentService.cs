@@ -20,4 +20,7 @@ public interface IPaymentService
     Task<List<PaymentStateHistory>>
     GetPaymentHistoryAsync(
         Guid paymentId);
+
+    Task<byte[]>
+    ExportPaymentsAsync();
 }

@@ -86,4 +86,18 @@ public class PaymentController : ControllerBase
 
         return Ok(history);
     }
+
+    [HttpGet("export")]
+    public async Task<IActionResult>
+    ExportPayments()
+    {
+        var file =
+            await _service
+                .ExportPaymentsAsync();
+
+        return File(
+            file,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "PaymentReport.xlsx");
+    }
 }
