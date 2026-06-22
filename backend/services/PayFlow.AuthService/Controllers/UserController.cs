@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PayFlow.AuthService.Interfaces;
+using PayFlow.AuthService.Services;
 using System.Security.Claims;
 
 namespace payflow.authservice.Controllers
@@ -8,6 +10,15 @@ namespace payflow.authservice.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+
+        private readonly IAuthService _authService;
+
+        public UserController(
+    IAuthService authService)
+        {
+            _authService = authService;
+        }
+
         //[HttpGet("profile")]
         //[Authorize]
         //public IActionResult GetProfile()
@@ -27,5 +38,20 @@ namespace payflow.authservice.Controllers
         {
             return Ok("Authorized user");
         }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
+        public async Task<IActionResult>
+        GetAllUsers()
+        {
+            var users =
+                await _authService
+                    .GetAllUsersAsync();
+
+            return Ok(users);
+        }
+
+
     }
 }

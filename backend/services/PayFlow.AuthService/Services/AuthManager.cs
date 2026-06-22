@@ -69,5 +69,9 @@ public class AuthManager
             AccessToken = token,
             Email = user.Email
         };
+
+
     }
+
+
 }

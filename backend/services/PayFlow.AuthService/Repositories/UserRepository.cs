@@ -39,4 +39,13 @@ public class UserRepository : IUserRepository
     {
         await _context.SaveChangesAsync();
     }
+
+
+    public async Task<List<User>>
+GetAllUsersAsync()
+    {
+        return await _context.Users
+            .OrderBy(x => x.Id)
+            .ToListAsync();
+    }
 }

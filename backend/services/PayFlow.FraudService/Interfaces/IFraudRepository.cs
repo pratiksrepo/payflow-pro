@@ -24,4 +24,7 @@ public interface IFraudRepository
 
     Task<FraudDashboardResponse>
     GetDashboardAsync();
+
+    Task<List<FraudCheck>>
+GetRecentFraudChecksAsync();
 }

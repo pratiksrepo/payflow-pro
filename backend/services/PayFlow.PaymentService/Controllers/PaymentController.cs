@@ -100,4 +100,17 @@ public class PaymentController : ControllerBase
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "PaymentReport.xlsx");
     }
+
+
+    [HttpGet("recent")]
+    public async Task<IActionResult>
+GetRecentPayments()
+    {
+        var payments =
+            await _service
+                .GetRecentPaymentsAsync();
+
+        return Ok(payments);
+    }
+
 }

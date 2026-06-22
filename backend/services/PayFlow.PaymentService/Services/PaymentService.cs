@@ -318,5 +318,17 @@ public class PaymentService : IPaymentService
             .Generate(payments);
     }
 
+    public async Task<List<Payment>>
+GetRecentPaymentsAsync()
+    {
+        var payments =
+            await _repository
+                .GetAllPaymentsAsync();
+
+        return payments
+            .Take(5)
+            .ToList();
+    }
+
 
 }

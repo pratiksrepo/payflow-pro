@@ -66,4 +66,15 @@ public class FraudRepository : IFraudRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<List<FraudCheck>>
+GetRecentFraudChecksAsync()
+    {
+        return await _context
+            .FraudChecks
+            .OrderByDescending(
+                x => x.CheckedAt)
+            .Take(5)
+            .ToListAsync();
+    }
 }

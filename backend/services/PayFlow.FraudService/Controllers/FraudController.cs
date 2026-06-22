@@ -38,4 +38,15 @@ public class FraudController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("recent")]
+    public async Task<IActionResult>
+GetRecentFraudChecks()
+    {
+        var result =
+            await _fraudService
+                .GetRecentFraudChecksAsync();
+
+        return Ok(result);
+    }
 }

@@ -23,4 +23,7 @@ public interface IPaymentService
 
     Task<byte[]>
     ExportPaymentsAsync();
+
+    Task<List<Payment>>
+GetRecentPaymentsAsync();
 }

@@ -10,4 +10,7 @@ public interface IAuthService
         LoginRequest request);
 
     Task<bool> VerifyEmailAsync(string token);
+
+    Task<List<User>>
+GetAllUsersAsync();
 }

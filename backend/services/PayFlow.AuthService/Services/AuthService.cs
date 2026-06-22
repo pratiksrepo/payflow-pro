@@ -1,5 +1,6 @@
 ﻿using AuthService.Models;
 using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 using PayFlow.AuthService.DTOs;
 using PayFlow.AuthService.Interfaces;
 
@@ -121,5 +122,12 @@ public class AuthService : IAuthService
         await _userRepository.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<List<User>>
+GetAllUsersAsync()
+    {
+        return await _userRepository
+            .GetAllUsersAsync();
     }
 }

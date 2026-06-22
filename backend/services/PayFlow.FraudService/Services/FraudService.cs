@@ -207,4 +207,11 @@ public class FraudService : IFraudService
     }
 
 
+    public async Task<List<FraudCheck>>
+GetRecentFraudChecksAsync()
+    {
+        return await _repository
+            .GetRecentFraudChecksAsync();
+    }
+
 }
