@@ -93,3 +93,14 @@ export async function exportPayments()
     window.URL
         .revokeObjectURL(url);
 }
+
+export const getRecentPayments =
+    async () =>
+{
+    const response =
+        await axios.get(
+            "https://localhost:7009/api/Payment/recent"
+        );
+
+    return response.data;
+};
