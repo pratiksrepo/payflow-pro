@@ -40,6 +40,9 @@ import AdminPanelSettingsIcon
     from "@mui/icons-material/AdminPanelSettings";
 import { getRole } from "../../utils/jwtHelper";
 
+import GroupIcon
+from "@mui/icons-material/Group";
+
 const drawerWidth = 260;
 
 export default function DashboardLayout() {
@@ -57,10 +60,10 @@ export default function DashboardLayout() {
 
     const role =
         getRole();
-console.log(getRole());
+    console.log(getRole());
 
     return (
-        
+
         <Box
             sx={{
                 display: "flex",
@@ -225,6 +228,28 @@ console.log(getRole());
 
                         <ListItemText
                             primary="Notifications"
+                        />
+                    </ListItemButton>
+
+
+                    <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/users"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/users")
+                        }
+                        sx={{
+                            borderRadius: 3
+                        }}
+                    >
+                        <ListItemIcon>
+                            <GroupIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            primary="Users"
                         />
                     </ListItemButton>
 

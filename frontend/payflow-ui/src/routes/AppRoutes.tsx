@@ -31,11 +31,12 @@ import NotificationsPage
 
 import AdminDashboardPage
     from "../pages/AdminDashboardPage";
-    
+
 import AdminRoute from "./AdminRoute";
 
 import RoleRoute
     from "./RoleRoute";
+import AdminUsersPage from "../pages/AdminUsersPage";
 
 export default function AppRoutes() {
     return (
@@ -100,6 +101,17 @@ export default function AppRoutes() {
                                 allowedRole="Admin"
                             >
                                 <AdminDashboardPage />
+                            </RoleRoute>
+                        }
+                    />
+
+                    <Route
+                        path="users"
+                        element={
+                            <RoleRoute
+                                allowedRole="Admin"
+                            >
+                                <AdminUsersPage />
                             </RoleRoute>
                         }
                     />
