@@ -17,4 +17,8 @@ public class PaymentDbContext : DbContext
 
     public DbSet<PaymentStateHistory> PaymentStateHistories =>
     Set<PaymentStateHistory>();
+
+
+    public DbSet<AuditLog> AuditLogs =>
+    Set<AuditLog>();
 }

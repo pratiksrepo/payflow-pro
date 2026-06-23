@@ -83,4 +83,20 @@ public class PaymentRepository : IPaymentRepository
                 p => p.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task AddAuditLogAsync(
+    AuditLog log)
+    {
+        await _context.AuditLogs
+            .AddAsync(log);
+    }
+
+    public async Task<List<AuditLog>>
+GetAuditLogsAsync()
+    {
+        return await _context.AuditLogs
+            .OrderByDescending(
+                x => x.CreatedAt)
+            .ToListAsync();
+    }
 }

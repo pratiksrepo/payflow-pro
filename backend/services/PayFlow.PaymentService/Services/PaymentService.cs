@@ -211,6 +211,16 @@ public class PaymentService : IPaymentService
 
             await _repository
                 .SaveChangesAsync();
+
+            await _repository.SaveChangesAsync();
+            await _repository.AddAuditLogAsync(
+new AuditLog
+{
+    UserId = request.UserId,
+    Action = "Payment Created",
+    Description =
+$"Payment ₹{request.Amount} created"
+});
         }
 
         return new PaymentResponse
@@ -219,6 +229,8 @@ public class PaymentService : IPaymentService
             Amount = payment.Amount,
             Status = payment.Status.ToString()
         };
+
+
     }
 
     public async Task<bool>
@@ -251,6 +263,17 @@ public class PaymentService : IPaymentService
 
         await _repository.UpdateAsync(
             payment);
+
+        await _repository.AddAuditLogAsync(
+    new AuditLog
+    {
+        UserId = payment.UserId,
+        Action = "Payment Updated",
+        Description =
+            $"Status changed to {payment.Status}"
+    });
+
+        await _repository.SaveChangesAsync();
 
         await _repository.AddHistoryAsync(
             new PaymentStateHistory
@@ -330,5 +353,12 @@ GetRecentPaymentsAsync()
             .ToList();
     }
 
+
+    public async Task<List<AuditLog>>
+GetAuditLogsAsync()
+    {
+        return await _repository
+            .GetAuditLogsAsync();
+    }
 
 }

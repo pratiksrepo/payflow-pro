@@ -25,6 +25,8 @@ public class PaymentController : ControllerBase
             await _service
                 .CreatePaymentAsync(request);
 
+
+
         return Ok(result);
     }
 
@@ -111,6 +113,18 @@ GetRecentPayments()
                 .GetRecentPaymentsAsync();
 
         return Ok(payments);
+    }
+
+
+    [HttpGet("auditlogs")]
+    public async Task<IActionResult>
+GetAuditLogs()
+    {
+        var logs =
+            await _service
+                .GetAuditLogsAsync();
+
+        return Ok(logs);
     }
 
 }

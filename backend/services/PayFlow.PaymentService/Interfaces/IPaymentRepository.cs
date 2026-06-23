@@ -26,4 +26,10 @@ public interface IPaymentRepository
 
     Task<List<Payment>>
     GetAllPaymentsAsync();
+
+    Task AddAuditLogAsync(
+    AuditLog log);
+
+    Task<List<AuditLog>>
+    GetAuditLogsAsync();
 }

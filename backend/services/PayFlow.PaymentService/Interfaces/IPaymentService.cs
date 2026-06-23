@@ -26,4 +26,7 @@ public interface IPaymentService
 
     Task<List<Payment>>
 GetRecentPaymentsAsync();
+
+    Task<List<AuditLog>>
+GetAuditLogsAsync();
 }
