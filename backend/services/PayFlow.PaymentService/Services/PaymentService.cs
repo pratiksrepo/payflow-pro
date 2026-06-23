@@ -212,15 +212,16 @@ public class PaymentService : IPaymentService
             await _repository
                 .SaveChangesAsync();
 
-            await _repository.SaveChangesAsync();
             await _repository.AddAuditLogAsync(
-new AuditLog
-{
-    UserId = request.UserId,
-    Action = "Payment Created",
-    Description =
-$"Payment ₹{request.Amount} created"
-});
+                new AuditLog
+                {
+                    UserId = request.UserId,
+                    Action = "Payment Created",
+                    Description =
+                        $"Payment ₹{request.Amount} created"
+                });
+
+            await _repository.SaveChangesAsync();
         }
 
         return new PaymentResponse
