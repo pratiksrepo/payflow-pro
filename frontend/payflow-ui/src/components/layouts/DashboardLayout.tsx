@@ -43,6 +43,12 @@ import { getRole } from "../../utils/jwtHelper";
 import GroupIcon
 from "@mui/icons-material/Group";
 
+
+import {
+    logout as logoutApi
+}
+from "../../services/authService";
+
 const drawerWidth = 260;
 
 export default function DashboardLayout() {
@@ -52,11 +58,23 @@ export default function DashboardLayout() {
     const location =
         useLocation();
 
-    const logout = () => {
-        localStorage.clear();
 
-        navigate("/");
-    };
+const logout =
+    async () =>
+{
+    try
+    {
+        await logoutApi();
+    }
+    catch
+    {
+        // Ignore API failures during logout
+    }
+
+    localStorage.clear();
+
+    navigate("/");
+};
 
     const role =
         getRole();
