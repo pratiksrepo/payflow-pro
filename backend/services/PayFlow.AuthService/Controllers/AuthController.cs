@@ -10,6 +10,7 @@ using PayFlow.AuthService.Helpers;
 using PayFlow.AuthService.Interfaces;
 
 using PayFlow.AuthService.Services;
+using System.Security.Claims;
 
 
 namespace PayFlow.AuthService.Controllers;
@@ -219,4 +220,20 @@ public class AuthController : ControllerBase
     {
         throw new Exception("Test exception middleware");
     }
-}   
+
+
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var userId =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier
+            )?.Value;
+
+        Console.WriteLine(
+            $"AUDIT : User {userId} logged out");
+
+        return Ok("Logged out");
+    }
+}

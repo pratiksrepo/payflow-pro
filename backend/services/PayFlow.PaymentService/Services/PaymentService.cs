@@ -338,6 +338,17 @@ public class PaymentService : IPaymentService
             await _repository
                 .GetAllPaymentsAsync();
 
+        await _repository.AddAuditLogAsync(
+            new AuditLog
+            {
+                UserId = 0,
+                Action = "Admin Report",
+                Description =
+                    "Payment report exported"
+            });
+
+        await _repository.SaveChangesAsync();
+
         return PaymentReportGenerator
             .Generate(payments);
     }

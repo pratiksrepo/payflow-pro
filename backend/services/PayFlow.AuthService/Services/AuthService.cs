@@ -98,6 +98,9 @@ public class AuthService : IAuthService
 
         await _userRepository.SaveChangesAsync();
 
+        Console.WriteLine(
+    $"AUDIT : User {user.Email} logged in at {DateTime.UtcNow}");
+
         return new AuthResponse
         {
             AccessToken = accessToken,

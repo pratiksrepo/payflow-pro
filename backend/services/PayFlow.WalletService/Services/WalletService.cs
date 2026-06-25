@@ -70,6 +70,9 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
+        Console.WriteLine(
+    $"AUDIT : Wallet credited ₹{request.Amount} for User {request.UserId}");
+
         return true;
     }
 
@@ -119,6 +122,9 @@ public class WalletService
 
         await _repository
             .SaveChangesAsync();
+
+        Console.WriteLine(
+    $"AUDIT : Wallet debited ₹{request.Amount} for User {request.UserId}");
 
         return new DebitWalletResponse
         {
