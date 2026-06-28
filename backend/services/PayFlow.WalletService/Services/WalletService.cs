@@ -154,4 +154,12 @@ public class WalletService
             Balance = wallet.Balance
         };
     }
+
+    public async Task<List<Wallet>>
+SearchWalletsAsync(
+    string search)
+    {
+        return await _repository
+            .SearchWalletsAsync(search);
+    }
 }

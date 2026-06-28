@@ -38,4 +38,92 @@ public class NotificationRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<DTOs.PagedResponse<Notification>>
+GetNotificationsPagedAsync(
+    int userId,
+    int page,
+    int pageSize,
+    string? search,
+    bool? isRead,
+    string? sort)
+    {
+        IQueryable<Notification> query =
+            _context.Notifications
+                .Where(x =>
+                    x.UserId == userId);
+
+        //---------------------------------------
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query =
+                query.Where(x =>
+
+                    x.Title.Contains(search)
+
+                    ||
+
+                    x.Message.Contains(search)
+
+                );
+        }
+
+        //---------------------------------------
+
+        if (isRead.HasValue)
+        {
+            query =
+                query.Where(x =>
+                    x.IsRead ==
+                    isRead.Value);
+        }
+
+        //---------------------------------------
+
+        query =
+            sort == "oldest"
+
+            ?
+
+            query.OrderBy(
+                x => x.CreatedAt)
+
+            :
+
+            query.OrderByDescending(
+                x => x.CreatedAt);
+
+        //---------------------------------------
+
+        var totalRecords =
+            await query.CountAsync();
+
+        //---------------------------------------
+
+        var data =
+            await query
+
+                .Skip(
+                    (page - 1)
+                    * pageSize)
+
+                .Take(pageSize)
+
+                .ToListAsync();
+
+        //---------------------------------------
+
+        return new DTOs.PagedResponse<Notification>
+        {
+            Data = data,
+
+            Page = page,
+
+            PageSize = pageSize,
+
+            TotalRecords =
+                totalRecords
+        };
+    }
 }

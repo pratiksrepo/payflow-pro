@@ -19,4 +19,8 @@ public interface IWalletRepository
     Task<List<WalletTransaction>>
         GetTransactionsAsync(
             Guid walletId);
+
+    Task<List<Wallet>>
+SearchWalletsAsync(
+    string search);
 }

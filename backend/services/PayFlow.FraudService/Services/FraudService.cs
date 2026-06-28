@@ -208,10 +208,36 @@ public class FraudService : IFraudService
 
 
     public async Task<List<FraudCheck>>
-GetRecentFraudChecksAsync()
+    GetRecentFraudChecksAsync()
     {
         return await _repository
             .GetRecentFraudChecksAsync();
     }
 
+
+    public async Task<List<FraudCheck>>
+    SearchFraudAsync(
+        string search)
+    {
+        return await _repository
+            .SearchFraudAsync(search);
+    }
+
+    public async Task<PagedResponse<FraudCheck>>
+GetFraudPagedAsync(
+    int page,
+    int pageSize,
+    string? search,
+    string? riskLevel,
+    string? sort)
+    {
+        return await
+            _repository
+                .GetFraudPagedAsync(
+                    page,
+                    pageSize,
+                    search,
+                    riskLevel,
+                    sort);
+    }
 }

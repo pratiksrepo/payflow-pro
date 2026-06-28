@@ -13,4 +13,8 @@ public interface IAuthService
 
     Task<List<User>>
 GetAllUsersAsync();
+
+
+    Task<List<User>>
+SearchUsersAsync(string search);
 }

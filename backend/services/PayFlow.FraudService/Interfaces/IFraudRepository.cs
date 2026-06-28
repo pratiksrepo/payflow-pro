@@ -27,4 +27,16 @@ public interface IFraudRepository
 
     Task<List<FraudCheck>>
 GetRecentFraudChecksAsync();
+
+    Task<List<FraudCheck>>
+SearchFraudAsync(
+    string search);
+
+    Task<PagedResponse<FraudCheck>>
+GetFraudPagedAsync(
+    int page,
+    int pageSize,
+    string? search,
+    string? riskLevel,
+    string? sort);
 }

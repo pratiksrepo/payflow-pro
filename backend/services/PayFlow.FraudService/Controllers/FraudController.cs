@@ -49,4 +49,36 @@ GetRecentFraudChecks()
 
         return Ok(result);
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchFraud(
+    [FromQuery] string search)
+    {
+        var result =
+            await _fraudService
+                .SearchFraudAsync(search);
+
+        return Ok(result);
+    }
+
+    [HttpGet("paged")]
+    public async Task<IActionResult>
+GetFraudPaged(
+    int page = 1,
+    int pageSize = 10,
+    string? search = null,
+    string? riskLevel = null,
+    string? sort = "newest")
+    {
+        var result =
+            await _fraudService
+                .GetFraudPagedAsync(
+                    page,
+                    pageSize,
+                    search,
+                    riskLevel,
+                    sort);
+
+        return Ok(result);
+    }
 }

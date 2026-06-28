@@ -64,13 +64,12 @@ public class PaymentController : ControllerBase
 
     [HttpGet("user/{userId}")]
     public async Task<IActionResult>
-        GetUserPayments(
+    GetUserPayments(
         int userId)
     {
         var payments =
             await _service
-                .GetPaymentsByUserAsync(
-                    userId);
+                .GetPaymentsByUserAsync(userId);
 
         return Ok(payments);
     }
@@ -125,6 +124,62 @@ GetAuditLogs()
                 .GetAuditLogsAsync();
 
         return Ok(logs);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchPayments(
+    [FromQuery] string search)
+    {
+        var result =
+            await _service
+                .SearchPaymentsAsync(search);
+
+        return Ok(result);
+    }
+
+
+    [HttpGet("user/{userId}/paged")]
+    public async Task<IActionResult>
+GetUserPaymentsPaged(
+    int userId,
+    int page = 1,
+    int pageSize = 10,
+    string? search = null,
+    string? status = null,
+    string? sort = "newest")
+    {
+        var result =
+            await _service
+                .GetPaymentsPagedAsync(
+                    userId,
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    sort);
+
+        return Ok(result);
+    }
+
+    [HttpGet("auditlogs/paged")]
+    public async Task<IActionResult>
+GetAuditLogsPaged(
+    int page = 1,
+    int pageSize = 10,
+    string? search = null,
+    string? action = null,
+    string? sort = "newest")
+    {
+        var result =
+            await _service
+                .GetAuditLogsPagedAsync(
+                    page,
+                    pageSize,
+                    search,
+                    action,
+                    sort);
+
+        return Ok(result);
     }
 
 }

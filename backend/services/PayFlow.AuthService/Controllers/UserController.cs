@@ -53,5 +53,18 @@ namespace payflow.authservice.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsers(
+    [FromQuery] string search)
+        {
+            var users =
+                await _authService
+                    .SearchUsersAsync(search);
+
+            return Ok(users);
+        }
+
+
     }
 }

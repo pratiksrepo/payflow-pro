@@ -68,4 +68,24 @@ public class NotificationService
                 })
             .ToList();
     }
+
+    public async Task<PagedResponse<Notification>>
+GetNotificationsPagedAsync(
+    int userId,
+    int page,
+    int pageSize,
+    string? search,
+    bool? isRead,
+    string? sort)
+    {
+        return await
+            _repository
+                .GetNotificationsPagedAsync(
+                    userId,
+                    page,
+                    pageSize,
+                    search,
+                    isRead,
+                    sort);
+    }
 }

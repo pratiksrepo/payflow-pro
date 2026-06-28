@@ -48,4 +48,14 @@ GetAllUsersAsync()
             .OrderBy(x => x.Id)
             .ToListAsync();
     }
+
+    public async Task<List<User>>
+SearchUsersAsync(string search)
+    {
+        return await _context.Users
+            .Where(x =>
+                x.FullName.Contains(search) ||
+                x.Email.Contains(search))
+            .ToListAsync();
+    }
 }

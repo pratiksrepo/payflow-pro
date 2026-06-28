@@ -80,5 +80,15 @@ public class WalletController : ControllerBase
         return Ok(wallet);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchWallets(
+    [FromQuery] string search)
+    {
+        var result =
+            await _walletService
+                .SearchWalletsAsync(search);
+
+        return Ok(result);
+    }
 
 }

@@ -77,4 +77,99 @@ GetRecentFraudChecksAsync()
             .Take(5)
             .ToListAsync();
     }
+
+    public async Task<List<FraudCheck>>
+SearchFraudAsync(
+    string search)
+    {
+        return await _context.FraudChecks
+            .Where(x =>
+                x.RiskLevel.Contains(search))
+            .ToListAsync();
+    }
+
+    public async Task<PagedResponse<FraudCheck>>
+GetFraudPagedAsync(
+    int page,
+    int pageSize,
+    string? search,
+    string? riskLevel,
+    string? sort)
+    {
+        IQueryable<FraudCheck> query =
+            _context.FraudChecks;
+
+        //--------------------------------
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query =
+                query.Where(x =>
+
+                    x.PaymentId
+                        .ToString()
+                        .Contains(search)
+
+                    ||
+
+                    x.Id
+                        .ToString()
+                        .Contains(search));
+        }
+
+        //--------------------------------
+
+        if (!string.IsNullOrWhiteSpace(riskLevel))
+        {
+            query =
+                query.Where(x =>
+                    x.RiskLevel ==
+                    riskLevel);
+        }
+
+        //--------------------------------
+
+        query =
+            sort == "oldest"
+
+            ?
+
+            query.OrderBy(
+                x => x.CheckedAt)
+
+            :
+
+            query.OrderByDescending(
+                x => x.CheckedAt);
+
+        //--------------------------------
+
+        var totalRecords =
+            await query.CountAsync();
+
+        //--------------------------------
+
+        var data =
+            await query
+                .Skip(
+                    (page - 1)
+                    * pageSize)
+
+                .Take(pageSize)
+
+                .ToListAsync();
+
+        //--------------------------------
+
+        return new PagedResponse<FraudCheck>
+        {
+            Data = data,
+
+            Page = page,
+
+            PageSize = pageSize,
+
+            TotalRecords = totalRecords
+        };
+    }
 }

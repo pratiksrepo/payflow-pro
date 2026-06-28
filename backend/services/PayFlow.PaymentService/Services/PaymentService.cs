@@ -317,8 +317,7 @@ public class PaymentService : IPaymentService
         int userId)
     {
         return await _repository
-            .GetPaymentsByUserAsync(
-                userId);
+            .GetPaymentsByUserAsync(userId);
     }
 
     public async Task<List<PaymentStateHistory>>
@@ -371,6 +370,51 @@ GetAuditLogsAsync()
     {
         return await _repository
             .GetAuditLogsAsync();
+    }
+
+    public async Task<List<Payment>>
+SearchPaymentsAsync(string search)
+    {
+        return await _repository
+            .SearchPaymentsAsync(search);
+    }
+
+
+    public async Task<PagedResponse<Payment>>
+    GetPaymentsPagedAsync(
+        int userId,
+        int page,
+        int pageSize,
+        string? search,
+        string? status,
+        string? sort)
+    {
+        return await _repository
+            .GetPaymentsPagedAsync(
+                userId,
+                page,
+                pageSize,
+                search,
+                status,
+                sort);
+    }
+
+    public async Task<PagedResponse<AuditLog>>
+GetAuditLogsPagedAsync(
+    int page,
+    int pageSize,
+    string? search,
+    string? action,
+    string? sort)
+    {
+        return await
+            _repository
+                .GetAuditLogsPagedAsync(
+                    page,
+                    pageSize,
+                    search,
+                    action,
+                    sort);
     }
 
 }

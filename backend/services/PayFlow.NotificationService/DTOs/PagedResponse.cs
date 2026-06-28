@@ -1,0 +1,42 @@
+﻿namespace PayFlow.NotificationService.DTOs;
+
+public class PagedResponse<T>
+{
+    public List<T> Data
+    {
+        get;
+        set;
+    }
+    = new();
+
+    public int Page
+    {
+        get;
+        set;
+    }
+
+    public int PageSize
+    {
+        get;
+        set;
+    }
+
+    public int TotalRecords
+    {
+        get;
+        set;
+    }
+
+    public int TotalPages
+    {
+        get
+        {
+            return
+                (int)Math.Ceiling(
+                    (double)
+                    TotalRecords
+                    /
+                    PageSize);
+        }
+    }
+}

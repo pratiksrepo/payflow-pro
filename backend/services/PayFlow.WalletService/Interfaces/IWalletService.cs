@@ -1,4 +1,5 @@
 ﻿using PayFlow.WalletService.DTOs;
+using PayFlow.WalletService.Models;
 
 namespace PayFlow.WalletService.Interfaces;
 
@@ -19,4 +20,8 @@ public interface IWalletService
     Task<WalletResponse?>
         GetWalletAsync(
             int userId);
+
+    Task<List<Wallet>>
+SearchWalletsAsync(
+    string search);
 }

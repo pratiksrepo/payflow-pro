@@ -133,4 +133,12 @@ GetAllUsersAsync()
         return await _userRepository
             .GetAllUsersAsync();
     }
+
+
+    public async Task<List<User>>
+SearchUsersAsync(string search)
+    {
+        return await _userRepository
+            .SearchUsersAsync(search);
+    }
 }

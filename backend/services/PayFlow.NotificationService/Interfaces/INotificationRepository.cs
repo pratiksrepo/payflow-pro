@@ -10,4 +10,13 @@ public interface INotificationRepository
         GetByUserIdAsync(int userId);
 
     Task SaveChangesAsync();
+
+    Task<DTOs.PagedResponse<Notification>>
+    GetNotificationsPagedAsync(
+        int userId,
+        int page,
+        int pageSize,
+        string? search,
+        bool? isRead,
+        string? sort);
 }

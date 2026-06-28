@@ -63,4 +63,16 @@ public class WalletRepository
                 x => x.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<List<Wallet>>
+SearchWalletsAsync(
+    string search)
+    {
+        return await _context.Wallets
+            .Where(x =>
+                x.UserId
+                    .ToString()
+                    .Contains(search))
+            .ToListAsync();
+    }
 }
