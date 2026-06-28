@@ -104,3 +104,31 @@ export const getRecentPayments =
 
     return response.data;
 };
+
+
+export const getPaymentsPaged =
+    async (
+        userId: number,
+        page: number,
+        pageSize: number,
+        search: string,
+        status: string,
+        sort: string
+    ) =>
+{
+    const response =
+        await axios.get(
+            `https://localhost:7009/api/Payment/user/${userId}/paged`,
+            {
+                params:
+                {
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    sort
+                }
+            });
+
+    return response.data;
+};

@@ -32,11 +32,13 @@ import NotificationsPage
 import AdminDashboardPage
     from "../pages/AdminDashboardPage";
 
-import AdminRoute from "./AdminRoute";
+import GlobalSearchPage
+    from "../pages/GlobalSearchPage";
 
 import RoleRoute
     from "./RoleRoute";
 import AdminUsersPage from "../pages/AdminUsersPage";
+import AuditLogsPage from "../pages/AuditLogsPage";
 
 export default function AppRoutes() {
     return (
@@ -113,6 +115,24 @@ export default function AppRoutes() {
                             >
                                 <AdminUsersPage />
                             </RoleRoute>
+                        }
+                    />
+
+                    <Route
+                        path="search"
+                        element={
+                            <RoleRoute
+                                allowedRole="Admin"
+                            >
+                                <GlobalSearchPage />
+                            </RoleRoute>
+                        }
+                    />
+
+                    <Route
+                        path="auditlogs"
+                        element={
+                            <AuditLogsPage />
                         }
                     />
 

@@ -1,114 +1,107 @@
-import {
+import
+{
     Box,
     Typography,
     Paper,
     Table,
     TableHead,
     TableBody,
-    TableCell,
     TableRow,
+    TableCell,
     TableContainer,
-    Chip,
     CircularProgress
 }
 from "@mui/material";
 
-import {
+import
+{
     useState,
     useEffect,
     useCallback
 }
 from "react";
 
+import type
+{
+    AuditLog
+}
+from "../types/AuditLog";
+
+import
+{
+    getAuditLogsPaged
+}
+from "../services/auditService";
+
 import SearchBar
 from "../components/SearchBar";
 
-import NotificationFilterPanel
-from "../components/NotificationFilterPanel";
+import AuditFilterPanel
+from "../components/AuditFilterPanel";
 
 import CommonPagination
 from "../components/CommonPagination";
 
-import {
-    getNotificationsPaged
-}
-from "../services/notificationService";
-
-import {
-    getUserId
-}
-from "../utils/jwtHelper";
-
-import type
+export default function AuditLogsPage()
 {
-    Notification
-}
-from "../types/Notification";
+    const[
+        auditLogs,
+        setAuditLogs
+    ]=
+    useState<AuditLog[]>([]);
 
-export default function NotificationsPage()
-{
-    const [
-        notifications,
-        setNotifications
-    ] =
-    useState<Notification[]>([]);
-
-    const [
+    const[
         loading,
         setLoading
-    ] =
+    ]=
     useState(false);
 
-    const [
+    const[
         page,
         setPage
-    ] =
+    ]=
     useState(1);
 
-    const [
+    const[
         pageSize,
         setPageSize
-    ] =
+    ]=
     useState(10);
 
-    const [
+    const[
         totalPages,
         setTotalPages
-    ] =
+    ]=
     useState(1);
 
-    const [
+    const[
         search,
         setSearch
-    ] =
+    ]=
     useState("");
 
-    const [
-        status,
-        setStatus
-    ] =
+    const[
+        action,
+        setAction
+    ]=
     useState("");
 
-    const [
+    const[
         sort,
         setSort
-    ] =
+    ]=
     useState("newest");
 
-    const loadNotifications =
+    const loadAuditLogs=
     useCallback(
-        async () =>
+        async()=>
         {
             try
             {
                 setLoading(true);
 
-                const result =
-                    await getNotificationsPaged(
-
-                        Number(
-                            getUserId()
-                        ),
+                const result=
+                    await getAuditLogsPaged(
 
                         page,
 
@@ -116,16 +109,13 @@ export default function NotificationsPage()
 
                         search,
 
-                        status === ""
-                        ?
-                        null
-                        :
-                        status === "Read",
+                        action,
 
                         sort
+
                     );
 
-                setNotifications(
+                setAuditLogs(
                     result.data
                 );
 
@@ -143,18 +133,19 @@ export default function NotificationsPage()
             page,
             pageSize,
             search,
-            status,
+            action,
             sort
-        ]);
+        ]
+    );
 
-    useEffect(() =>
-    {
-        void loadNotifications();
-
-    },
-    [
-        loadNotifications
-    ]);
+    useEffect(
+        ()=>{
+            void loadAuditLogs();
+        },
+        [
+            loadAuditLogs
+        ]
+    );
 
     return(
 
@@ -165,7 +156,7 @@ export default function NotificationsPage()
                 fontWeight={700}
                 mb={3}
             >
-                Notifications
+                Audit Logs
             </Typography>
 
             <SearchBar
@@ -179,23 +170,23 @@ export default function NotificationsPage()
                 }}
 
                 onSearch={
-                    loadNotifications
+                    loadAuditLogs
                 }
 
             />
 
-            <NotificationFilterPanel
+            <AuditFilterPanel
 
-                status={status}
+                action={action}
 
                 sort={sort}
 
                 pageSize={pageSize}
 
-                onStatusChange={(value)=>
+                onActionChange={(value)=>
                 {
                     setPage(1);
-                    setStatus(value);
+                    setAction(value);
                 }}
 
                 onSortChange={(value)=>
@@ -213,7 +204,9 @@ export default function NotificationsPage()
             />
 
             {
-                loading ?
+                loading
+
+                ?
 
                 <Box
                     sx={{
@@ -229,6 +222,9 @@ export default function NotificationsPage()
 
                 <TableContainer
                     component={Paper}
+                    sx={{
+                        borderRadius:3
+                    }}
                 >
 
                     <Table>
@@ -238,15 +234,15 @@ export default function NotificationsPage()
                             <TableRow>
 
                                 <TableCell>
-                                    Title
+                                    User Id
                                 </TableCell>
 
                                 <TableCell>
-                                    Message
+                                    Action
                                 </TableCell>
 
                                 <TableCell>
-                                    Status
+                                    Description
                                 </TableCell>
 
                                 <TableCell>
@@ -258,8 +254,9 @@ export default function NotificationsPage()
                         </TableHead>
 
                         <TableBody>
+
                                                         {
-                                notifications.length === 0 ?
+                                auditLogs.length === 0 ?
 
                                 <TableRow>
 
@@ -267,74 +264,68 @@ export default function NotificationsPage()
                                         colSpan={4}
                                         align="center"
                                     >
+
                                         <Typography
                                             sx={{
-                                                py: 4,
-                                                color: "text.secondary"
+                                                py:4,
+                                                color:"text.secondary"
                                             }}
                                         >
-                                            No Notifications Found
+                                            No Audit Logs Found
                                         </Typography>
+
                                     </TableCell>
 
                                 </TableRow>
 
                                 :
 
-                                notifications.map(
+                                auditLogs.map(
                                     (
-                                        notification
-                                    ) => (
+                                        log
+                                    )=>
 
-                                        <TableRow
-                                            hover
-                                            key={notification.id}
-                                        >
+                                    <TableRow
+                                        hover
+                                        key={log.id}
+                                    >
 
-                                            <TableCell>
-                                                {notification.title}
-                                            </TableCell>
+                                        <TableCell>
 
-                                            <TableCell>
-                                                {notification.message}
-                                            </TableCell>
+                                            {log.userId}
 
-                                            <TableCell>
+                                        </TableCell>
 
-                                                {
-                                                    notification.isRead ?
+                                        <TableCell>
 
-                                                    <Chip
-                                                        label="Read"
-                                                        color="success"
-                                                        size="small"
-                                                    />
+                                            <Typography
+                                                fontWeight={600}
+                                            >
+                                                {log.action}
+                                            </Typography>
 
-                                                    :
+                                        </TableCell>
 
-                                                    <Chip
-                                                        label="Unread"
-                                                        color="warning"
-                                                        size="small"
-                                                    />
+                                        <TableCell>
 
-                                                }
+                                            {log.description}
 
-                                            </TableCell>
+                                        </TableCell>
 
-                                            <TableCell>
+                                        <TableCell>
 
-                                                {
-                                                    new Date(
-                                                        notification.createdAt
-                                                    ).toLocaleString()
-                                                }
+                                            {
+                                                new Date(
+                                                    log.createdAt
+                                                ).toLocaleString()
+                                            }
 
-                                            </TableCell>
+                                        </TableCell>
 
-                                        </TableRow>
+                                    </TableRow>
 
-                                    ))
+                                )
+
                             }
 
                         </TableBody>

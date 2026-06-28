@@ -11,41 +11,41 @@ import {
     TextField,
     Typography
 }
-from "@mui/material";
+    from "@mui/material";
 
 import {
     useState,
     useEffect,
 }
-from "react";
+    from "react";
 
 import {
     createPayment,
     getPaymentById
 }
-from "../services/paymentService";
+    from "../services/paymentService";
 
 import {
     getUserId
 }
-from "../utils/jwtHelper";
+    from "../utils/jwtHelper";
 
 import type
 {
     Payment
 }
-from "../types/Payment";
+    from "../types/Payment";
 
 import {
     getPaymentsByUser
 }
-from "../services/paymentService";
+    from "../services/paymentService";
 
 import type
 {
     PaymentHistory
 }
-from "../types/PaymentHistory";
+    from "../types/PaymentHistory";
 
 import {
     Table,
@@ -55,31 +55,34 @@ import {
     TableHead,
     TableRow
 }
-from "@mui/material";
-
-import {
-    Timeline,
-    TimelineItem,
-    TimelineSeparator,
-    TimelineConnector,
-    TimelineContent,
-    TimelineDot
-}
-from "@mui/lab";
+    from "@mui/material";
 
 import {
     getPaymentHistory
 }
-from "../services/paymentService";
+    from "../services/paymentService";
 
 import type
 {
     PaymentHistoryItem
 }
-from "../types/PaymentHistoryItem";
+    from "../types/PaymentHistoryItem";
 
-export default function PaymentsPage()
-{
+import CommonPagination
+    from "../components/CommonPagination";
+
+import SearchBar
+    from "../components/SearchBar";
+
+import FilterPanel
+    from "../components/FilterPanel";
+
+import {
+getPaymentsPaged
+}
+    from "../services/paymentService";
+
+export default function PaymentsPage() {
 
 
     const [
@@ -87,14 +90,26 @@ export default function PaymentsPage()
         setAmount
     ] = useState("");
 
+    const [page, setPage] = useState(1);
+
+    const [pageSize, setPageSize] = useState(10);
+
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [search, setSearch] = useState("");
+
+    const [status, setStatus] = useState("");
+
+    const [sort, setSort] = useState("newest");
+
     const [
-    createdPayment,
-    setCreatedPayment
-] = useState<{
-    paymentId: string;
-    status: string;
-    amount: number;
-} | null>(null);
+        createdPayment,
+        setCreatedPayment
+    ] = useState<{
+        paymentId: string;
+        status: string;
+        amount: number;
+    } | null>(null);
 
     const [
         merchantId,
@@ -112,20 +127,20 @@ export default function PaymentsPage()
     ] = useState("");
 
     const [
-    paymentHistory,
-    setPaymentHistory
-] =
-    useState<
-        PaymentHistory[]
-    >([]);
+        paymentHistory,
+        setPaymentHistory
+    ] =
+        useState<
+            PaymentHistory[]
+        >([]);
 
     const [
-    paymentTimeline,
-    setPaymentTimeline
-] =
-    useState<
-        PaymentHistoryItem[]
-    >([]);
+        paymentTimeline,
+        setPaymentTimeline
+    ] =
+        useState<
+            PaymentHistoryItem[]
+        >([]);
 
     const [
         error,
@@ -145,148 +160,180 @@ export default function PaymentsPage()
             null
         );
 
-           const loadPaymentHistory =
-        async () =>
-    {
-        try
-        {
-            const result =
-                await getPaymentsByUser(
-                    Number(
-                        getUserId()
-                    )
-                );
+    // const loadPaymentHistory =
+    //     async () => {
+    //         try {
+    //             const result =
+    //                 await getPaymentsByUser(
+    //                     Number(
+    //                         getUserId()
+    //                     )
+    //                 );
 
-            setPaymentHistory(
-                result
-            );
-        }
-        catch (error)
-        {
-            console.log(error);
-        }
-    };
+    //             setPaymentHistory(
+    //                 result
+    //             );
+    //         }
+    //         catch (error) {
+    //             console.log(error);
+    //         }
+    //     };
 
-    useEffect(() =>
-    {
-        void loadPaymentHistory();
-    }, []);
+
+    // useEffect(() => {
+    //     void loadPaymentHistory();
+    // }, []);
+
+
+    const loadPagedPayments =
+async () =>
+{
+    console.log({
+    page,
+    pageSize,
+    search,
+    status,
+    sort
+});
+    const result =
+        await getPaymentsPaged(
+            Number(getUserId()),
+            page,
+            pageSize,
+            search,
+            status,
+            sort);
+
+setPaymentHistory(
+    result.data
+);
+
+    setTotalPages(
+        result.totalPages);
+
+        console.log(result);
+}
+
+useEffect(() =>
+{
+    void loadPagedPayments();
+
+},
+[
+    page,
+    pageSize,
+    search,
+    status,
+    sort
+]);
 
     const handleCreatePayment =
-        async () =>
-    {
-        try
-        {
-            setSuccess("");
-            setError("");
+        async () => {
+            try {
+                setSuccess("");
+                setError("");
 
-const result =
-    await createPayment({
-        userId:
-            Number(
-                getUserId()
-            ),
+                const result =
+                    await createPayment({
+                        userId:
+                            Number(
+                                getUserId()
+                            ),
 
-        amount:
-            Number(
-                amount
-            ),
+                        amount:
+                            Number(
+                                amount
+                            ),
 
-        merchantId,
+                        merchantId,
 
-        paymentMethod
-    });
+                        paymentMethod
+                    });
 
-setCreatedPayment(result);
-await loadPaymentHistory();
-setPaymentId(
-    result.paymentId
-);
-            setSuccess(
-                "Payment created successfully"
-            );
-
-            
-
-            setAmount("");
-            setMerchantId("");
-            setPaymentMethod("UPI");
-        }
-        catch
-        {
-            setError(
-                "Payment failed"
-            );
-        }
-    };
-
-    const handleSearchPayment =
-        async () =>
-    {
-        try
-        {
-            const result =
-                await getPaymentById(
-                    paymentId
+                setCreatedPayment(result);
+                await loadPaymentHistory();
+                setPaymentId(
+                    result.paymentId
+                );
+                setSuccess(
+                    "Payment created successfully"
                 );
 
-            setPayment(result);
-            const history =
-    await getPaymentHistory(
-        paymentId
-    );
 
-setPaymentTimeline(
-    history
-);
-        }
-        catch
-        {
-            alert(
-                "Payment Not Found"
-            );
-        }
-    };
+
+                setAmount("");
+                setMerchantId("");
+                setPaymentMethod("UPI");
+            }
+            catch {
+                setError(
+                    "Payment failed"
+                );
+            }
+        };
+
+    const handleSearchPayment =
+        async () => {
+            try {
+                const result =
+                    await getPaymentById(
+                        paymentId
+                    );
+
+                setPayment(result);
+                const history =
+                    await getPaymentHistory(
+                        paymentId
+                    );
+
+                setPaymentTimeline(
+                    history
+                );
+            }
+            catch {
+                alert(
+                    "Payment Not Found"
+                );
+            }
+        };
 
     const getStatusChip =
         (
             status: number
-        ) =>
-    {
-        switch (status)
-        {
-            case 1:
-                return (
-                    <Chip
-                        label="Pending"
-                        color="warning"
-                    />
-                );
+        ) => {
+            switch (status) {
+                case 1:
+                    return (
+                        <Chip
+                            label="Pending"
+                            color="warning"
+                        />
+                    );
 
-            case 2:
-                return (
-                    <Chip
-                        label="Success"
-                        color="success"
-                    />
-                );
+                case 2:
+                    return (
+                        <Chip
+                            label="Success"
+                            color="success"
+                        />
+                    );
 
-            case 3:
-                return (
-                    <Chip
-                        label="Failed"
-                        color="error"
-                    />
-                );
+                case 3:
+                    return (
+                        <Chip
+                            label="Failed"
+                            color="error"
+                        />
+                    );
 
-            default:
-                return (
-                    <Chip
-                        label="Unknown"
-                    />
-                );
-        }
-    };
+                default:
+                    return (
+                        <Chip
+                            label="Unknown"
+                        />
+                    );
+            }
+        };
 
     return (
         <Box>
@@ -334,43 +381,43 @@ setPaymentTimeline(
 
                     }
 
-                                            {
-    createdPayment &&
-    (
-        <Alert
-            severity="info"
-        >
-            <Typography
-                fontWeight={700}
-            >
-                Payment Created
-            </Typography>
+                    {
+                        createdPayment &&
+                        (
+                            <Alert
+                                severity="info"
+                            >
+                                <Typography
+                                    fontWeight={700}
+                                >
+                                    Payment Created
+                                </Typography>
 
-            Payment ID:
-            {" "}
-            {
-                createdPayment.paymentId
-            }
+                                Payment ID:
+                                {" "}
+                                {
+                                    createdPayment.paymentId
+                                }
 
-            <br />
+                                <br />
 
-            Status:
-            {" "}
-            {
-                createdPayment.status
-            }
+                                Status:
+                                {" "}
+                                {
+                                    createdPayment.status
+                                }
 
-            <br />
+                                <br />
 
-            Amount:
-            {" "}
-            ₹
-            {
-                createdPayment.amount
-            }
-        </Alert>
-    )
-}
+                                Amount:
+                                {" "}
+                                ₹
+                                {
+                                    createdPayment.amount
+                                }
+                            </Alert>
+                        )
+                    }
 
                     {
                         error &&
@@ -495,77 +542,77 @@ setPaymentTimeline(
                             </Typography>
 
                             <Paper
-    sx={{
-        p: 4,
-        mt: 4,
-        borderRadius: 4
-    }}
->
-    <Typography
-        variant="h5"
-        sx={{
-            fontWeight: 700,
-            mb: 4
-        }}
-    >
-        Payment Journey
-    </Typography>
+                                sx={{
+                                    p: 4,
+                                    mt: 4,
+                                    borderRadius: 4
+                                }}
+                            >
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 4
+                                    }}
+                                >
+                                    Payment Journey
+                                </Typography>
 
-    <Box>
+                                <Box>
 
-        {
-            paymentTimeline.map(
-                (
-                    item
-                ) => (
-                    <Box
-                        key={
-                            item.id
-                        }
-                        sx={{
-                            mb: 3,
-                            pl: 2,
-                            borderLeft:
-                                "4px solid #4CAF50"
-                        }}
-                    >
+                                    {
+                                        paymentTimeline.map(
+                                            (
+                                                item
+                                            ) => (
+                                                <Box
+                                                    key={
+                                                        item.id
+                                                    }
+                                                    sx={{
+                                                        mb: 3,
+                                                        pl: 2,
+                                                        borderLeft:
+                                                            "4px solid #4CAF50"
+                                                    }}
+                                                >
 
-                        <Typography
-                            fontWeight={700}
-                        >
-                            ✅ {
-                                item.newStatus
-                            }
-                        </Typography>
+                                                    <Typography
+                                                        fontWeight={700}
+                                                    >
+                                                        ✅ {
+                                                            item.newStatus
+                                                        }
+                                                    </Typography>
 
-                        <Typography
-                            color="text.secondary"
-                        >
-                            {
-                                new Date(
-                                    item.changedAt
-                                )
-                                    .toLocaleString()
-                            }
-                        </Typography>
+                                                    <Typography
+                                                        color="text.secondary"
+                                                    >
+                                                        {
+                                                            new Date(
+                                                                item.changedAt
+                                                            )
+                                                                .toLocaleString()
+                                                        }
+                                                    </Typography>
 
-                        <Typography
-                            color="text.secondary"
-                        >
-                            Changed By:
-                            {
-                                item.changedBy
-                            }
-                        </Typography>
+                                                    <Typography
+                                                        color="text.secondary"
+                                                    >
+                                                        Changed By:
+                                                        {
+                                                            item.changedBy
+                                                        }
+                                                    </Typography>
 
-                    </Box>
-                )
-            )
-        }
+                                                </Box>
+                                            )
+                                        )
+                                    }
 
-    </Box>
+                                </Box>
 
-</Paper>
+                            </Paper>
 
                             <Divider
                                 sx={{
@@ -626,7 +673,7 @@ setPaymentTimeline(
                                         new Date(
                                             payment.createdAt
                                         )
-                                        .toLocaleString()
+                                            .toLocaleString()
                                     }
                                 </Typography>
 
@@ -639,116 +686,135 @@ setPaymentTimeline(
             }
 
             <Paper
-    sx={{
-        p: 4,
-        mt: 4,
-        borderRadius: 4
-    }}
->
-    <Typography
-        variant="h5"
-        fontWeight={700}
-        mb={3}
-    >
-        Payment History
-    </Typography>
+                sx={{
+                    p: 4,
+                    mt: 4,
+                    borderRadius: 4
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    mb={3}
+                >
+                    Payment History
+                </Typography>
 
-    <TableContainer>
+                <TableContainer>
+<SearchBar
+    value={search}
+    onChange={setSearch}
+    onSearch={loadPagedPayments}
+/>
 
-        <Table>
+<FilterPanel
+    status={status}
+    sort={sort}
+    pageSize={pageSize}
+    onStatusChange={setStatus}
+    onSortChange={setSort}
+    onPageSizeChange={setPageSize}
+/>
+                    <Table>
 
-            <TableHead>
+                        <TableHead>
 
-                <TableRow>
+                            <TableRow>
 
-                    <TableCell>
-                        Amount
-                    </TableCell>
+                                <TableCell>
+                                    Amount
+                                </TableCell>
 
-                    <TableCell>
-                        Merchant
-                    </TableCell>
+                                <TableCell>
+                                    Merchant
+                                </TableCell>
 
-                    <TableCell>
-                        Method
-                    </TableCell>
+                                <TableCell>
+                                    Method
+                                </TableCell>
 
                                 <TableCell>
                                     Date
                                 </TableCell>
 
-                    <TableCell>
-                        Status
-                    </TableCell>
+                                <TableCell>
+                                    Status
+                                </TableCell>
 
-                </TableRow>
+                            </TableRow>
 
-            </TableHead>
+                        </TableHead>
 
-            <TableBody>
+                        <TableBody>
 
-                {
-                    paymentHistory
-                        .map(
-                            (
-                                payment
-                            ) =>
-                            (
-                                <TableRow
-                                    key={
-                                        payment.id
-                                    }
-                                >
+                            {
+                                paymentHistory
+                                    .map(
+                                        (
+                                            payment
+                                        ) =>
+                                        (
+                                            <TableRow
+                                                key={
+                                                    payment.id
+                                                }
+                                            >
 
-                                    <TableCell>
-                                        ₹
-                                        {
-                                            payment.amount
-                                        }
-                                    </TableCell>
+                                                <TableCell>
+                                                    ₹
+                                                    {
+                                                        payment.amount
+                                                    }
+                                                </TableCell>
 
-                                    <TableCell>
-                                        {
-                                            payment.merchantId
-                                        }
-                                    </TableCell>
+                                                <TableCell>
+                                                    {
+                                                        payment.merchantId
+                                                    }
+                                                </TableCell>
 
-                                    <TableCell>
-                                        {
-                                            payment.paymentMethod
-                                        }
-                                    </TableCell>
-                                    <TableCell>
-{
-    new Date(
-        payment.createdAt
-    ).toLocaleDateString()
-}
-</TableCell>
-<TableCell>
-{
-    payment.status === 2
-        ? "Pending"
-        : payment.status === 5
-        ? "Failed"
-        : payment.status === 3
-        ? "Completed"
-        : payment.status
-}
-</TableCell>
+                                                <TableCell>
+                                                    {
+                                                        payment.paymentMethod
+                                                    }
+                                                </TableCell>
+                                                <TableCell>
+                                                    {
+                                                        new Date(
+                                                            payment.createdAt
+                                                        ).toLocaleDateString()
+                                                    }
+                                                </TableCell>
+                                                <TableCell>
+                                                    {
+                                                        payment.status === 2
+                                                            ? "Pending"
+                                                            : payment.status === 5
+                                                                ? "Failed"
+                                                                : payment.status === 3
+                                                                    ? "Completed"
+                                                                    : payment.status
+                                                    }
+                                                </TableCell>
 
-                                </TableRow>
-                            )
-                        )
-                }
+                                            </TableRow>
+                                        )
+                                    )
+                            }
 
-            </TableBody>
+                        </TableBody>
 
-        </Table>
+                    </Table>
 
-    </TableContainer>
+                    <CommonPagination
+    page={page}
+    totalPages={totalPages}
+    onChange={setPage}
+/>
 
-</Paper>
+                </TableContainer>
+
+            </Paper>
 
         </Box>
     );

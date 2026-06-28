@@ -14,6 +14,7 @@ import {
 }
     from "@mui/material";
 
+
 import {
     Outlet,
     useLocation,
@@ -21,8 +22,12 @@ import {
 }
     from "react-router-dom";
 
-import DashboardIcon
-    from "@mui/icons-material/Dashboard";
+
+import SearchIcon
+    from "@mui/icons-material/Search";
+
+import HistoryIcon
+    from "@mui/icons-material/History";
 
 import PaymentsIcon
     from "@mui/icons-material/Payments";
@@ -41,13 +46,13 @@ import AdminPanelSettingsIcon
 import { getRole } from "../../utils/jwtHelper";
 
 import GroupIcon
-from "@mui/icons-material/Group";
+    from "@mui/icons-material/Group";
 
 
 import {
     logout as logoutApi
 }
-from "../../services/authService";
+    from "../../services/authService";
 
 const drawerWidth = 260;
 
@@ -59,22 +64,19 @@ export default function DashboardLayout() {
         useLocation();
 
 
-const logout =
-    async () =>
-{
-    try
-    {
-        await logoutApi();
-    }
-    catch
-    {
-        // Ignore API failures during logout
-    }
+    const logout =
+        async () => {
+            try {
+                await logoutApi();
+            }
+            catch {
+                // Ignore API failures during logout
+            }
 
-    localStorage.clear();
+            localStorage.clear();
 
-    navigate("/");
-};
+            navigate("/");
+        };
 
     const role =
         getRole();
@@ -229,24 +231,38 @@ const logout =
                     </ListItemButton>
 
                     <ListItemButton
+
                         selected={
                             location.pathname ===
                             "/dashboard/notifications"
                         }
+
                         onClick={() =>
-                            navigate("/dashboard/notifications")
+
+                            navigate(
+                                "/dashboard/notifications"
+                            )
+
                         }
+
                         sx={{
                             borderRadius: 3
                         }}
+
                     >
+
                         <ListItemIcon>
+
                             <NotificationsIcon />
+
                         </ListItemIcon>
 
                         <ListItemText
+
                             primary="Notifications"
+
                         />
+
                     </ListItemButton>
 
 
@@ -270,6 +286,63 @@ const logout =
                             primary="Users"
                         />
                     </ListItemButton>
+
+                    
+
+                    <ListItemButton
+
+                        selected={
+                            location.pathname ===
+                            "/dashboard/auditlogs"
+                        }
+
+                        onClick={() =>
+                            navigate(
+                                "/dashboard/auditlogs"
+                            )
+                        }
+
+                        sx={{
+                            borderRadius: 3
+                        }}
+
+                    >
+
+                        <ListItemIcon>
+
+                            <HistoryIcon />
+
+                        </ListItemIcon>
+
+                        <ListItemText
+
+                            primary="Audit Logs"
+
+                        />
+
+                    </ListItemButton>
+
+                    {/* <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/auditlogs"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/auditlogs")
+                        }
+                        sx={{
+                            borderRadius: 3
+                        }}
+                    >
+
+                        <ListItemIcon>
+                            <HistoryIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            primary="Audit Logs"
+                        />
+                    </ListItemButton> */}
 
 
                     {
@@ -299,6 +372,27 @@ const logout =
 
                         )
                     }
+
+                    <ListItemButton
+                        selected={
+                            location.pathname ===
+                            "/dashboard/search"
+                        }
+                        onClick={() =>
+                            navigate("/dashboard/search")
+                        }
+                        sx={{
+                            borderRadius: 3
+                        }}
+                    >
+                        <ListItemIcon>
+                            <SearchIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            primary="Global Search"
+                        />
+                    </ListItemButton>
                 </List>
             </Drawer>
 
