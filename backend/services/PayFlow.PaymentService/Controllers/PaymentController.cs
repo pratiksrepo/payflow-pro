@@ -182,4 +182,11 @@ GetAuditLogsPaged(
         return Ok(result);
     }
 
+
+    [HttpGet("test-error")]
+    public IActionResult TestError()
+    {
+        throw new Exception("Testing Middleware");
+    }
+
 }

@@ -1,14 +1,25 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.FraudService.Consumers;
 using PayFlow.FraudService.Data;
+using PayFlow.FraudService.HostedServices;
 using PayFlow.FraudService.Interfaces;
-using PayFlow.FraudService.Services;
+using PayFlow.FraudService.Middleware;
 using PayFlow.FraudService.Repositories;
+using PayFlow.FraudService.Services;
+using PayFlow.MessageBus.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddHealthChecks()
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "postgres");
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -44,6 +55,12 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddRabbitMQ(builder.Configuration);
+
+builder.Services.AddScoped<PaymentCreatedConsumer>();
+
+builder.Services.AddHostedService<RabbitMQBackgroundService>();
+
 var app = builder.Build();
 
 app.UseCors(
@@ -58,8 +75,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

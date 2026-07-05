@@ -15,14 +15,18 @@ public class AuthService : IAuthService
 
     private readonly EmailService _emailService;
 
+    private readonly ILogger<AuthService> _logger;
+
     public AuthService(
         IUserRepository userRepository,
         TokenService tokenService,
-        EmailService emailService)
+        EmailService emailService,
+        ILogger<AuthService> logger)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
         _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<string> RegisterAsync(
@@ -98,7 +102,7 @@ public class AuthService : IAuthService
 
         await _userRepository.SaveChangesAsync();
 
-        Console.WriteLine(
+        _logger.LogError(
     $"AUDIT : User {user.Email} logged in at {DateTime.UtcNow}");
 
         return new AuthResponse

@@ -10,10 +10,14 @@ public class WalletService
     private readonly IWalletRepository
         _repository;
 
+    private readonly ILogger<WalletService> _logger;
+
     public WalletService(
-        IWalletRepository repository)
+        IWalletRepository repository,
+        ILogger<WalletService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public async Task<WalletResponse>
@@ -70,7 +74,7 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
-        Console.WriteLine(
+        _logger.LogError(
     $"AUDIT : Wallet credited ₹{request.Amount} for User {request.UserId}");
 
         return true;
@@ -123,7 +127,7 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
-        Console.WriteLine(
+        _logger.LogError(
     $"AUDIT : Wallet debited ₹{request.Amount} for User {request.UserId}");
 
         return new DebitWalletResponse

@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.MessageBus.Extensions;
+using PayFlow.NotificationService.Consumers;
 using PayFlow.NotificationService.Data;
+using PayFlow.NotificationService.HostedServices;
 using PayFlow.NotificationService.Interfaces;
+using PayFlow.NotificationService.Middleware;
 using PayFlow.NotificationService.Repositories;
 using PayFlow.NotificationService.Services;
 
@@ -10,6 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddHealthChecks()
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "postgres");
 
 builder.Services.AddCors(options =>
 {
@@ -44,6 +54,12 @@ builder.Services.AddScoped<
     INotificationService,
     NotificationService>();
 
+builder.Services.AddRabbitMQ(builder.Configuration);
+
+builder.Services.AddScoped<PaymentCreatedConsumer>();
+
+builder.Services.AddHostedService<RabbitMQBackgroundService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -57,8 +73,14 @@ app.UseCors("ReactPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

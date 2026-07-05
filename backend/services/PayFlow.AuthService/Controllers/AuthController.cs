@@ -27,17 +27,21 @@ public class AuthController : ControllerBase
 
     private readonly TokenService _tokenService;
 
+    private readonly ILogger<AuthController> _logger;
+
 
     public AuthController(
         IAuthService authService,
         EmailService emailService,
         AuthDbContext context,
-        TokenService tokenService)
+        TokenService tokenService,
+        ILogger<AuthController> logger)
     {
         _authService = authService;
         _emailService = emailService;
         _context = context;
         _tokenService = tokenService;
+        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -231,7 +235,7 @@ public class AuthController : ControllerBase
                 ClaimTypes.NameIdentifier
             )?.Value;
 
-        Console.WriteLine(
+        _logger.LogError(
             $"AUDIT : User {userId} logged out");
 
         return Ok("Logged out");

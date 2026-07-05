@@ -31,6 +31,12 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+builder.Services
+    .AddHealthChecks()
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        name: "postgres");
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -127,7 +133,11 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 
 app.UseCors(
@@ -139,5 +149,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();
