@@ -16,8 +16,7 @@ public class RequestLoggingMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(
-        HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -25,9 +24,14 @@ public class RequestLoggingMiddleware
 
         stopwatch.Stop();
 
+        var correlationId =
+            context.Items["X-Correlation-ID"]?.ToString();
+
         _logger.LogInformation(
 
-            "{Method} {Path} responded {StatusCode} in {Elapsed} ms",
+            "CorrelationId: {CorrelationId} | {Method} {Path} responded {StatusCode} in {Elapsed} ms",
+
+            correlationId,
 
             context.Request.Method,
 

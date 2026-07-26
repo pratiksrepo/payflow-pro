@@ -1,12 +1,23 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.MessageBus.Extensions;
+using PayFlow.WalletService.Consumers;
 using PayFlow.WalletService.Data;
 using PayFlow.WalletService.HostedServices;
 using PayFlow.WalletService.Interfaces;
 using PayFlow.WalletService.Middleware;
 using PayFlow.WalletService.Repositories;
 using PayFlow.WalletService.Services;
+using PayFlow.ApiGateway.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine("==================================");
+Console.WriteLine("RabbitMQ Configuration");
+Console.WriteLine("Host     : " + builder.Configuration["RabbitMQ:HostName"]);
+Console.WriteLine("Port     : " + builder.Configuration["RabbitMQ:Port"]);
+Console.WriteLine("User     : " + builder.Configuration["RabbitMQ:UserName"]);
+Console.WriteLine("Exchange : " + builder.Configuration["RabbitMQ:Exchange"]);
+Console.WriteLine("==================================");
 
 // Add services to the container.
 
@@ -51,7 +62,11 @@ builder.Services.AddScoped<
     IWalletService,
     WalletService>();
 
+builder.Services.AddScoped<PaymentCreatedConsumer>();
+
 builder.Services.AddHostedService<RabbitMQBackgroundService>();
+
+builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
@@ -63,6 +78,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

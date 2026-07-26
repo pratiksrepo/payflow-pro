@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.ApiGateway.Middleware;
 using PayFlow.MessageBus.Extensions;
 using PayFlow.NotificationService.Consumers;
 using PayFlow.NotificationService.Data;
@@ -10,6 +11,14 @@ using PayFlow.NotificationService.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine("==================================");
+Console.WriteLine("RabbitMQ Configuration");
+Console.WriteLine("Host     : " + builder.Configuration["RabbitMQ:HostName"]);
+Console.WriteLine("Port     : " + builder.Configuration["RabbitMQ:Port"]);
+Console.WriteLine("User     : " + builder.Configuration["RabbitMQ:UserName"]);
+Console.WriteLine("Exchange : " + builder.Configuration["RabbitMQ:Exchange"]);
+Console.WriteLine("==================================");
 
 // Add services to the container.
 
@@ -54,11 +63,19 @@ builder.Services.AddScoped<
     INotificationService,
     NotificationService>();
 
-builder.Services.AddRabbitMQ(builder.Configuration);
 
 builder.Services.AddScoped<PaymentCreatedConsumer>();
 
 builder.Services.AddHostedService<RabbitMQBackgroundService>();
+
+Console.WriteLine("========== RabbitMQ ==========");
+Console.WriteLine(builder.Configuration["RabbitMQ:HostName"]);
+Console.WriteLine(builder.Configuration["RabbitMQ:Port"]);
+Console.WriteLine(builder.Configuration["RabbitMQ:UserName"]);
+Console.WriteLine(builder.Configuration["RabbitMQ:Exchange"]);
+Console.WriteLine("==============================");
+
+builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
@@ -72,6 +89,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("ReactPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

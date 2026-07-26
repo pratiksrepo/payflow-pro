@@ -48,11 +48,27 @@ public class RabbitMQBackgroundService : BackgroundService
                 Password = _settings.Password
             };
 
-            var connection =
-                await factory.CreateConnectionAsync();
+            IConnection? connection = null;
 
-            var channel =
-                await connection.CreateChannelAsync();
+            while (connection == null && !stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _logger.LogInformation("Trying to connect to RabbitMQ...");
+
+                    connection = await factory.CreateConnectionAsync();
+
+                    _logger.LogInformation("Connected to RabbitMQ.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "RabbitMQ not ready. Retrying in 5 seconds...");
+
+                    await Task.Delay(5000, stoppingToken);
+                }
+            }
+
+            var channel = await connection!.CreateChannelAsync();
 
             await channel.ExchangeDeclareAsync(
                 _settings.Exchange,
@@ -186,7 +202,7 @@ public class RabbitMQBackgroundService : BackgroundService
             _logger.LogError(ex, "Unexpected error occurred.");
             Console.ResetColor();
 
-            throw;
+            return;
         }
     }
 }

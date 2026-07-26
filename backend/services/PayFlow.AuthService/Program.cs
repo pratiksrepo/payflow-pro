@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PayFlow.ApiGateway.Middleware;
 using PayFlow.AuthService.Data;
 using PayFlow.AuthService.Interfaces;
 using PayFlow.AuthService.Middleware;
@@ -132,6 +133,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

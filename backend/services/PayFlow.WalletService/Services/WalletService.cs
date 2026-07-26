@@ -74,8 +74,10 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
-        _logger.LogError(
-    $"AUDIT : Wallet credited ₹{request.Amount} for User {request.UserId}");
+        _logger.LogInformation(
+           "Wallet credited. User={UserId}, Amount={Amount}",
+           request.UserId,
+           request.Amount);
 
         return true;
     }
@@ -114,6 +116,10 @@ public class WalletService
         await _repository
             .UpdateAsync(wallet);
 
+        _logger.LogWarning(
+    "Insufficient wallet balance for User {UserId}.",
+    request.UserId);
+
         await _repository
             .AddTransactionAsync(
                 new WalletTransaction
@@ -127,8 +133,10 @@ public class WalletService
         await _repository
             .SaveChangesAsync();
 
-        _logger.LogError(
-    $"AUDIT : Wallet debited ₹{request.Amount} for User {request.UserId}");
+        _logger.LogInformation(
+            "Wallet debited. User={UserId}, Amount={Amount}",
+            request.UserId,
+            request.Amount);
 
         return new DebitWalletResponse
         {
@@ -152,6 +160,7 @@ public class WalletService
         if (wallet == null)
             return null;
 
+
         return new WalletResponse
         {
             WalletId = wallet.Id,
@@ -165,5 +174,8 @@ SearchWalletsAsync(
     {
         return await _repository
             .SearchWalletsAsync(search);
+
     }
+
+
 }

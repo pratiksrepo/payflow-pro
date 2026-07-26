@@ -1,6 +1,6 @@
 ﻿using AuthService.DTOs;
 using AuthService.Models;
-using Azure.Core;
+//using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

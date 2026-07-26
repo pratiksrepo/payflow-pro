@@ -7,18 +7,34 @@ namespace PayFlow.FraudService.Services;
 
 public class FraudService : IFraudService
 {
-
     private readonly IFraudRepository _repository;
 
-    private readonly
-    IAnomalyDetectionService
-        _anomalyDetectionService;
+    private readonly IAnomalyDetectionService _anomalyDetectionService;
 
+    private readonly ILogger<FraudService> _logger;
+
+    public FraudService(
+        IFraudRepository repository,
+        IAnomalyDetectionService anomalyDetectionService,
+        ILogger<FraudService> logger)
+    {
+        _repository = repository;
+
+        _anomalyDetectionService =
+            anomalyDetectionService;
+
+        _logger = logger;
+    }
 
     public async Task<FraudCheckResponse>
         CheckFraudAsync(
         FraudCheckRequest request)
     {
+        _logger.LogInformation(
+            "Fraud check started for Payment {PaymentId}. Amount={Amount}",
+            request.PaymentId,
+            request.Amount);
+
         int riskScore;
 
         if (request.Amount > 50000)
@@ -43,13 +59,17 @@ public class FraudService : IFraudService
             };
 
         var isAnomaly =
-        await _anomalyDetectionService
-        .IsAnomalousAsync(
-            request.PaymentId,
-            request.Amount);
+            await _anomalyDetectionService
+                .IsAnomalousAsync(
+                    request.PaymentId,
+                    request.Amount);
 
         if (isAnomaly)
         {
+            _logger.LogWarning(
+                "Anomaly detected for Payment {PaymentId}.",
+                request.PaymentId);
+
             riskScore += 20;
         }
 
@@ -60,129 +80,109 @@ public class FraudService : IFraudService
                 .GetFingerprintsAsync();
 
         var fraudCheck =
-    new FraudCheck
-    {
-        Id = Guid.NewGuid(),
-        PaymentId = request.PaymentId,
-        Amount = request.Amount,
-        PaymentMethod = request.PaymentMethod,
-        RiskScore = riskScore,
-        RiskLevel = riskLevel,
-        IsFraudulent = riskScore >= 70,
-        CheckedAt = DateTime.UtcNow
-    };
+            new FraudCheck
+            {
+                Id = Guid.NewGuid(),
+                PaymentId = request.PaymentId,
+                Amount = request.Amount,
+                PaymentMethod = request.PaymentMethod,
+                RiskScore = riskScore,
+                RiskLevel = riskLevel,
+                IsFraudulent = riskScore >= 70,
+                CheckedAt = DateTime.UtcNow
+            };
+
+        await _repository.AddAnomalyAsync(
+            new AnomalyDetectionResult
+            {
+                Id = Guid.NewGuid(),
+
+                PaymentId = request.PaymentId,
+
+                Amount = request.Amount,
+
+                AverageAmount =
+                    fingerprints.Any()
+                        ? fingerprints.Average(x => x.Amount)
+                        : 0,
+
+                IsAnomaly = isAnomaly,
+
+                Reason =
+                    isAnomaly
+                        ? "Amount exceeds average by 3x"
+                        : "Normal",
+
+                CreatedAt = DateTime.UtcNow
+            });
+
         await _repository
-    .AddAnomalyAsync(
-        new AnomalyDetectionResult
-        {
-            Id = Guid.NewGuid(),
+            .AddFraudCheckAsync(fraudCheck);
 
-            PaymentId =
-                request.PaymentId,
-
-            Amount =
-                request.Amount,
-
-            AverageAmount =
-                fingerprints.Any()
-                    ? fingerprints.Average(
-                        x => x.Amount)
-                    : 0,
-
-            IsAnomaly =
-                isAnomaly,
-
-            Reason =
-                isAnomaly
-                    ? "Amount exceeds average by 3x"
-                    : "Normal",
-
-            CreatedAt =
-                DateTime.UtcNow
-        });
-        await _repository
-            .AddFraudCheckAsync(
-                fraudCheck);
         var fingerprint =
-    new TransactionFingerprint
-    {
-        Id = Guid.NewGuid(),
-        PaymentId = request.PaymentId,
-        Amount = request.Amount,
-        PaymentMethod = request.PaymentMethod,
+            new TransactionFingerprint
+            {
+                Id = Guid.NewGuid(),
+                PaymentId = request.PaymentId,
+                Amount = request.Amount,
+                PaymentMethod = request.PaymentMethod,
 
-        HourOfDay =
-            DateTime.UtcNow.Hour,
+                HourOfDay = DateTime.UtcNow.Hour,
 
-        DayOfWeek =
-            (int)DateTime.UtcNow.DayOfWeek,
+                DayOfWeek =
+                    (int)DateTime.UtcNow.DayOfWeek,
 
-        RiskScore = riskScore,
+                RiskScore = riskScore,
 
-        RiskLevel = riskLevel,
+                RiskLevel = riskLevel,
 
-        CreatedAt =
-            DateTime.UtcNow
-    };
+                CreatedAt = DateTime.UtcNow
+            };
 
         await _repository
             .AddFingerprintAsync(
                 fingerprint);
 
-        await _repository
-            .SaveChangesAsync();
+        await _repository.SaveChangesAsync();
 
+        _logger.LogInformation(
+            "Fraud check completed for Payment {PaymentId}. RiskScore={RiskScore}, RiskLevel={RiskLevel}, Fraud={Fraud}",
+            request.PaymentId,
+            riskScore,
+            riskLevel,
+            riskScore >= 70);
 
-
-        return await Task.FromResult(
-            new FraudCheckResponse
-            {
-                RiskScore = riskScore,
-                RiskLevel = riskLevel,
-                IsFraudulent = riskScore >= 70
-            });
-
+        return new FraudCheckResponse
+        {
+            RiskScore = riskScore,
+            RiskLevel = riskLevel,
+            IsFraudulent = riskScore >= 70
+        };
     }
-
-    public FraudService(
-    IFraudRepository repository,
-    IAnomalyDetectionService
-        anomalyDetectionService)
-    {
-        _repository = repository;
-
-        _anomalyDetectionService =
-            anomalyDetectionService;
-    }
-
 
     public async Task<FraudDashboardResponse>
-    GetDashboardAsync()
+        GetDashboardAsync()
     {
         var checks =
-            await _repository
-                .GetFraudChecksAsync();
+            await _repository.GetFraudChecksAsync();
 
-        var total =
-            checks.Count;
+        var total = checks.Count;
 
         var fraud =
-            checks.Count(
-                x => x.IsFraudulent);
+            checks.Count(x => x.IsFraudulent);
 
-        var safe =
-            total - fraud;
+        var safe = total - fraud;
+
+        _logger.LogInformation(
+            "Fraud dashboard requested.");
 
         return new FraudDashboardResponse
         {
-            TotalTransactions =
-                total,
+            TotalTransactions = total,
 
-            SafeTransactions =
-                safe,
+            SafeTransactions = safe,
 
-            FlaggedTransactions =
-                fraud,
+            FlaggedTransactions = fraud,
 
             FraudRate =
                 total == 0
@@ -206,38 +206,48 @@ public class FraudService : IFraudService
         };
     }
 
-
     public async Task<List<FraudCheck>>
-    GetRecentFraudChecksAsync()
+        GetRecentFraudChecksAsync()
     {
+        _logger.LogInformation(
+            "Recent fraud checks requested.");
+
         return await _repository
             .GetRecentFraudChecksAsync();
     }
 
-
     public async Task<List<FraudCheck>>
-    SearchFraudAsync(
-        string search)
+        SearchFraudAsync(
+            string search)
     {
+        _logger.LogInformation(
+            "Fraud search executed. Search={Search}",
+            search);
+
         return await _repository
             .SearchFraudAsync(search);
     }
 
     public async Task<PagedResponse<FraudCheck>>
-GetFraudPagedAsync(
-    int page,
-    int pageSize,
-    string? search,
-    string? riskLevel,
-    string? sort)
+        GetFraudPagedAsync(
+            int page,
+            int pageSize,
+            string? search,
+            string? riskLevel,
+            string? sort)
     {
-        return await
-            _repository
-                .GetFraudPagedAsync(
-                    page,
-                    pageSize,
-                    search,
-                    riskLevel,
-                    sort);
+        _logger.LogInformation(
+            "Fraud pagination requested. Page={Page}, Search={Search}, RiskLevel={RiskLevel}",
+            page,
+            search,
+            riskLevel);
+
+        return await _repository
+            .GetFraudPagedAsync(
+                page,
+                pageSize,
+                search,
+                riskLevel,
+                sort);
     }
 }

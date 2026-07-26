@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11822.322 stable
+VisualStudioVersion = 18.6.11822.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{5854FF58-B8C5-05C6-5BF2-ACE42193F22B}"
 EndProject
@@ -18,6 +18,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.AuthService", "services\PayFlow.AuthService\PayFlow.AuthService.csproj", "{6ACACB6E-4A92-A020-00C8-AB6A16784263}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.SharedKernel", "shared\PayFlow.SharedKernel\PayFlow.SharedKernel.csproj", "{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.WalletService", "services\PayFlow.WalletService\PayFlow.WalletService.csproj", "{358E86A7-80A0-4F30-B36C-5343B5135190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayFlow.MessageBus", "shared\PayFlow.MessageBus\PayFlow.MessageBus.csproj", "{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +105,30 @@ Global
 		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x64.Build.0 = Release|Any CPU
 		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{1A4A53BC-6F73-4FC5-96AA-41C1C3CE43BB}.Release|x86.Build.0 = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|x64.Build.0 = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Debug|x86.Build.0 = Debug|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|x64.ActiveCfg = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|x64.Build.0 = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|x86.ActiveCfg = Release|Any CPU
+		{358E86A7-80A0-4F30-B36C-5343B5135190}.Release|x86.Build.0 = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|x64.Build.0 = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Debug|x86.Build.0 = Debug|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|x64.ActiveCfg = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|x64.Build.0 = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C01EA32F-B1BC-47F0-8241-68DBE3DD359C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +139,7 @@ Global
 		{B8F46981-170F-492B-985C-2D6A2F247F44} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 		{3843F562-52FB-4910-9AB6-91AAE510F0E6} = {E7BDDBC6-9FD1-D1D7-ACD8-2C4F8E3D2461}
 		{6ACACB6E-4A92-A020-00C8-AB6A16784263} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
+		{358E86A7-80A0-4F30-B36C-5343B5135190} = {5854FF58-B8C5-05C6-5BF2-ACE42193F22B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9007BFC-CF2C-4E20-B456-B740E110751A}

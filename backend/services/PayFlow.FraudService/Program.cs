@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PayFlow.ApiGateway.Middleware;
 using PayFlow.FraudService.Consumers;
 using PayFlow.FraudService.Data;
 using PayFlow.FraudService.HostedServices;
@@ -9,6 +10,14 @@ using PayFlow.FraudService.Services;
 using PayFlow.MessageBus.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine("==================================");
+Console.WriteLine("RabbitMQ Configuration");
+Console.WriteLine("Host     : " + builder.Configuration["RabbitMQ:HostName"]);
+Console.WriteLine("Port     : " + builder.Configuration["RabbitMQ:Port"]);
+Console.WriteLine("User     : " + builder.Configuration["RabbitMQ:UserName"]);
+Console.WriteLine("Exchange : " + builder.Configuration["RabbitMQ:Exchange"]);
+Console.WriteLine("==================================");
 
 // Add services to the container.
 
@@ -55,11 +64,12 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddRabbitMQ(builder.Configuration);
 
 builder.Services.AddScoped<PaymentCreatedConsumer>();
 
 builder.Services.AddHostedService<RabbitMQBackgroundService>();
+
+builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
@@ -74,6 +84,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

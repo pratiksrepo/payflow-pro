@@ -1,27 +1,43 @@
-﻿using PayFlow.PaymentService.DTOs;
+﻿using PayFlow.MessageBus.Events;
+using PayFlow.MessageBus.Interfaces;
+using PayFlow.PaymentService.DTOs;
 using PayFlow.PaymentService.Helpers;
 using PayFlow.PaymentService.Interfaces;
 using PayFlow.PaymentService.Models;
-using PayFlow.SharedKernel.DTOs;
-//using PayFlow.SharedKernel.Events;
-using System.Net.Http.Json;
 using PayFlow.PaymentService.Reports;
-using PayFlow.MessageBus.Interfaces;
-using PayFlow.MessageBus.Events;
+using PayFlow.SharedKernel.Constants;
+using PayFlow.SharedKernel.DTOs;
+using System.Net.Http.Json;
 
 namespace PayFlow.PaymentService.Services;
 
+/// <summary>
+/// Handles payment business operations.
+/// </summary>
 public class PaymentService : IPaymentService
 {
     private readonly IPaymentRepository _repository;
 
     private readonly IHttpClientFactory _httpClientFactory;
 
-    //private readonly IEventPublisher _eventPublisher;
-    private readonly IMessageBus
-_messageBus;
+    private readonly IMessageBus _messageBus;
 
     private readonly ILogger<PaymentService> _logger;
+
+    public PaymentService(
+        IPaymentRepository repository,
+        IHttpClientFactory httpClientFactory,
+        IMessageBus messageBus,
+        ILogger<PaymentService> logger)
+    {
+        _repository = repository;
+
+        _httpClientFactory = httpClientFactory;
+
+        _messageBus = messageBus;
+
+        _logger = logger;
+    }
 
 
     private async Task<FraudCheckResponse?>
@@ -141,24 +157,28 @@ _messageBus;
         //            payment.PaymentMethod
         //    });
 
+        _logger.LogInformation(
+    "Creating payment for User {UserId}.",
+    request.UserId);
+
         await _messageBus.PublishAsync(
 
-    "payment.created",
+            RoutingKeys.PaymentCreated,
 
-    new PaymentCreatedEvent
-    {
-        PaymentId = payment.Id,
+            new PaymentCreatedEvent
+            {
+                PaymentId = payment.Id,
 
-        UserId = payment.UserId,
+                UserId = payment.UserId,
 
-        Amount = payment.Amount,
+                Amount = payment.Amount,
 
-        MerchantId = payment.MerchantId,
+                MerchantId = payment.MerchantId,
 
-        PaymentMethod = payment.PaymentMethod,
+                PaymentMethod = payment.PaymentMethod,
 
-        CreatedAt = DateTime.UtcNow
-    });
+                CreatedAt = DateTime.UtcNow
+            });
 
         var fraudResult =
             await CheckFraudAsync(payment);
@@ -166,7 +186,7 @@ _messageBus;
         if (fraudResult != null)
         {
             _logger.LogWarning(
-    $"RiskScore={fraudResult.RiskScore}, Fraud={fraudResult.IsFraudulent}");
+$"RiskScore={fraudResult.RiskScore}, Fraud={fraudResult.IsFraudulent}");
 
             if (fraudResult.IsFraudulent)
             {
@@ -312,6 +332,10 @@ _messageBus;
 
         await _repository.SaveChangesAsync();
 
+        _logger.LogInformation(
+    "Payment {PaymentId} completed.",
+    payment.Id);
+
         return true;
     }
 
@@ -336,17 +360,7 @@ _messageBus;
     //        eventPublisher;
     //}
 
-    public PaymentService(
-    IPaymentRepository repository,
-    IHttpClientFactory httpClientFactory,
-    IMessageBus messageBus)
-    {
-        _repository = repository;
 
-        _httpClientFactory = httpClientFactory;
-
-        _messageBus = messageBus;
-    }
 
     public async Task<List<Payment>>
     GetPaymentsByUserAsync(
@@ -436,12 +450,12 @@ SearchPaymentsAsync(string search)
     }
 
     public async Task<PagedResponse<AuditLog>>
-GetAuditLogsPagedAsync(
-    int page,
-    int pageSize,
-    string? search,
-    string? action,
-    string? sort)
+        GetAuditLogsPagedAsync(
+            int page,
+            int pageSize,
+            string? search,
+            string? action,
+            string? sort)
     {
         return await
             _repository

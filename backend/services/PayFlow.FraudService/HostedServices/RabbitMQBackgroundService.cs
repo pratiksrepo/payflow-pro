@@ -47,11 +47,27 @@ namespace PayFlow.FraudService.HostedServices
                     Password = _settings.Password
                 };
 
-                var connection =
-                    await factory.CreateConnectionAsync();
+                IConnection? connection = null;
 
-                var channel =
-                    await connection.CreateChannelAsync();
+                while (connection == null && !stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        _logger.LogInformation("Trying to connect to RabbitMQ...");
+
+                        connection = await factory.CreateConnectionAsync();
+
+                        _logger.LogInformation("Connected to RabbitMQ.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "RabbitMQ not ready. Retrying in 5 seconds...");
+
+                        await Task.Delay(5000, stoppingToken);
+                    }
+                }
+
+                var channel = await connection!.CreateChannelAsync();
 
                 await channel.ExchangeDeclareAsync(
                     _settings.Exchange,
@@ -65,7 +81,7 @@ namespace PayFlow.FraudService.HostedServices
 
                 await channel.QueueDeclareAsync(
 
-                    "notification.payment.created.queue",
+                    "FraudService.payment.created.queue",
 
                     durable: true,
 
@@ -80,7 +96,7 @@ namespace PayFlow.FraudService.HostedServices
 
                 await channel.QueueDeclareAsync(
 
-                    "notification.deadletter.queue",
+                    "FraudService.deadletter.queue",
 
                     durable: true,
 
@@ -92,7 +108,7 @@ namespace PayFlow.FraudService.HostedServices
 
                 await channel.QueueBindAsync(
 
-                    "notification.deadletter.queue",
+                    "FraudService.deadletter.queue",
 
                     "payflow.dlx",
 
@@ -102,7 +118,7 @@ namespace PayFlow.FraudService.HostedServices
 
                 await channel.QueueBindAsync(
 
-                    "notification.payment.created.queue",
+                    "FraudService.payment.created.queue",
 
                     _settings.Exchange,
 
@@ -149,7 +165,7 @@ namespace PayFlow.FraudService.HostedServices
 
                         _logger.LogError(
                             ex,
-                            "Error while processing notification message.");
+                            "Error while processing FraudService message.");
 
                         Console.ResetColor();
 
@@ -166,7 +182,7 @@ namespace PayFlow.FraudService.HostedServices
                 };
 
                 await channel.BasicConsumeAsync(
-                    "notification.payment.created.queue",
+                    "FraudService.payment.created.queue",
                     autoAck: false,
                     consumer);
 
@@ -187,7 +203,7 @@ namespace PayFlow.FraudService.HostedServices
     "Unexpected error occurred.");
                 Console.ResetColor();
 
-                throw;
+                return;
             }
         }
     }

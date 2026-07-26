@@ -63,6 +63,10 @@ public class AuthService : IAuthService
             $"Your verification token is: {user.VerificationToken}"
         );
 
+        _logger.LogInformation(
+    "Email verified for {Email}.",
+    user.Email);
+
         return "User registered successfully";
     }
 
@@ -81,8 +85,15 @@ public class AuthService : IAuthService
                 request.Password,
                 user.PasswordHash);
 
+
+        _logger.LogWarning(
+    "Failed login attempt for {Email}.",
+    request.Email);
+
         if (!validPassword)
-            return null;
+            return null; 
+
+
 
         if (!user.EmailVerified)
             return null;
@@ -102,8 +113,9 @@ public class AuthService : IAuthService
 
         await _userRepository.SaveChangesAsync();
 
-        _logger.LogError(
-    $"AUDIT : User {user.Email} logged in at {DateTime.UtcNow}");
+        _logger.LogInformation(
+            "User {Email} logged in successfully.",
+            user.Email);
 
         return new AuthResponse
         {
