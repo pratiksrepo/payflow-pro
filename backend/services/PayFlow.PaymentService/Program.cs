@@ -113,12 +113,8 @@ using (var scope = app.Services.CreateScope())
 
 #region Middleware Pipeline
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
 if (!app.Environment.IsProduction())
