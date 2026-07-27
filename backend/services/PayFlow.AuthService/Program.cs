@@ -23,8 +23,10 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins(
-                    "http://localhost:5173")
+.WithOrigins(
+    "http://localhost:5173",
+    "https://payflow-pro-ui.onrender.com"
+)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -127,6 +129,12 @@ builder.Services.AddScoped<
     PayFlow.AuthService.Services.AuthService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseSwagger();
 
