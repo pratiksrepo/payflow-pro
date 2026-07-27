@@ -4,6 +4,7 @@ import type {
     CreatePaymentRequest
 } from "../types/CreatePaymentRequest";
 
+
 export const createPayment =
     async (
         request: CreatePaymentRequest
@@ -11,7 +12,7 @@ export const createPayment =
 {
     const response =
         await axios.post(
-            "https://localhost:7009/api/Payment",
+            "https://localhost:7056/api/Payment",
             request
         );
 
@@ -26,7 +27,7 @@ export const getPaymentById =
 {
     const response =
         await axios.get(
-            `https://localhost:7009/api/Payment/${paymentId}`
+            `https://localhost:7056/api/Payment/${paymentId}`
         );
 
     return response.data;
@@ -39,7 +40,7 @@ export const getPaymentsByUser =
 {
     const response =
         await axios.get(
-            `https://localhost:7009/api/Payment/user/${userId}`
+            `https://localhost:7056/api/Payment/user/${userId}`
         );
 
     return response.data;
@@ -53,7 +54,7 @@ export const getPaymentHistory =
 {
     const response =
         await axios.get(
-            `https://localhost:7009/api/Payment/history/${paymentId}`
+            `https://localhost:7056/api/Payment/history/${paymentId}`
         );
 
     return response.data;
@@ -64,7 +65,7 @@ export async function exportPayments()
 {
     const response =
         await axios.get(
-            "https://localhost:7009/api/Payment/export",
+            "https://localhost:7056/api/Payment/export",
             {
                 responseType: "blob"
             });
@@ -99,7 +100,7 @@ export const getRecentPayments =
 {
     const response =
         await axios.get(
-            "https://localhost:7009/api/Payment/recent"
+            "https://localhost:7056/api/Payment/recent"
         );
 
     return response.data;
@@ -118,7 +119,7 @@ export const getPaymentsPaged =
 {
     const response =
         await axios.get(
-            `https://localhost:7009/api/Payment/user/${userId}/paged`,
+            `https://localhost:7056/api/Payment/user/${userId}/paged`,
             {
                 params:
                 {

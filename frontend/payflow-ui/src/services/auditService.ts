@@ -2,7 +2,7 @@ import axios
 from "axios";
 
 const API =
-"https://localhost:7014/api/Payment";
+"https://localhost:7056/api/Payment";
 
 export const getAuditLogs =
 async()=>

@@ -287,7 +287,7 @@ export default function DashboardLayout() {
                         />
                     </ListItemButton>
 
-                    
+
 
                     <ListItemButton
 
@@ -358,7 +358,8 @@ export default function DashboardLayout() {
                                 }
                                 sx={{
                                     borderRadius: 3,
-                                    mt: 1
+                                    mx: 1,
+                                    my: 0.5
                                 }}
                             >
                                 <ListItemIcon>

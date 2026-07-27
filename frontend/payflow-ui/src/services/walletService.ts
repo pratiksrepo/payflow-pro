@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const walletApi = axios.create({
-    baseURL: "https://localhost:7224/api"
+    baseURL: "https://localhost:7056/api"
 });
 
 export async function getWallet(

@@ -40,7 +40,7 @@ const token =
 
 const response =
     await axios.get(
-        "https://localhost:7093/api/User/all",
+        "https://localhost:7056/api/User/all",
         {
             headers:
             {

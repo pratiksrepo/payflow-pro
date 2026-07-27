@@ -4,7 +4,7 @@ from "axios";
 const notificationApi =
     axios.create({
         baseURL:
-            "https://localhost:7136/api"
+            "https://localhost:7056/api"
     });
 
 export async function
@@ -30,7 +30,7 @@ async (
 {
     const response =
         await axios.get(
-            `https://localhost:7136/api/Notification/user/${userId}/paged`,
+            `https://localhost:7056/api/Notification/user/${userId}/paged`,
             {
                 params:
                 {

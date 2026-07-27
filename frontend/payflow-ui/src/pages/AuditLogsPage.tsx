@@ -1,5 +1,4 @@
-import
-{
+import {
     Box,
     Typography,
     Paper,
@@ -11,135 +10,131 @@ import
     TableContainer,
     CircularProgress
 }
-from "@mui/material";
+    from "@mui/material";
 
-import
-{
+import {
     useState,
     useEffect,
     useCallback
 }
-from "react";
+    from "react";
 
 import type
 {
     AuditLog
 }
-from "../types/AuditLog";
+    from "../types/AuditLog";
 
-import
-{
+import {
     getAuditLogsPaged
 }
-from "../services/auditService";
+    from "../services/auditService";
 
 import SearchBar
-from "../components/SearchBar";
+    from "../components/SearchBar";
 
 import AuditFilterPanel
-from "../components/AuditFilterPanel";
+    from "../components/AuditFilterPanel";
 
 import CommonPagination
-from "../components/CommonPagination";
+    from "../components/CommonPagination";
+import EmptyState from "../components/EmptyState";
+import SkeletonTable from "../components/SkeletonTable";
 
-export default function AuditLogsPage()
-{
-    const[
+export default function AuditLogsPage() {
+    const [
         auditLogs,
         setAuditLogs
-    ]=
-    useState<AuditLog[]>([]);
+    ] =
+        useState<AuditLog[]>([]);
 
-    const[
+    const [
         loading,
         setLoading
-    ]=
-    useState(false);
+    ] =
+        useState(false);
 
-    const[
+    const [
         page,
         setPage
-    ]=
-    useState(1);
+    ] =
+        useState(1);
 
-    const[
+    const [
         pageSize,
         setPageSize
-    ]=
-    useState(10);
+    ] =
+        useState(10);
 
-    const[
+    const [
         totalPages,
         setTotalPages
-    ]=
-    useState(1);
+    ] =
+        useState(1);
 
-    const[
+    const [
         search,
         setSearch
-    ]=
-    useState("");
+    ] =
+        useState("");
 
-    const[
+    const [
         action,
         setAction
-    ]=
-    useState("");
+    ] =
+        useState("");
 
-    const[
+    const [
         sort,
         setSort
-    ]=
-    useState("newest");
+    ] =
+        useState("newest");
 
-    const loadAuditLogs=
-    useCallback(
-        async()=>
-        {
-            try
-            {
-                setLoading(true);
+    const loadAuditLogs =
+        useCallback(
+            async () => {
+                try {
+                    setLoading(true);
 
-                const result=
-                    await getAuditLogsPaged(
+                    const result =
+                        await getAuditLogsPaged(
 
-                        page,
+                            page,
 
-                        pageSize,
+                            pageSize,
 
-                        search,
+                            search,
 
-                        action,
+                            action,
 
-                        sort
+                            sort
 
+                        );
+
+                    setAuditLogs(
+                        result.data
                     );
 
-                setAuditLogs(
-                    result.data
-                );
+                    setTotalPages(
+                        result.totalPages
+                    );
+                }
+                finally {
+                    setLoading(false);
+                }
 
-                setTotalPages(
-                    result.totalPages
-                );
-            }
-            finally
-            {
-                setLoading(false);
-            }
-
-        },
-        [
-            page,
-            pageSize,
-            search,
-            action,
-            sort
-        ]
-    );
+            },
+            [
+                page,
+                pageSize,
+                search,
+                action,
+                sort
+            ]
+        );
 
     useEffect(
-        ()=>{
+        () => {
             void loadAuditLogs();
         },
         [
@@ -147,7 +142,7 @@ export default function AuditLogsPage()
         ]
     );
 
-    return(
+    return (
 
         <Box>
 
@@ -163,8 +158,7 @@ export default function AuditLogsPage()
 
                 value={search}
 
-                onChange={(value)=>
-                {
+                onChange={(value) => {
                     setPage(1);
                     setSearch(value);
                 }}
@@ -183,20 +177,17 @@ export default function AuditLogsPage()
 
                 pageSize={pageSize}
 
-                onActionChange={(value)=>
-                {
+                onActionChange={(value) => {
                     setPage(1);
                     setAction(value);
                 }}
 
-                onSortChange={(value)=>
-                {
+                onSortChange={(value) => {
                     setPage(1);
                     setSort(value);
                 }}
 
-                onPageSizeChange={(value)=>
-                {
+                onPageSizeChange={(value) => {
                     setPage(1);
                     setPageSize(value);
                 }}
@@ -204,135 +195,133 @@ export default function AuditLogsPage()
             />
 
             {
-                loading
+                loading ?
 
-                ?
+                    <SkeletonTable
 
-                <Box
-                    sx={{
-                        display:"flex",
-                        justifyContent:"center",
-                        mt:6
-                    }}
-                >
-                    <CircularProgress/>
-                </Box>
+                        rows={6}
 
-                :
+                        columns={4}
 
-                <TableContainer
-                    component={Paper}
-                    sx={{
-                        borderRadius:3
-                    }}
-                >
+                    />
 
-                    <Table>
+                    :
 
-                        <TableHead>
+                    <TableContainer
+                        component={Paper}
+                        sx={{
+                            borderRadius: 3
+                        }}
+                    >
 
-                            <TableRow>
+                        <Table>
 
-                                <TableCell>
-                                    User Id
-                                </TableCell>
-
-                                <TableCell>
-                                    Action
-                                </TableCell>
-
-                                <TableCell>
-                                    Description
-                                </TableCell>
-
-                                <TableCell>
-                                    Date
-                                </TableCell>
-
-                            </TableRow>
-
-                        </TableHead>
-
-                        <TableBody>
-
-                                                        {
-                                auditLogs.length === 0 ?
+                            <TableHead>
 
                                 <TableRow>
 
-                                    <TableCell
-                                        colSpan={4}
-                                        align="center"
-                                    >
+                                    <TableCell>
+                                        User Id
+                                    </TableCell>
 
-                                        <Typography
-                                            sx={{
-                                                py:4,
-                                                color:"text.secondary"
-                                            }}
-                                        >
-                                            No Audit Logs Found
-                                        </Typography>
+                                    <TableCell>
+                                        Action
+                                    </TableCell>
 
+                                    <TableCell>
+                                        Description
+                                    </TableCell>
+
+                                    <TableCell>
+                                        Date
                                     </TableCell>
 
                                 </TableRow>
 
-                                :
+                            </TableHead>
 
-                                auditLogs.map(
-                                    (
-                                        log
-                                    )=>
+                            <TableBody>
 
-                                    <TableRow
-                                        hover
-                                        key={log.id}
-                                    >
+                                {
+                                    auditLogs.length === 0 ?
 
-                                        <TableCell>
+                                        <TableRow>
 
-                                            {log.userId}
-
-                                        </TableCell>
-
-                                        <TableCell>
-
-                                            <Typography
-                                                fontWeight={600}
+                                            <TableCell
+                                                colSpan={4}
                                             >
-                                                {log.action}
-                                            </Typography>
 
-                                        </TableCell>
+                                                <EmptyState
 
-                                        <TableCell>
+                                                    title="No Audit Logs Found"
 
-                                            {log.description}
+                                                    message="Try changing your search or filters."
 
-                                        </TableCell>
+                                                    buttonText="Reload"
 
-                                        <TableCell>
+                                                    onClick={loadAuditLogs}
 
-                                            {
-                                                new Date(
-                                                    log.createdAt
-                                                ).toLocaleString()
-                                            }
+                                                />
 
-                                        </TableCell>
+                                            </TableCell>
 
-                                    </TableRow>
+                                        </TableRow>
 
-                                )
+                                        :
 
-                            }
+                                        auditLogs.map(
+                                            (
+                                                log
+                                            ) =>
 
-                        </TableBody>
+                                                <TableRow
+                                                    hover
+                                                    key={log.id}
+                                                >
 
-                    </Table>
+                                                    <TableCell>
 
-                </TableContainer>
+                                                        {log.userId}
+
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                        <Typography
+                                                            fontWeight={600}
+                                                        >
+                                                            {log.action}
+                                                        </Typography>
+
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                        {log.description}
+
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                        {
+                                                            new Date(
+                                                                log.createdAt
+                                                            ).toLocaleString()
+                                                        }
+
+                                                    </TableCell>
+
+                                                </TableRow>
+
+                                        )
+
+                                }
+
+                            </TableBody>
+
+                        </Table>
+
+                    </TableContainer>
 
             }
 

@@ -45,8 +45,8 @@ export default function SearchBar(
             <TextField
 
                 fullWidth
-
-                label="Search"
+                size="small"
+                placeholder="Search..."
 
                 value={value}
 
@@ -58,21 +58,13 @@ export default function SearchBar(
 
             />
 
-            <Button
-
-                variant="contained"
-
-                startIcon={
-                    <SearchIcon />
-                }
-
-                onClick={onSearch}
-
-            >
-
-                Search
-
-            </Button>
+<Button
+    variant="contained"
+    size="large"
+    startIcon={<SearchIcon/>}
+>
+    Search
+</Button>
 
         </Stack>
 

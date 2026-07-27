@@ -5,7 +5,7 @@ export const getFraudDashboard =
 {
     const response =
         await axios.get(
-            "https://localhost:7169/api/fraud/dashboard"
+            "https://localhost:7056/api/fraud/dashboard"
         );
 
     return response.data;
@@ -16,7 +16,7 @@ export const getRecentFraudChecks =
 {
     const response =
         await axios.get(
-            "https://localhost:7169/api/Fraud/recent"
+            "https://localhost:7056/api/Fraud/recent"
         );
 
     return response.data;

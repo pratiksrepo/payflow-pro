@@ -12,32 +12,32 @@ import {
     ListItem,
     Chip
 }
-from "@mui/material";
+    from "@mui/material";
 
 import SearchIcon
-from "@mui/icons-material/Search";
+    from "@mui/icons-material/Search";
 
 import GroupIcon
-from "@mui/icons-material/Group";
+    from "@mui/icons-material/Group";
 
 import PaymentsIcon
-from "@mui/icons-material/Payments";
+    from "@mui/icons-material/Payments";
 
 import AccountBalanceWalletIcon
-from "@mui/icons-material/AccountBalanceWallet";
+    from "@mui/icons-material/AccountBalanceWallet";
 
 import GppMaybeIcon
-from "@mui/icons-material/GppMaybe";
+    from "@mui/icons-material/GppMaybe";
 
 import {
     useState
 }
-from "react";
+    from "react";
 
 import axios from "axios";
+import EmptyState from "../components/EmptyState";
 
-export default function GlobalSearchPage()
-{
+export default function GlobalSearchPage() {
     const [
         keyword,
         setKeyword
@@ -69,90 +69,85 @@ export default function GlobalSearchPage()
     ] = useState<any[]>([]);
 
     const searchAll =
-        async () =>
-    {
-        if (
-            keyword.trim() === ""
-        )
-        {
-            setUsers([]);
-            setPayments([]);
-            setWallets([]);
-            setFraudChecks([]);
-            return;
-        }
+        async () => {
+            if (
+                keyword.trim() === ""
+            ) {
+                setUsers([]);
+                setPayments([]);
+                setWallets([]);
+                setFraudChecks([]);
+                return;
+            }
 
-        setLoading(true);
+            setLoading(true);
 
-        try
-        {
-            const token =
-                localStorage.getItem(
-                    "accessToken"
+            try {
+                const token =
+                    localStorage.getItem(
+                        "accessToken"
+                    );
+
+                const config =
+                {
+                    headers:
+                    {
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                };
+
+                const [
+                    usersResult,
+                    paymentsResult,
+                    walletsResult,
+                    fraudResult
+                ] =
+                    await Promise.all([
+                        axios.get(
+                            `https://localhost:7093/api/User/search?search=${keyword}`,
+                            config
+                        ),
+
+                        axios.get(
+                            `https://localhost:7009/api/Payment/search?search=${keyword}`,
+                            config
+                        ),
+
+                        axios.get(
+                            `https://localhost:7224/api/Wallet/search?search=${keyword}`,
+                            config
+                        ),
+
+                        axios.get(
+                            `https://localhost:7169/api/Fraud/search?search=${keyword}`,
+                            config
+                        )
+                    ]);
+
+                setUsers(
+                    usersResult.data
                 );
 
-            const config =
-            {
-                headers:
-                {
-                    Authorization:
-                        `Bearer ${token}`
-                }
-            };
+                setPayments(
+                    paymentsResult.data
+                );
 
-            const [
-                usersResult,
-                paymentsResult,
-                walletsResult,
-                fraudResult
-            ] =
-                await Promise.all([
-                    axios.get(
-                        `https://localhost:7093/api/User/search?search=${keyword}`,
-                        config
-                    ),
+                setWallets(
+                    walletsResult.data
+                );
 
-                    axios.get(
-                        `https://localhost:7009/api/Payment/search?search=${keyword}`,
-                        config
-                    ),
-
-                    axios.get(
-                        `https://localhost:7224/api/Wallet/search?search=${keyword}`,
-                        config
-                    ),
-
-                    axios.get(
-                        `https://localhost:7169/api/Fraud/search?search=${keyword}`,
-                        config
-                    )
-                ]);
-
-            setUsers(
-                usersResult.data
-            );
-
-            setPayments(
-                paymentsResult.data
-            );
-
-            setWallets(
-                walletsResult.data
-            );
-
-            setFraudChecks(
-                fraudResult.data
-            );
-        }
-        catch (error)
-        {
-            console.error(error);
-        }
-        finally
-        {
-            setLoading(false);
-        }
-    };
+                setFraudChecks(
+                    fraudResult.data
+                );
+            }
+            catch (error) {
+                console.error(error);
+            }
+            finally {
+                setLoading(false);
+            }
+        };
 
     return (
         <Box>
@@ -190,12 +185,10 @@ export default function GlobalSearchPage()
                             e.target.value
                         )
                     }
-                    onKeyDown={(e) =>
-                    {
+                    onKeyDown={(e) => {
                         if (
                             e.key === "Enter"
-                        )
-                        {
+                        ) {
                             void searchAll();
                         }
                     }}
@@ -348,7 +341,7 @@ export default function GlobalSearchPage()
                     mt: 1
                 }}
             >
-                                {/* Users */}
+                {/* Users */}
 
                 <Grid
                     size={{
@@ -387,11 +380,19 @@ export default function GlobalSearchPage()
 
                         {
                             users.length === 0 ?
-                                <Typography
-                                    color="text.secondary"
-                                >
-                                    No Users Found
-                                </Typography>
+                                // <Typography
+                                //     color="text.secondary"
+                                // >
+                                //     No Users Found
+                                // </Typography>
+
+                                <EmptyState
+
+                                    title="No Users Found"
+
+                                    message="No Users Found"
+
+                                />
                                 :
                                 <List>
 
@@ -486,11 +487,18 @@ export default function GlobalSearchPage()
 
                         {
                             payments.length === 0 ?
-                                <Typography
-                                    color="text.secondary"
-                                >
-                                    No Payments Found
-                                </Typography>
+                                // <Typography
+                                //     color="text.secondary"
+                                // >
+                                //     No Payments Found
+                                // </Typography>
+                                <EmptyState
+
+                                    title="No Payments Found"
+
+                                    message="No Payments Found"
+
+                                />
                                 :
                                 <List>
 
@@ -598,11 +606,18 @@ export default function GlobalSearchPage()
 
                         {
                             wallets.length === 0 ?
-                                <Typography
-                                    color="text.secondary"
-                                >
-                                    No Wallet Found
-                                </Typography>
+                                // <Typography
+                                //     color="text.secondary"
+                                // >
+                                //     No Wallet Found
+                                // </Typography>
+                                <EmptyState
+
+                                    title="No Wallets Found"
+
+                                    message="No Wallet Found"
+
+                                />
                                 :
                                 <List>
 
@@ -689,11 +704,18 @@ export default function GlobalSearchPage()
 
                         {
                             fraudChecks.length === 0 ?
-                                <Typography
-                                    color="text.secondary"
-                                >
-                                    No Fraud Records Found
-                                </Typography>
+                                // <Typography
+                                //     color="text.secondary"
+                                // >
+                                //     No Fraud Records Found
+                                // </Typography>
+                                <EmptyState
+
+                                    title="No Fraud Records Found"
+
+                                    message="Try another search keyword."
+
+                                />
                                 :
                                 <List>
 

@@ -11,152 +11,149 @@ import {
     Chip,
     CircularProgress
 }
-from "@mui/material";
+    from "@mui/material";
 
 import {
     useState,
     useEffect,
     useCallback
 }
-from "react";
+    from "react";
 
 import SearchBar
-from "../components/SearchBar";
+    from "../components/SearchBar";
 
 import NotificationFilterPanel
-from "../components/NotificationFilterPanel";
+    from "../components/NotificationFilterPanel";
 
 import CommonPagination
-from "../components/CommonPagination";
+    from "../components/CommonPagination";
 
 import {
     getNotificationsPaged
 }
-from "../services/notificationService";
+    from "../services/notificationService";
 
 import {
     getUserId
 }
-from "../utils/jwtHelper";
+    from "../utils/jwtHelper";
 
 import type
 {
     Notification
 }
-from "../types/Notification";
+    from "../types/Notification";
+import EmptyState from "../components/EmptyState";
+import SkeletonTable from "../components/SkeletonTable";
 
-export default function NotificationsPage()
-{
+export default function NotificationsPage() {
     const [
         notifications,
         setNotifications
     ] =
-    useState<Notification[]>([]);
+        useState<Notification[]>([]);
 
     const [
         loading,
         setLoading
     ] =
-    useState(false);
+        useState(false);
 
     const [
         page,
         setPage
     ] =
-    useState(1);
+        useState(1);
 
     const [
         pageSize,
         setPageSize
     ] =
-    useState(10);
+        useState(10);
 
     const [
         totalPages,
         setTotalPages
     ] =
-    useState(1);
+        useState(1);
 
     const [
         search,
         setSearch
     ] =
-    useState("");
+        useState("");
 
     const [
         status,
         setStatus
     ] =
-    useState("");
+        useState("");
 
     const [
         sort,
         setSort
     ] =
-    useState("newest");
+        useState("newest");
 
     const loadNotifications =
-    useCallback(
-        async () =>
-        {
-            try
-            {
-                setLoading(true);
+        useCallback(
+            async () => {
+                try {
+                    setLoading(true);
 
-                const result =
-                    await getNotificationsPaged(
+                    const result =
+                        await getNotificationsPaged(
 
-                        Number(
-                            getUserId()
-                        ),
+                            Number(
+                                getUserId()
+                            ),
 
-                        page,
+                            page,
 
-                        pageSize,
+                            pageSize,
 
-                        search,
+                            search,
 
-                        status === ""
-                        ?
-                        null
-                        :
-                        status === "Read",
+                            status === ""
+                                ?
+                                null
+                                :
+                                status === "Read",
 
-                        sort
+                            sort
+                        );
+
+                    setNotifications(
+                        result.data
                     );
 
-                setNotifications(
-                    result.data
-                );
+                    setTotalPages(
+                        result.totalPages
+                    );
+                }
+                finally {
+                    setLoading(false);
+                }
 
-                setTotalPages(
-                    result.totalPages
-                );
-            }
-            finally
-            {
-                setLoading(false);
-            }
+            },
+            [
+                page,
+                pageSize,
+                search,
+                status,
+                sort
+            ]);
 
-        },
-        [
-            page,
-            pageSize,
-            search,
-            status,
-            sort
-        ]);
-
-    useEffect(() =>
-    {
+    useEffect(() => {
         void loadNotifications();
 
     },
-    [
-        loadNotifications
-    ]);
+        [
+            loadNotifications
+        ]);
 
-    return(
+    return (
 
         <Box>
 
@@ -172,8 +169,7 @@ export default function NotificationsPage()
 
                 value={search}
 
-                onChange={(value)=>
-                {
+                onChange={(value) => {
                     setPage(1);
                     setSearch(value);
                 }}
@@ -192,20 +188,17 @@ export default function NotificationsPage()
 
                 pageSize={pageSize}
 
-                onStatusChange={(value)=>
-                {
+                onStatusChange={(value) => {
                     setPage(1);
                     setStatus(value);
                 }}
 
-                onSortChange={(value)=>
-                {
+                onSortChange={(value) => {
                     setPage(1);
                     setSort(value);
                 }}
 
-                onPageSizeChange={(value)=>
-                {
+                onPageSizeChange={(value) => {
                     setPage(1);
                     setPageSize(value);
                 }}
@@ -215,133 +208,135 @@ export default function NotificationsPage()
             {
                 loading ?
 
-                <Box
-                    sx={{
-                        display:"flex",
-                        justifyContent:"center",
-                        mt:6
-                    }}
-                >
-                    <CircularProgress/>
-                </Box>
+                    <SkeletonTable
 
-                :
+                        rows={6}
 
-                <TableContainer
-                    component={Paper}
-                >
+                        columns={4}
 
-                    <Table>
+                    />
 
-                        <TableHead>
+                    :
 
-                            <TableRow>
+                    <TableContainer
+                        component={Paper}
+                    >
 
-                                <TableCell>
-                                    Title
-                                </TableCell>
+                        <Table>
 
-                                <TableCell>
-                                    Message
-                                </TableCell>
-
-                                <TableCell>
-                                    Status
-                                </TableCell>
-
-                                <TableCell>
-                                    Date
-                                </TableCell>
-
-                            </TableRow>
-
-                        </TableHead>
-
-                        <TableBody>
-                                                        {
-                                notifications.length === 0 ?
+                            <TableHead>
 
                                 <TableRow>
 
-                                    <TableCell
-                                        colSpan={4}
-                                        align="center"
-                                    >
-                                        <Typography
-                                            sx={{
-                                                py: 4,
-                                                color: "text.secondary"
-                                            }}
-                                        >
-                                            No Notifications Found
-                                        </Typography>
+                                    <TableCell>
+                                        Title
+                                    </TableCell>
+
+                                    <TableCell>
+                                        Message
+                                    </TableCell>
+
+                                    <TableCell>
+                                        Status
+                                    </TableCell>
+
+                                    <TableCell>
+                                        Date
                                     </TableCell>
 
                                 </TableRow>
 
-                                :
+                            </TableHead>
 
-                                notifications.map(
-                                    (
-                                        notification
-                                    ) => (
+                            <TableBody>
+                                {
+                                    notifications.length === 0 ?
 
-                                        <TableRow
-                                            hover
-                                            key={notification.id}
-                                        >
+                                        <TableRow>
 
-                                            <TableCell>
-                                                {notification.title}
-                                            </TableCell>
+                                            <TableCell
+                                                colSpan={4}
+                                            >
 
-                                            <TableCell>
-                                                {notification.message}
-                                            </TableCell>
+                                                <EmptyState
 
-                                            <TableCell>
+                                                    title="No Notifications"
 
-                                                {
-                                                    notification.isRead ?
+                                                    message="You don't have any notifications."
 
-                                                    <Chip
-                                                        label="Read"
-                                                        color="success"
-                                                        size="small"
-                                                    />
+                                                    buttonText="Refresh"
 
-                                                    :
+                                                    onClick={loadNotifications}
 
-                                                    <Chip
-                                                        label="Unread"
-                                                        color="warning"
-                                                        size="small"
-                                                    />
-
-                                                }
-
-                                            </TableCell>
-
-                                            <TableCell>
-
-                                                {
-                                                    new Date(
-                                                        notification.createdAt
-                                                    ).toLocaleString()
-                                                }
+                                                />
 
                                             </TableCell>
 
                                         </TableRow>
 
-                                    ))
-                            }
+                                        :
 
-                        </TableBody>
+                                        notifications.map(
+                                            (
+                                                notification
+                                            ) => (
 
-                    </Table>
+                                                <TableRow
+                                                    hover
+                                                    key={notification.id}
+                                                >
 
-                </TableContainer>
+                                                    <TableCell>
+                                                        {notification.title}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {notification.message}
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                        {
+                                                            notification.isRead ?
+
+                                                                <Chip
+                                                                    label="Read"
+                                                                    color="success"
+                                                                    size="small"
+                                                                />
+
+                                                                :
+
+                                                                <Chip
+                                                                    label="Unread"
+                                                                    color="warning"
+                                                                    size="small"
+                                                                />
+
+                                                        }
+
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                        {
+                                                            new Date(
+                                                                notification.createdAt
+                                                            ).toLocaleString()
+                                                        }
+
+                                                    </TableCell>
+
+                                                </TableRow>
+
+                                            ))
+                                }
+
+                            </TableBody>
+
+                        </Table>
+
+                    </TableContainer>
 
             }
 

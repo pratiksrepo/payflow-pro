@@ -24,7 +24,7 @@ export async function logout()
         localStorage.getItem("accessToken");
 
     await axios.post(
-        "https://localhost:7093/api/Auth/logout",
+        "https://localhost:7056/api/Auth/logout",
         {},
         {
             headers:

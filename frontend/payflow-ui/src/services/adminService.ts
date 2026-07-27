@@ -10,16 +10,16 @@ async () =>
         fraud
     ] = await Promise.all([
         axios.get(
-            "https://localhost:7017/api/User/admin/stats"
+            "https://localhost:7056/api/User/admin/stats"
         ),
         axios.get(
-            "https://localhost:7009/api/Payment/admin/stats"
+            "https://localhost:7056/api/Payment/admin/stats"
         ),
         axios.get(
-            "https://localhost:7224/api/Wallet/admin/stats"
+            "https://localhost:7056/api/Wallet/admin/stats"
         ),
         axios.get(
-            "https://localhost:7169/api/Fraud/admin/stats"
+            "https://localhost:7056/api/Fraud/admin/stats"
         )
     ]);
 
