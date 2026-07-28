@@ -45,7 +45,8 @@ public class RabbitMQBackgroundService : BackgroundService
                 HostName = _settings.HostName,
                 Port = _settings.Port,
                 UserName = _settings.UserName,
-                Password = _settings.Password
+                Password = _settings.Password,
+                VirtualHost = _settings.VirtualHost
             };
 
             IConnection? connection = null;

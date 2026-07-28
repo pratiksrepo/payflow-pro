@@ -37,10 +37,11 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins(
-                    "http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://payflow-pro-ui.onrender.com")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         });
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -79,17 +80,22 @@ builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
+    db.Database.Migrate();
 }
+
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("ReactPolicy");
 
-app.UseHttpsRedirection();
-
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
