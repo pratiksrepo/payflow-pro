@@ -36,21 +36,14 @@ public class RabbitMQPublisher
 
         try
         {
-            var factory =
-             new ConnectionFactory
-             {
-                 HostName =
-                     _settings.HostName,
-
-                 Port =
-                     _settings.Port,
-
-                 UserName =
-                     _settings.UserName,
-
-                 Password =
-                     _settings.Password
-             };
+            var factory = new ConnectionFactory
+            {
+                HostName = _settings.HostName,
+                Port = _settings.Port,
+                UserName = _settings.UserName,
+                Password = _settings.Password,
+                VirtualHost = _settings.VirtualHost
+            };
 
             using var connection =
                 await factory.CreateConnectionAsync();

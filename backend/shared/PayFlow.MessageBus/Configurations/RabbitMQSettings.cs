@@ -11,4 +11,6 @@ public class RabbitMQSettings
     public string Password { get; set; } = "guest";
 
     public string Exchange { get; set; } = "payflow.exchange";
+
+    public string VirtualHost { get; set; } = "/";
 }
