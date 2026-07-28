@@ -73,18 +73,23 @@ builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FraudDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseCors(
     "ReactPolicy");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (!app.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
-
 app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
