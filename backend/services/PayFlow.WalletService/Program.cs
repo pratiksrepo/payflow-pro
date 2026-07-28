@@ -37,7 +37,8 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    "http://localhost:5173")
+                "http://localhost:5173",
+                "https://payflow-pro-ui.onrender.com")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -70,14 +71,20 @@ builder.Services.AddRabbitMQ(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<WalletDbContext>();
+    db.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 
