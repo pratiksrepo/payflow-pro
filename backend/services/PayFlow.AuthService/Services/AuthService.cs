@@ -39,18 +39,32 @@ public class AuthService : IAuthService
         if (existingUser != null)
             return "User already exists";
 
+        //var user = new User
+        //{
+        //    FullName = request.FullName,
+        //    Email = request.Email,
+        //    PasswordHash =
+        //        BCrypt.Net.BCrypt.HashPassword(
+        //            request.Password),
+
+        //    Role = "User",
+
+        //    VerificationToken =
+        //        Guid.NewGuid().ToString()
+        //};
+
         var user = new User
         {
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash =
-                BCrypt.Net.BCrypt.HashPassword(
-                    request.Password),
+        BCrypt.Net.BCrypt.HashPassword(request.Password),
 
             Role = "User",
 
-            VerificationToken =
-                Guid.NewGuid().ToString()
+            EmailVerified = true,
+
+            VerificationToken = null
         };
 
         await _userRepository.AddUserAsync(user);
@@ -95,8 +109,8 @@ public class AuthService : IAuthService
 
 
 
-        if (!user.EmailVerified)
-            return null;
+        //if (!user.EmailVerified)
+        //    return null;
 
         var accessToken =
             _tokenService.CreateAccessToken(user);
