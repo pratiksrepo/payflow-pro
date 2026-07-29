@@ -30,18 +30,23 @@ return (
         >
             <CardContent>
 
-                <Typography
-                    variant="h4"
-                    fontWeight="bold"
-                    gutterBottom
-                >
+<Typography
+    variant="h4"
+    sx={{
+        fontWeight: 700,
+        mb: 1,
+    }}
+>
                     Create Account
                 </Typography>
 
-                <Typography
-                    color="text.secondary"
-                    mb={3}
-                >
+<Typography
+    variant="h3"
+    sx={{
+        fontWeight: 700,
+        mt: 1,
+    }}
+>
                     Join PayFlow Pro
                 </Typography>
 

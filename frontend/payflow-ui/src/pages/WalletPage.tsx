@@ -117,18 +117,22 @@ await creditWallet(
     return (
         <Box>
 
-            <Typography
-                variant="h4"
-                fontWeight={700}
-                mb={1}
-            >
+<Typography
+    variant="h4"
+    sx={{
+        fontWeight: 700,
+        mb: 1,
+    }}
+>
                 Wallet
             </Typography>
 
-            <Typography
-                color="text.secondary"
-                mb={4}
-            >
+<Typography
+    color="text.secondary"
+    sx={{
+        mb: 3,
+    }}
+>
                 Manage your wallet
             </Typography>
 
@@ -152,11 +156,13 @@ await creditWallet(
                                 Current Balance
                             </Typography>
 
-                            <Typography
-                                variant="h3"
-                                fontWeight={700}
-                                mt={1}
-                            >
+<Typography
+    variant="h3"
+    sx={{
+        fontWeight: 700,
+        mt: 1,
+    }}
+>
                                 ₹{balance}
                             </Typography>
 
@@ -179,11 +185,13 @@ await creditWallet(
                                 Total Credits
                             </Typography>
 
-                            <Typography
-                                variant="h4"
-                                fontWeight={700}
-                                mt={1}
-                            >
+<Typography
+    variant="h3"
+    sx={{
+        fontWeight: 700,
+        mt: 1,
+    }}
+>
                                 ₹15000
                             </Typography>
 
@@ -206,11 +214,13 @@ await creditWallet(
                                 Total Debits
                             </Typography>
 
-                            <Typography
-                                variant="h4"
-                                fontWeight={700}
-                                mt={1}
-                            >
+<Typography
+    variant="h3"
+    sx={{
+        fontWeight: 700,
+        mt: 1,
+    }}
+>
                                 ₹5000
                             </Typography>
 
@@ -230,8 +240,10 @@ await creditWallet(
 
                 <Typography
                     variant="h5"
-                    fontWeight={700}
-                    mb={3}
+                    sx={{
+                        fontWeight: 700,
+                        mb: 3
+                    }}
                 >
                     Wallet Actions
                 </Typography>

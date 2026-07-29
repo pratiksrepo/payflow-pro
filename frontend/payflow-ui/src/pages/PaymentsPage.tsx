@@ -36,10 +36,10 @@ import type
 }
     from "../types/Payment";
 
-import {
-    getPaymentsByUser
-}
-    from "../services/paymentService";
+// import {
+//     getPaymentsByUser
+// }
+//     from "../services/paymentService";
 
 import type
 {
@@ -251,7 +251,7 @@ useEffect(() =>
                     });
 
                 setCreatedPayment(result);
-                await loadPaymentHistory();
+                // await loadPaymentHistory();
                 setPaymentId(
                     result.paymentId
                 );

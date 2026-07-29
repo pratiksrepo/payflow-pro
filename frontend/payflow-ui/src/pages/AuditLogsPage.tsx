@@ -8,7 +8,6 @@ import {
     TableRow,
     TableCell,
     TableContainer,
-    CircularProgress
 }
     from "@mui/material";
 

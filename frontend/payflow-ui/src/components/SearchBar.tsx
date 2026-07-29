@@ -25,7 +25,7 @@ export default function SearchBar(
 {
     value,
     onChange,
-    onSearch
+    // onSearch
 }: Props)
 {
     return (

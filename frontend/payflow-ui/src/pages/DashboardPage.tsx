@@ -132,17 +132,17 @@ export default function DashboardPage() {
     ] =
         useState(0);
 
-    const [
-        totalAmount,
-        setTotalAmount
-    ] =
-        useState(0);
+    // const [
+    //     // totalAmount,
+    //     setTotalAmount
+    // ] =
+    //     useState(0);
 
-    const [
-        successRate,
-        setSuccessRate
-    ] =
-        useState(0);
+    // const [
+    //     // successRate,
+    //     setSuccessRate
+    // ] =
+    //     useState(0);
 
     const [
         recentPayments,
@@ -223,42 +223,42 @@ export default function DashboardPage() {
                     payments.length
                 );
 
-                const amount =
-                    payments.reduce(
-                        (
-                            sum: number,
-                            payment: any
-                        ) =>
-                            sum +
-                            payment.amount,
-                        0
-                    );
+                // const amount =
+                //     payments.reduce(
+                //         (
+                //             sum: number,
+                //             payment: any
+                //         ) =>
+                //             sum +
+                //             payment.amount,
+                //         0
+                //     );
 
-                setTotalAmount(
-                    amount
-                );
+                // setTotalAmount(
+                //     amount
+                // );
 
-                const success =
-                    payments.filter(
-                        (
-                            payment: any
-                        ) =>
-                            payment.status === 2
-                    ).length;
+                // const success =
+                //     payments.filter(
+                //         (
+                //             payment: any
+                //         ) =>
+                //             payment.status === 2
+                //     ).length;
 
-                const rate =
-                    payments.length > 0
-                        ? Math.round(
-                            (
-                                success /
-                                payments.length
-                            ) * 100
-                        )
-                        : 0;
+                // const rate =
+                //     payments.length > 0
+                //         ? Math.round(
+                //             (
+                //                 success /
+                //                 payments.length
+                //             ) * 100
+                //         )
+                //         : 0;
 
-                setSuccessRate(
-                    rate
-                );
+                // setSuccessRate(
+                //     rate
+                // );
 
                 const latestPayments =
                     payments.slice(
