@@ -38,7 +38,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:5173")
+                .WithOrigins(
+                "http://localhost:5173",
+                "https://payflow-pro-ui.onrender.com")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -56,15 +58,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
 
     app.UseSwaggerUI();
+
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
-
 app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
