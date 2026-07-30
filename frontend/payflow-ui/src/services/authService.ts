@@ -1,36 +1,34 @@
 import apiClient from "./apiClient";
 
 import { type LoginRequest }
-from "../types/LoginRequest";
+    from "../types/LoginRequest";
 
 import { type LoginResponse }
-from "../types/LoginResponse";
-import axios from "axios";
+    from "../types/LoginResponse";
 
 export async function login(
-    request: LoginRequest)
-{
+    request: LoginRequest) {
     const response =
-        await apiClient.post<LoginResponse>(
-            "/Auth/login",
-            request);
+        await
+            apiClient.post<LoginResponse>(
+                "/Auth/login",
+                request);
 
     return response.data;
 }
 
-export async function logout()
-{
+export async function logout() {
     const token =
         localStorage.getItem("accessToken");
 
-    await axios.post(
-        "https://localhost:7056/api/Auth/logout",
-        {},
-        {
-            headers:
+    await
+        apiClient.post(
+            "/Auth/logout",
+            {},
             {
-                Authorization:
-                    `Bearer ${token}`
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-        });
+        );
 }

@@ -1,4 +1,5 @@
-import axios from "axios";
+import apiClient from "./apiClient";
+
 
 import type {
     CreatePaymentRequest
@@ -11,10 +12,7 @@ export const createPayment =
     ) =>
 {
     const response =
-        await axios.post(
-            "https://localhost:7056/api/Payment",
-            request
-        );
+        await apiClient.post("/Payment", request);
 
     return response.data;
 };
@@ -26,9 +24,7 @@ export const getPaymentById =
     ) =>
 {
     const response =
-        await axios.get(
-            `https://localhost:7056/api/Payment/${paymentId}`
-        );
+        await apiClient.get(`/Payment/${paymentId}`);
 
     return response.data;
 };
@@ -39,9 +35,7 @@ export const getPaymentsByUser =
     ) =>
 {
     const response =
-        await axios.get(
-            `https://localhost:7056/api/Payment/user/${userId}`
-        );
+        await apiClient.get(`/Payment/user/${userId}`);
 
     return response.data;
 };
@@ -53,9 +47,7 @@ export const getPaymentHistory =
     ) =>
 {
     const response =
-        await axios.get(
-            `https://localhost:7056/api/Payment/history/${paymentId}`
-        );
+        await apiClient.get(`/Payment/history/${paymentId}`);
 
     return response.data;
 };
@@ -64,8 +56,9 @@ export const getPaymentHistory =
 export async function exportPayments()
 {
     const response =
-        await axios.get(
-            "https://localhost:7056/api/Payment/export",
+        await 
+        apiClient.get(
+            "/Payment/export",
             {
                 responseType: "blob"
             });
@@ -99,9 +92,8 @@ export const getRecentPayments =
     async () =>
 {
     const response =
-        await axios.get(
-            "https://localhost:7056/api/Payment/recent"
-        );
+        await 
+        apiClient.get("/Payment/recent");
 
     return response.data;
 };
@@ -118,12 +110,10 @@ export const getPaymentsPaged =
     ) =>
 {
     const response =
-        await axios.get(
-            `https://localhost:7056/api/Payment/user/${userId}/paged`,
-            {
-                params:
-                {
-                    page,
+        await 
+        apiClient.get(`/Payment/user/${userId}/paged`, {
+            params: {
+                page,
                     pageSize,
                     search,
                     status,

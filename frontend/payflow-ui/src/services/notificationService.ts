@@ -1,20 +1,22 @@
-import axios
-from "axios";
+// import axios
+// from "axios";
 
-const notificationApi =
-    axios.create({
-        baseURL:
-            "https://localhost:7056/api"
-    });
+import apiClient from "./apiClient";
+
+// const notificationApi =
+//     axios.create({
+//         baseURL:
+//             "https://localhost:7056/api"
+//     });
 
 export async function
 getNotifications(
     userId: number)
 {
     const response =
-        await notificationApi.get(
-            `/Notification/${userId}`);
-
+        await 
+        apiClient.get(`/Notification/${userId}`);
+    
     return response.data;
 }
 
@@ -29,12 +31,10 @@ async (
 )=>
 {
     const response =
-        await axios.get(
-            `https://localhost:7056/api/Notification/user/${userId}/paged`,
-            {
-                params:
-                {
-                    page,
+        await 
+        apiClient.get(`/Notification/user/${userId}/paged`, {
+            params: {
+                page,
                     pageSize,
                     search,
                     isRead,

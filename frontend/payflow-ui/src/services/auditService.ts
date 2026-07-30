@@ -1,46 +1,39 @@
-import axios
-from "axios";
+// import axios
+// from "axios";
 
-const API =
-"https://localhost:7056/api/Payment";
+import apiClient from "./apiClient";
+
+// const API =
+// "https://localhost:7056/api/Payment";
 
 export const getAuditLogs =
-async()=>
-{
-    const response =
-        await axios.get(
-            `${API}/auditlogs`
-        );
+    async () => {
+        const response =
+            await
+                apiClient.get("/Payment/auditlogs");
 
-    return response.data;
-};
+        return response.data;
+    };
 
 export const getAuditLogsPaged =
-async(
-    page:number,
-    pageSize:number,
-    search:string,
-    action:string,
-    sort:string
-)=>
-{
-    const response =
-        await axios.get(
+    async (
+        page: number,
+        pageSize: number,
+        search: string,
+        action: string,
+        sort: string
+    ) => {
+        const response =
+            await
+                apiClient.get("/Payment/auditlogs/paged", {
+                    params: {
+                        page,
+                        pageSize,
+                        search,
+                        action,
+                        sort,
+                    },
+                });
 
-            `${API}/auditlogs/paged`,
-
-            {
-                params:
-                {
-                    page,
-                    pageSize,
-                    search,
-                    action,
-                    sort
-                }
-            }
-
-        );
-
-    return response.data;
-};
+        return response.data;
+    };

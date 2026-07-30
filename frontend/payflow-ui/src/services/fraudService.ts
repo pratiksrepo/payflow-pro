@@ -1,12 +1,12 @@
 import axios from "axios";
+import apiClient from "./apiClient";
 
 export const getFraudDashboard =
     async () =>
 {
     const response =
-        await axios.get(
-            "https://localhost:7056/api/fraud/dashboard"
-        );
+        await 
+        apiClient.get("/Fraud/dashboard");
 
     return response.data;
 };
@@ -15,9 +15,8 @@ export const getRecentFraudChecks =
     async () =>
 {
     const response =
-        await axios.get(
-            "https://localhost:7056/api/Fraud/recent"
-        );
+        await 
+        apiClient.get("/Fraud/recent");
 
     return response.data;
 };

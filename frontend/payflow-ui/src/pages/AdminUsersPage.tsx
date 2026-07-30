@@ -18,6 +18,7 @@ import {
     from "react";
 
 import axios from "axios";
+import apiClient from "../services/apiClient";
 
 export default function AdminUsersPage() {
     const [
@@ -39,15 +40,9 @@ const token =
     );
 
 const response =
-    await axios.get(
-        "https://localhost:7056/api/User/all",
-        {
-            headers:
-            {
-                Authorization:
-                    `Bearer ${token}`
-            }
-        }
+    await 
+    apiClient.get(
+        "/User/all"
     );
 
                 setUsers(
