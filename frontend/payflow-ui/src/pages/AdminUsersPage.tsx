@@ -17,7 +17,6 @@ import {
 }
     from "react";
 
-import axios from "axios";
 import apiClient from "../services/apiClient";
 
 export default function AdminUsersPage() {
@@ -32,23 +31,11 @@ export default function AdminUsersPage() {
     ] = useState("");
 
     useEffect(() => {
-        const load =
-            async () => {
-const token =
-    localStorage.getItem(
-        "accessToken"
-    );
+        const load = async () => {
+            const response = await apiClient.get("/User/all");
 
-const response =
-    await 
-    apiClient.get(
-        "/User/all"
-    );
-
-                setUsers(
-                    response.data
-                );
-            };
+            setUsers(response.data);
+        };
 
         void load();
     }, []);
