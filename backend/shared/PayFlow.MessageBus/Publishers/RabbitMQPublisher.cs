@@ -39,14 +39,15 @@ public class RabbitMQPublisher
             var factory = new ConnectionFactory
             {
                 HostName = _settings.HostName,
-                Port = _settings.Port,
+                Port = 5671,
                 UserName = _settings.UserName,
                 Password = _settings.Password,
                 VirtualHost = _settings.VirtualHost,
 
                 Ssl = new SslOption
                 {
-                    Enabled = true
+                    Enabled = true,
+                    ServerName = _settings.HostName
                 }
             };
 
