@@ -42,7 +42,12 @@ public class RabbitMQPublisher
                 Port = _settings.Port,
                 UserName = _settings.UserName,
                 Password = _settings.Password,
-                VirtualHost = _settings.VirtualHost
+                VirtualHost = _settings.VirtualHost,
+
+                Ssl = new SslOption
+                {
+                    Enabled = true
+                }
             };
 
             using var connection =

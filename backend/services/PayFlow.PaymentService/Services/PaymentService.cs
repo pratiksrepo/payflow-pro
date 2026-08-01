@@ -49,16 +49,22 @@ public class PaymentService : IPaymentService
                 .CreateClient();
 
         var response =
-            await client.PostAsJsonAsync(
-                "https://localhost:7169/api/fraud/check",
-                new FraudCheckRequest
-                {
-                    PaymentId = payment.Id,
-                    Amount = payment.Amount,
-                    PaymentMethod =
-                        payment.PaymentMethod
-                });
-
+        //await client.PostAsJsonAsync(
+        //    "https://payflow-api-gateway-7es6.onrender.com/api/Fraud/check",
+        //    new FraudCheckRequest
+        //    {
+        //        PaymentId = payment.Id,
+        //        Amount = payment.Amount,
+        //        PaymentMethod = payment.PaymentMethod
+        //    });
+        await client.PostAsJsonAsync(
+    "https://payflow-api-gateway-7es6.onrender.com/api/Fraud/check",
+    new FraudCheckRequest
+    {
+        PaymentId = payment.Id,
+        Amount = payment.Amount,
+        PaymentMethod = payment.PaymentMethod
+    });
         if (!response.IsSuccessStatusCode)
             return null;
 
@@ -77,16 +83,24 @@ public class PaymentService : IPaymentService
                 .CreateClient();
 
         var response =
-            await client.PostAsJsonAsync(
-                "https://localhost:7224/api/wallet/debit",
-                new DebitWalletRequest
-                {
-                    UserId =
-                        payment.UserId,
+            //await client.PostAsJsonAsync(
+            //    "https://localhost:7224/api/wallet/debit",
+            //    new DebitWalletRequest
+            //    {
+            //        UserId =
+            //            payment.UserId,
 
-                    Amount =
-                        payment.Amount
-                });
+            //        Amount =
+            //            payment.Amount
+            //    });
+
+            await client.PostAsJsonAsync(
+    "https://payflow-api-gateway-7es6.onrender.com/api/Wallet/debit",
+    new DebitWalletRequest
+    {
+        UserId = payment.UserId,
+        Amount = payment.Amount
+    });
 
         if (!response
             .IsSuccessStatusCode)
@@ -110,15 +124,25 @@ public class PaymentService : IPaymentService
             _httpClientFactory
                 .CreateClient();
 
+        //await client.PostAsJsonAsync(
+        //    "https://localhost:7136/api/notification",
+        //    new CreateNotificationRequest
+        //    {
+        //        UserId = userId,
+        //        Title = title,
+        //        Message = message,
+        //        Type = "Payment"
+        //    });
+
         await client.PostAsJsonAsync(
-            "https://localhost:7136/api/notification",
-            new CreateNotificationRequest
-            {
-                UserId = userId,
-                Title = title,
-                Message = message,
-                Type = "Payment"
-            });
+    "https://payflow-api-gateway-7es6.onrender.com/api/Notification",
+    new CreateNotificationRequest
+    {
+        UserId = userId,
+        Title = title,
+        Message = message,
+        Type = "Payment"
+    });
     }
 
     public async Task<PaymentResponse>
