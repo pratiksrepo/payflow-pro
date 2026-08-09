@@ -5,11 +5,9 @@ import {
     Typography,
     List,
     ListItem,
-    ListItemText,
-    Divider,
-    Chip
+    ListItemText
 }
-from "@mui/material";
+    from "@mui/material";
 
 import {
     BarChart,
@@ -19,29 +17,42 @@ import {
     Legend,
     PieChart,
     Pie,
-    Cell,
+    Cell
+}
+    from "recharts";
+
+import {
+    useEffect,
+    useState
+}
+    from "react";
+
+import {
     ResponsiveContainer,
     AreaChart,
     Area,
     XAxis,
     Tooltip
 }
-from "recharts";
-
-import {
-    useEffect,
-    useState
-}
-from "react";
+    from "recharts";
 
 import DashboardSection
     from "../components/DashboardSection";
 
+import {
+    Divider,
+    Chip
+}
+    from "@mui/material";
+
 import AccountBalanceWalletIcon
     from "@mui/icons-material/AccountBalanceWallet";
 
+
 import PaymentsIcon
     from "@mui/icons-material/Payments";
+
+
 
 import DashboardCard
     from "../components/DashboardCard";
@@ -52,48 +63,42 @@ import PeopleIcon
 import SecurityIcon
     from "@mui/icons-material/Security";
 
+
 import {
     getWallet
 }
-from "../services/walletService";
+    from "../services/walletService";
 
 import {
     getNotifications
 }
-from "../services/notificationService";
+    from "../services/notificationService";
 
 import {
     getPaymentsByUser
 }
-from "../services/paymentService";
+    from "../services/paymentService";
 
 import {
     getUserId,
-    getEmail,
-    getRole
+    getEmail
 }
-from "../utils/jwtHelper";
+    from "../utils/jwtHelper";
 
 import type {
     Notification
 }
-from "../types/Notification";
+    from "../types/Notification";
+import { getFraudDashboard } from "../services/fraudService";
 
 import {
-    getFraudDashboard
+    getRole
 }
-from "../services/fraudService";
-
-import PageHeader
-    from "../components/PageHeader";
-
+    from "../utils/jwtHelper";
+import PageHeader from "../components/PageHeader";
 
 export default function DashboardPage() {
-
-    const [
-        email,
-        setEmail
-    ] =
+    const [email, setEmail] =
         useState("");
 
     const CHART_COLORS =
@@ -105,16 +110,15 @@ export default function DashboardPage() {
         ];
 
 
+
     const [
         walletBalance,
         setWalletBalance
     ] =
         useState(0);
 
-
     const role =
         getRole();
-
 
     const [
         notifications,
@@ -122,13 +126,23 @@ export default function DashboardPage() {
     ] =
         useState<Notification[]>([]);
 
-
     const [
         totalPayments,
         setTotalPayments
     ] =
         useState(0);
 
+    // const [
+    //     // totalAmount,
+    //     setTotalAmount
+    // ] =
+    //     useState(0);
+
+    // const [
+    //     // successRate,
+    //     setSuccessRate
+    // ] =
+    //     useState(0);
 
     const [
         recentPayments,
@@ -136,47 +150,37 @@ export default function DashboardPage() {
     ] =
         useState<any[]>([]);
 
-
     const [
         chartData,
         setChartData
     ] =
         useState<any[]>([]);
 
-
     const [
         fraudDashboard,
         setFraudDashboard
-    ] =
-        useState<any>(null);
-
+    ] = useState<any>(null);
 
     const fraudPieData =
         [
             {
                 name: "Safe",
-                value:
-                    fraudDashboard?.safeTransactions
-                    ?? 0
+                value: fraudDashboard?.safeTransactions ?? 0
             },
             {
                 name: "Flagged",
-                value:
-                    fraudDashboard?.flaggedTransactions
-                    ?? 0
+                value: fraudDashboard?.flaggedTransactions ?? 0
             },
             {
                 name: "High Risk",
-                value:
-                    fraudDashboard?.highRiskCount
-                    ?? 0
+                value: fraudDashboard?.highRiskCount ?? 0
             }
         ];
 
 
+
     const loadDashboardData =
         async () => {
-
             try {
 
                 const userId =
@@ -184,49 +188,77 @@ export default function DashboardPage() {
                         getUserId()
                     );
 
-
                 if (!userId) {
                     return;
                 }
 
-
                 setEmail(
                     getEmail()
                 );
-
 
                 const wallet =
                     await getWallet(
                         userId
                     );
 
-
                 setWalletBalance(
                     wallet.balance
                 );
-
 
                 const notificationData =
                     await getNotifications(
                         userId
                     );
 
-
                 setNotifications(
                     notificationData
                 );
-
 
                 const payments =
                     await getPaymentsByUser(
                         userId
                     );
 
-
                 setTotalPayments(
                     payments.length
                 );
 
+                // const amount =
+                //     payments.reduce(
+                //         (
+                //             sum: number,
+                //             payment: any
+                //         ) =>
+                //             sum +
+                //             payment.amount,
+                //         0
+                //     );
+
+                // setTotalAmount(
+                //     amount
+                // );
+
+                // const success =
+                //     payments.filter(
+                //         (
+                //             payment: any
+                //         ) =>
+                //             payment.status === 2
+                //     ).length;
+
+                // const rate =
+                //     payments.length > 0
+                //         ? Math.round(
+                //             (
+                //                 success /
+                //                 payments.length
+                //             ) * 100
+                //         )
+                //         : 0;
+
+                // setSuccessRate(
+                //     rate
+                // );
 
                 const latestPayments =
                     payments.slice(
@@ -234,20 +266,18 @@ export default function DashboardPage() {
                         5
                     );
 
-
                 setRecentPayments(
                     latestPayments
                 );
 
 
+
                 const fraud =
                     await getFraudDashboard();
-
 
                 setFraudDashboard(
                     fraud
                 );
-
 
                 setChartData(
                     latestPayments.map(
@@ -255,89 +285,70 @@ export default function DashboardPage() {
                             p: any,
                             index: number
                         ) => ({
-                            name:
-                                `P${index + 1}`,
-
-                            amount:
-                                p.amount
+                            name: `P${index + 1}`,
+                            amount: p.amount
                         })
                     )
                 );
 
-
+                console.log(
+                    "Chart Loaded",
+                    latestPayments
+                );
             }
             catch (error) {
-
                 console.error(
                     error
                 );
-
             }
-
         };
 
-
-    useEffect(
-        () => {
-
-            void loadDashboardData();
-
-        },
-        []
-    );
-
+    useEffect(() => {
+        void loadDashboardData();
+    }, []);
 
     return (
 
-        <Box
-            sx={{
-                width: "100%",
-                maxWidth: "100%",
-                overflowX: "hidden"
-            }}
-        >
+<Box
+    sx={{
+        width:"100%",
+        overflowX:"hidden"
+    }}
+>
+            {/* <Typography
+                variant="h4"
+                sx={{
+                    fontWeight: 700,
+                    mb: 1
+                }}
+            >
+                Welcome Back 👋
 
-            {/* =========================
-                PAGE HEADER
-            ========================== */}
+                {
+                    role === "Admin"
+                        ? " Admin"
+                        : ""
+                }
+            </Typography> */}
 
             <PageHeader
                 title="Dashboard"
-                subtitle={
-                    `Welcome back, ${role}! ` +
-                    `Here's your business overview for today.`
-                }
+                subtitle={`Welcome back, ${role}! Here's your business overview for today.`}
             />
-
 
             <Typography
                 color="text.secondary"
                 sx={{
-                    mb: {
-                        xs: 3,
-                        sm: 4
-                    },
-                    fontSize: {
-                        xs: "0.85rem",
-                        sm: "0.95rem"
-                    },
-                    wordBreak: "break-word"
+                    mb: 4
                 }}
             >
                 Signed as:- {email}
+
             </Typography>
-
-
-            {/* =========================
-                KPI CARDS
-            ========================== */}
 
             <Grid
                 container
-                spacing={{
-                    xs: 2,
-                    sm: 3
-                }}
+                spacing={3}
             >
 
                 <Grid
@@ -349,405 +360,251 @@ export default function DashboardPage() {
                 >
 
                     <DashboardCard
+
                         title="Users"
+
                         value={totalPayments}
                         subtitle="Registered Users"
+
                         icon={<PeopleIcon />}
+
                         color="#1976d2"
+
                         trend={12}
+
                     />
 
                 </Grid>
 
-
                 <Grid
                     size={{
                         xs: 12,
-                        sm: 6,
                         md: 3
                     }}
                 >
 
                     <DashboardCard
+
                         title="Payments"
+
                         value={totalPayments}
                         subtitle="Transactions"
+
                         icon={<PaymentsIcon />}
+
                         color="#2e7d32"
+
                     />
 
                 </Grid>
 
-
                 <Grid
                     size={{
                         xs: 12,
-                        sm: 6,
                         md: 3
                     }}
                 >
 
                     <DashboardCard
+
                         title="Wallet"
+
                         value={`₹${walletBalance}`}
+
                         subtitle="Current Balance"
-                        icon={
-                            <AccountBalanceWalletIcon />
-                        }
+
+                        icon={<AccountBalanceWalletIcon />}
+
                         color="#ed6c02"
+
                     />
 
                 </Grid>
 
-
                 <Grid
                     size={{
                         xs: 12,
-                        sm: 6,
                         md: 3
                     }}
                 >
 
                     <DashboardCard
+
                         title="Fraud Alerts"
+
                         value={
-                            fraudDashboard?.highRiskCount
-                            ?? 0
+                            fraudDashboard?.highRiskCount ?? 0
                         }
+
                         subtitle="High Risk"
+
                         icon={<SecurityIcon />}
+
                         color="#d32f2f"
+
                     />
 
                 </Grid>
 
             </Grid>
-
-
-            {/* =========================
-                FRAUD ANALYTICS
-            ========================== */}
 
             <Typography
                 variant="h5"
                 sx={{
                     fontWeight: 700,
-                    mt: {
-                        xs: 3,
-                        sm: 4
-                    },
+                    mt: 4,
                     mb: 2,
-                    fontSize: {
-                        xs: "1.35rem",
-                        sm: "1.5rem"
-                    }
+
                 }}
             >
                 Fraud Analytics
             </Typography>
 
-
             <Grid
                 container
-                spacing={{
-                    xs: 2,
-                    sm: 3
-                }}
+                spacing={3}
             >
-
-                {/* Fraud Rate */}
-
-                <Grid
-                    size={{
-                        xs: 12,
-                        sm: 6,
-                        md: 3
-                    }}
-                >
-
-                    <Paper
-                        sx={{
-                            p: {
-                                xs: 2,
-                                sm: 3,
-                                md: 4
-                            },
-                            borderRadius: 3,
-                            height: "100%"
-                        }}
-                    >
-
-                        <Typography
-                            color="error"
-                            sx={{
-                                fontSize: {
-                                    xs: "0.85rem",
-                                    sm: "0.95rem"
-                                }
-                            }}
-                        >
+                <Grid size={{ xs: 12, md: 3 }}>
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                        <Typography color="error">
                             Fraud Rate
                         </Typography>
 
-
-                        <Typography
-                            variant="h4"
-                            sx={{
-                                fontWeight: 700,
-                                mt: 1,
-                                fontSize: {
-                                    xs: "1.6rem",
-                                    sm: "2rem",
-                                    md: "2.2rem"
-                                }
-                            }}
-                        >
-                            {
-                                fraudDashboard?.fraudRate
-                                ?? 0
-                            }%
+    <Typography
+        variant="h4"
+        sx={{
+            fontWeight: 700,
+            mb: 3,
+            fontSize: {
+                xs: "1.6rem",
+                sm: "2rem",
+                md: "2.2rem",
+            },
+        }}
+    >
+                            {fraudDashboard?.fraudRate ?? 0}%
                         </Typography>
-
                     </Paper>
-
                 </Grid>
 
-
-                {/* Safe */}
-
-                <Grid
-                    size={{
-                        xs: 12,
-                        sm: 6,
-                        md: 3
-                    }}
-                >
-
-                    <Paper
-                        sx={{
-                            p: {
-                                xs: 2,
-                                sm: 3,
-                                md: 4
-                            },
-                            borderRadius: 3,
-                            height: "100%"
-                        }}
-                    >
-
-                        <Typography
-                            sx={{
-                                fontSize: {
-                                    xs: "0.85rem",
-                                    sm: "0.95rem"
-                                }
-                            }}
-                        >
+                <Grid size={{ xs: 12, md: 3 }}>
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                        <Typography>
                             Safe Transactions
                         </Typography>
 
-
                         <Typography
                             variant="h4"
-                            sx={{
-                                fontWeight: 700,
-                                mt: 1,
-                                fontSize: {
-                                    xs: "1.6rem",
-                                    sm: "2rem",
-                                    md: "2.2rem"
-                                }
-                            }}
+                            fontWeight={700}
                         >
-                            {
-                                fraudDashboard
-                                    ?.safeTransactions
-                                ?? 0
-                            }
+                            {fraudDashboard?.safeTransactions ?? 0}
                         </Typography>
-
                     </Paper>
-
                 </Grid>
 
-
-                {/* Flagged */}
-
-                <Grid
-                    size={{
-                        xs: 12,
-                        sm: 6,
-                        md: 3
-                    }}
-                >
-
-                    <Paper
-                        sx={{
-                            p: {
-                                xs: 2,
-                                sm: 3,
-                                md: 4
-                            },
-                            borderRadius: 3,
-                            height: "100%"
-                        }}
-                    >
-
-                        <Typography
-                            sx={{
-                                fontSize: {
-                                    xs: "0.85rem",
-                                    sm: "0.95rem"
-                                }
-                            }}
-                        >
+                <Grid size={{ xs: 12, md: 3 }}>
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                        <Typography>
                             Flagged
                         </Typography>
 
-
                         <Typography
                             variant="h4"
-                            sx={{
-                                fontWeight: 700,
-                                mt: 1,
-                                fontSize: {
-                                    xs: "1.6rem",
-                                    sm: "2rem",
-                                    md: "2.2rem"
-                                }
-                            }}
+                            fontWeight={700}
                         >
-                            {
-                                fraudDashboard
-                                    ?.flaggedTransactions
-                                ?? 0
-                            }
+                            {fraudDashboard?.flaggedTransactions ?? 0}
                         </Typography>
-
                     </Paper>
-
                 </Grid>
 
-
-                {/* High Risk */}
-
-                <Grid
-                    size={{
-                        xs: 12,
-                        sm: 6,
-                        md: 3
-                    }}
-                >
-
-                    <Paper
-                        sx={{
-                            p: {
-                                xs: 2,
-                                sm: 3,
-                                md: 4
-                            },
-                            borderRadius: 3,
-                            height: "100%"
-                        }}
-                    >
-
-                        <Typography
-                            sx={{
-                                fontSize: {
-                                    xs: "0.85rem",
-                                    sm: "0.95rem"
-                                }
-                            }}
-                        >
+                <Grid size={{ xs: 12, md: 3 }}>
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                        <Typography>
                             High Risk
                         </Typography>
 
-
                         <Typography
                             variant="h4"
-                            sx={{
-                                fontWeight: 700,
-                                mt: 1,
-                                fontSize: {
-                                    xs: "1.6rem",
-                                    sm: "2rem",
-                                    md: "2.2rem"
-                                }
-                            }}
+                            fontWeight={700}
                         >
-                            {
-                                fraudDashboard
-                                    ?.highRiskCount
-                                ?? 0
-                            }
+                            {fraudDashboard?.highRiskCount ?? 0}
                         </Typography>
-
                     </Paper>
-
                 </Grid>
 
             </Grid>
 
-
-            {/* =========================
-                PAYMENT ANALYTICS
-            ========================== */}
-
             <Paper
+
                 elevation={3}
-                sx={{
-                    p: {
-                        xs: 2,
-                        sm: 3,
-                        md: 4
-                    },
-                    mt: {
-                        xs: 3,
-                        sm: 4
-                    },
-                    borderRadius: 3
-                }}
+
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+
             >
 
                 <Typography
-                    variant="h6"
-                    sx={{
-                        fontWeight: 700,
-                        mb: 3,
-                        fontSize: {
-                            xs: "1rem",
-                            sm: "1.15rem"
-                        }
-                    }}
-                >
-                    Payment Analytics
-                </Typography>
 
+                    variant="h6"
+
+                    fontWeight={700}
+
+                    mb={3}
+
+                >
+
+                    Payment Analytics
+
+                </Typography>
 
                 <Box
                     sx={{
                         width: "100%",
-                        height: {
-                            xs: 250,
-                            sm: 300,
-                            md: 350
-                        }
+                        height: 350
                     }}
                 >
 
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
-                    >
+                    <ResponsiveContainer>
 
                         <BarChart
                             data={chartData}
-                            margin={{
-                                top: 5,
-                                right: 5,
-                                left: -15,
-                                bottom: 5
-                            }}
                         >
 
                             <CartesianGrid
@@ -756,30 +613,22 @@ export default function DashboardPage() {
 
                             <XAxis
                                 dataKey="name"
-                                tick={{
-                                    fontSize: 12
-                                }}
                             />
 
-                            <YAxis
-                                tick={{
-                                    fontSize: 12
-                                }}
-                            />
+                            <YAxis />
 
                             <Tooltip />
 
                             <Legend />
 
                             <Bar
+
                                 dataKey="amount"
-                                radius={[
-                                    8,
-                                    8,
-                                    0,
-                                    0
-                                ]}
+
+                                radius={[8, 8, 0, 0]}
+
                                 fill="#1976d2"
+
                             />
 
                         </BarChart>
@@ -790,66 +639,45 @@ export default function DashboardPage() {
 
             </Paper>
 
-
-            {/* =========================
-                WALLET GROWTH
-            ========================== */}
-
             <Paper
+
                 elevation={3}
-                sx={{
-                    p: {
-                        xs: 2,
-                        sm: 3,
-                        md: 4
-                    },
-                    mt: {
-                        xs: 3,
-                        sm: 4
-                    },
-                    borderRadius: 3
-                }}
+
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+
             >
 
                 <Typography
-                    variant="h6"
-                    sx={{
-                        fontWeight: 700,
-                        mb: 3,
-                        fontSize: {
-                            xs: "1rem",
-                            sm: "1.15rem"
-                        }
-                    }}
-                >
-                    Wallet Growth
-                </Typography>
 
+                    variant="h6"
+
+                    fontWeight={700}
+
+                    mb={3}
+
+                >
+
+                    Wallet Growth
+
+                </Typography>
 
                 <Box
                     sx={{
                         width: "100%",
-                        height: {
-                            xs: 230,
-                            sm: 270,
-                            md: 300
-                        }
+                        height: 300
                     }}
                 >
 
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
-                    >
+                    <ResponsiveContainer>
 
                         <AreaChart
                             data={chartData}
-                            margin={{
-                                top: 5,
-                                right: 5,
-                                left: -15,
-                                bottom: 5
-                            }}
                         >
 
                             <CartesianGrid
@@ -858,24 +686,22 @@ export default function DashboardPage() {
 
                             <XAxis
                                 dataKey="name"
-                                tick={{
-                                    fontSize: 12
-                                }}
                             />
 
-                            <YAxis
-                                tick={{
-                                    fontSize: 12
-                                }}
-                            />
+                            <YAxis />
 
                             <Tooltip />
 
                             <Area
+
                                 type="monotone"
+
                                 dataKey="amount"
+
                                 stroke="#2e7d32"
+
                                 fill="#81c784"
+
                             />
 
                         </AreaChart>
@@ -886,274 +712,199 @@ export default function DashboardPage() {
 
             </Paper>
 
-
-            {/* =========================
-                FRAUD DISTRIBUTION
-            ========================== */}
-
             <Paper
+
                 elevation={3}
-                sx={{
-                    p: {
-                        xs: 2,
-                        sm: 3,
-                        md: 4
-                    },
-                    mt: {
-                        xs: 3,
-                        sm: 4
-                    },
-                    borderRadius: 3
-                }}
+
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+
             >
 
                 <Typography
+
                     variant="h6"
-                    sx={{
-                        fontWeight: 700,
-                        mb: 3,
-                        fontSize: {
-                            xs: "1rem",
-                            sm: "1.15rem"
-                        }
-                    }}
+
+                    fontWeight={700}
+
+                    mb={3}
+
                 >
+
                     Fraud Distribution
+
                 </Typography>
 
-
-                {/* Recent Payments */}
-
                 <DashboardSection
+
                     title="Recent Payments"
+
                 >
 
                     <List dense>
 
                         {
+
                             recentPayments
+
                                 .slice(0, 5)
+
                                 .map(
-                                    (
-                                        payment
-                                    ) => (
 
-                                        <Box
-                                            key={payment.id}
-                                        >
+                                    payment =>
 
-                                            <ListItem
-                                                sx={{
-                                                    px: 0,
-                                                    py: 1.5,
-                                                    gap: 1
-                                                }}
-                                            >
+                                        <>
+
+                                            <ListItem>
 
                                                 <ListItemText
 
-                                                    primary={
-                                                        `₹${payment.amount}`
-                                                    }
+                                                    primary={`₹${payment.amount}`}
 
                                                     secondary={
-                                                        `${payment.paymentMethod} • ${payment.status}`
+
+                                                        `${payment.paymentMethod}
+• ${payment.status}`
+
                                                     }
-
-                                                    primaryTypographyProps={{
-                                                        fontWeight: 600,
-                                                        fontSize: {
-                                                            xs: "0.9rem",
-                                                            sm: "1rem"
-                                                        }
-                                                    }}
-
-                                                    secondaryTypographyProps={{
-                                                        fontSize: {
-                                                            xs: "0.75rem",
-                                                            sm: "0.85rem"
-                                                        },
-                                                        sx: {
-                                                            wordBreak: "break-word"
-                                                        }
-                                                    }}
-
-                                                    sx={{
-                                                        minWidth: 0
-                                                    }}
 
                                                 />
 
-
                                                 <Chip
 
-                                                    label={
-                                                        payment.status
-                                                    }
+                                                    label={payment.status}
 
                                                     size="small"
 
                                                     color={
-                                                        payment.status ===
-                                                        "Completed"
-                                                            ?
-                                                            "success"
-                                                            :
-                                                        payment.status ===
-                                                        "Failed"
-                                                            ?
-                                                            "error"
-                                                            :
-                                                            "warning"
-                                                    }
 
-                                                    sx={{
-                                                        flexShrink: 0
-                                                    }}
+                                                        payment.status === "Completed"
+
+                                                            ?
+
+                                                            "success"
+
+                                                            :
+
+                                                            payment.status === "Failed"
+
+                                                                ?
+
+                                                                "error"
+
+                                                                :
+
+                                                                "warning"
+
+                                                    }
 
                                                 />
 
                                             </ListItem>
 
-
                                             <Divider />
 
-                                        </Box>
+                                        </>
 
-                                    )
                                 )
+
                         }
 
                     </List>
 
                 </DashboardSection>
-
-
-                {/* Recent Notifications */}
 
                 <DashboardSection
+
                     title="Recent Notifications"
+
                 >
 
                     <List dense>
 
                         {
+
                             notifications
+
                                 .slice(0, 5)
+
                                 .map(
-                                    (
-                                        notification
-                                    ) => (
 
-                                        <Box
-                                            key={
-                                                notification.id
-                                            }
-                                        >
+                                    notification =>
 
-                                            <ListItem
-                                                sx={{
-                                                    px: 0,
-                                                    py: 1.5,
-                                                    gap: 1
-                                                }}
-                                            >
+                                        <>
+
+                                            <ListItem>
 
                                                 <ListItemText
 
-                                                    primary={
-                                                        notification.title
-                                                    }
+                                                    primary={notification.title}
 
-                                                    secondary={
-                                                        notification.message
-                                                    }
-
-                                                    primaryTypographyProps={{
-                                                        fontWeight: 600,
-                                                        fontSize: {
-                                                            xs: "0.9rem",
-                                                            sm: "1rem"
-                                                        }
-                                                    }}
-
-                                                    secondaryTypographyProps={{
-                                                        fontSize: {
-                                                            xs: "0.75rem",
-                                                            sm: "0.85rem"
-                                                        },
-                                                        sx: {
-                                                            wordBreak: "break-word"
-                                                        }
-                                                    }}
-
-                                                    sx={{
-                                                        minWidth: 0
-                                                    }}
+                                                    secondary={notification.message}
 
                                                 />
-
 
                                                 <Chip
 
                                                     label={
+
                                                         notification.isRead
+
                                                             ?
+
                                                             "Read"
+
                                                             :
+
                                                             "Unread"
+
                                                     }
 
                                                     size="small"
 
                                                     color={
-                                                        notification.isRead
-                                                            ?
-                                                            "success"
-                                                            :
-                                                            "warning"
-                                                    }
 
-                                                    sx={{
-                                                        flexShrink: 0
-                                                    }}
+                                                        notification.isRead
+
+                                                            ?
+
+                                                            "success"
+
+                                                            :
+
+                                                            "warning"
+
+                                                    }
 
                                                 />
 
                                             </ListItem>
 
-
                                             <Divider />
 
-                                        </Box>
+                                        </>
 
-                                    )
                                 )
+
                         }
 
                     </List>
 
                 </DashboardSection>
-
-
-                {/* Fraud Pie Chart */}
 
                 <Box
                     sx={{
                         width: "100%",
-                        height: {
-                            xs: 260,
-                            sm: 300,
-                            md: 320
-                        },
-                        mt: 2
+                        height: 320
                     }}
                 >
 
-                    <ResponsiveContainer
-                        width="100%"
-                        height="100%"
-                    >
+                    <ResponsiveContainer>
 
                         <PieChart>
 
@@ -1165,39 +916,36 @@ export default function DashboardPage() {
 
                                 nameKey="name"
 
-                                outerRadius="70%"
+                                outerRadius={110}
 
                                 label
 
                             >
 
                                 {
+
                                     fraudPieData.map(
+
                                         (
                                             _,
                                             index
-                                        ) => (
+                                        ) =>
 
                                             <Cell
 
-                                                key={
-                                                    index
-                                                }
+                                                key={index}
 
                                                 fill={
-                                                    CHART_COLORS[
-                                                        index
-                                                    ]
+                                                    CHART_COLORS[index]
                                                 }
 
                                             />
 
-                                        )
                                     )
+
                                 }
 
                             </Pie>
-
 
                             <Tooltip />
 
@@ -1211,7 +959,101 @@ export default function DashboardPage() {
 
             </Paper>
 
-        </Box>
 
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        mb: 2
+                    }}
+                >
+                    Recent Transactions
+                </Typography>
+
+                <List>
+
+                    {
+                        recentPayments.map(
+                            (
+                                payment
+                            ) => (
+                                <ListItem
+                                    key={
+                                        payment.id
+                                    }
+                                >
+                                    <ListItemText
+                                        primary={
+                                            `₹${payment.amount}`
+                                        }
+                                        secondary={
+                                            `${payment.merchantId} • ${payment.paymentMethod}`
+                                        }
+                                    />
+                                </ListItem>
+                            )
+                        )
+                    }
+
+                </List>
+            </Paper>
+
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        mb: 2
+                    }}
+                >
+                    Recent Notifications
+                </Typography>
+
+                <List>
+
+                    {
+                        notifications.slice(0, 5).map(
+                            (
+                                item
+                            ) => (
+                                <ListItem
+                                    key={
+                                        item.id
+                                    }
+                                >
+                                    <ListItemText
+                                        primary={
+                                            item.title
+                                        }
+                                        secondary={
+                                            item.message
+                                        }
+                                    />
+                                </ListItem>
+                            )
+                        )
+                    }
+
+                </List>
+            </Paper>
+
+        </Box>
     );
 }
