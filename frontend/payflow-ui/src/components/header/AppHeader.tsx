@@ -19,7 +19,7 @@ import {
 }
 from "react";
 
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 
 import {
     getEmail
@@ -34,7 +34,7 @@ export default function AppHeader()
     ] = useState<null | HTMLElement>(
         null);
 
-        const [open,setOpen]=useState(false);
+        // const [open,setOpen]=useState(false);
 
     const handleMenuOpen =
         (
