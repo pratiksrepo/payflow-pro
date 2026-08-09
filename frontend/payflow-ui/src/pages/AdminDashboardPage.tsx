@@ -111,8 +111,12 @@ export default function AdminDashboardPage()
     };
 
     return (
-        <Box>
-
+<Box
+    sx={{
+        width:"100%",
+        overflowX:"hidden"
+    }}
+>
             <Typography
                 variant="h4"
                 sx={{
@@ -149,12 +153,15 @@ export default function AdminDashboardPage()
                         md: 6
                     }}
                 >
-                    <Paper
-                        sx={{
-                            p: 3,
-                            borderRadius: 4
-                        }}
-                    >
+<Paper
+    sx={{
+        p:{
+            xs:2,
+            md:4
+        },
+        borderRadius:3
+    }}
+>
                         <Typography
                             color="text.secondary"
                         >
@@ -178,8 +185,11 @@ export default function AdminDashboardPage()
                 >
                     <Paper
                         sx={{
-                            p: 3,
-                            borderRadius: 4
+                            p:{
+                                xs:2,
+                                md:4
+                            },
+                            borderRadius:3
                         }}
                     >
                         <Typography
@@ -202,7 +212,10 @@ export default function AdminDashboardPage()
             <Paper
                 sx={{
                     mt: 4,
-                    p: 3,
+                    p:{
+                        xs:2,
+                        md:4
+                    },
                     borderRadius: 4
                 }}
             >
@@ -258,8 +271,11 @@ export default function AdminDashboardPage()
             <Paper
                 sx={{
                     mt: 4,
-                    p: 3,
-                    borderRadius: 4
+                    p:{
+                        xs:2,
+                        md:4
+                    },
+                    borderRadius:3
                 }}
             >
                 <Typography

@@ -9,64 +9,42 @@ import {
     Paper,
     Stack,
     TextField,
-    Typography
-}
-    from "@mui/material";
-
-import {
-    useState,
-    useEffect,
-}
-    from "react";
-
-import {
-    createPayment,
-    getPaymentById
-}
-    from "../services/paymentService";
-
-import {
-    getUserId
-}
-    from "../utils/jwtHelper";
-
-import type
-{
-    Payment
-}
-    from "../types/Payment";
-
-// import {
-//     getPaymentsByUser
-// }
-//     from "../services/paymentService";
-
-import type
-{
-    PaymentHistory
-}
-    from "../types/PaymentHistory";
-
-import {
+    Typography,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
-}
-    from "@mui/material";
+    TableRow,
+} from "@mui/material";
 
 import {
-    getPaymentHistory
-}
-    from "../services/paymentService";
+    useState,
+    useEffect,
+} from "react";
 
-import type
-{
+import {
+    createPayment,
+    getPaymentById,
+    getPaymentHistory,
+    getPaymentsPaged,
+} from "../services/paymentService";
+
+import {
+    getUserId
+} from "../utils/jwtHelper";
+
+import type {
+    Payment
+} from "../types/Payment";
+
+import type {
+    PaymentHistory
+} from "../types/PaymentHistory";
+
+import type {
     PaymentHistoryItem
-}
-    from "../types/PaymentHistoryItem";
+} from "../types/PaymentHistoryItem";
 
 import CommonPagination
     from "../components/CommonPagination";
@@ -77,30 +55,43 @@ import SearchBar
 import FilterPanel
     from "../components/FilterPanel";
 
-import {
-getPaymentsPaged
-}
-    from "../services/paymentService";
 
 export default function PaymentsPage() {
-
 
     const [
         amount,
         setAmount
     ] = useState("");
 
-    const [page, setPage] = useState(1);
+    const [
+        page,
+        setPage
+    ] = useState(1);
 
-    const [pageSize, setPageSize] = useState(10);
+    const [
+        pageSize,
+        setPageSize
+    ] = useState(10);
 
-    const [totalPages, setTotalPages] = useState(1);
+    const [
+        totalPages,
+        setTotalPages
+    ] = useState(1);
 
-    const [search, setSearch] = useState("");
+    const [
+        search,
+        setSearch
+    ] = useState("");
 
-    const [status, setStatus] = useState("");
+    const [
+        status,
+        setStatus
+    ] = useState("");
 
-    const [sort, setSort] = useState("newest");
+    const [
+        sort,
+        setSort
+    ] = useState("newest");
 
     const [
         createdPayment,
@@ -160,81 +151,90 @@ export default function PaymentsPage() {
             null
         );
 
-    // const loadPaymentHistory =
-    //     async () => {
-    //         try {
-    //             const result =
-    //                 await getPaymentsByUser(
-    //                     Number(
-    //                         getUserId()
-    //                     )
-    //                 );
 
-    //             setPaymentHistory(
-    //                 result
-    //             );
-    //         }
-    //         catch (error) {
-    //             console.log(error);
-    //         }
-    //     };
-
-
-    // useEffect(() => {
-    //     void loadPaymentHistory();
-    // }, []);
-
+    /*
+     * ================================
+     * LOAD PAGED PAYMENT HISTORY
+     * ================================
+     */
 
     const loadPagedPayments =
-async () =>
-{
-    console.log({
-    page,
-    pageSize,
-    search,
-    status,
-    sort
-});
-    const result =
-        await getPaymentsPaged(
-            Number(getUserId()),
-            page,
-            pageSize,
-            search,
-            status,
-            sort);
+        async () => {
 
-setPaymentHistory(
-    result.data
-);
+            try {
 
-    setTotalPages(
-        result.totalPages);
+                console.log({
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    sort
+                });
 
-        console.log(result);
-}
+                const result =
+                    await getPaymentsPaged(
+                        Number(
+                            getUserId()
+                        ),
+                        page,
+                        pageSize,
+                        search,
+                        status,
+                        sort
+                    );
 
-useEffect(() =>
-{
-    void loadPagedPayments();
+                setPaymentHistory(
+                    result.data
+                );
 
-},
-[
-    page,
-    pageSize,
-    search,
-    status,
-    sort
-]);
+                setTotalPages(
+                    result.totalPages
+                );
+
+                console.log(result);
+
+            }
+            catch (error) {
+
+                console.log(
+                    "Failed to load payments",
+                    error
+                );
+
+            }
+        };
+
+
+    useEffect(() => {
+
+        void loadPagedPayments();
+
+    }, [
+        page,
+        pageSize,
+        search,
+        status,
+        sort
+    ]);
+
+
+    /*
+     * ================================
+     * CREATE PAYMENT
+     * ================================
+     */
 
     const handleCreatePayment =
         async () => {
+
             try {
+
                 setSuccess("");
                 setError("");
 
                 const result =
                     await createPayment({
+
                         userId:
                             Number(
                                 getUserId()
@@ -248,39 +248,60 @@ useEffect(() =>
                         merchantId,
 
                         paymentMethod
+
                     });
 
-                setCreatedPayment(result);
-                // await loadPaymentHistory();
+                setCreatedPayment(
+                    result
+                );
+
                 setPaymentId(
                     result.paymentId
                 );
+
                 setSuccess(
                     "Payment created successfully"
                 );
 
-
-
                 setAmount("");
+
                 setMerchantId("");
-                setPaymentMethod("UPI");
+
+                setPaymentMethod(
+                    "UPI"
+                );
+
             }
             catch {
+
                 setError(
                     "Payment failed"
                 );
+
             }
         };
 
+
+    /*
+     * ================================
+     * SEARCH PAYMENT
+     * ================================
+     */
+
     const handleSearchPayment =
         async () => {
+
             try {
+
                 const result =
                     await getPaymentById(
                         paymentId
                     );
 
-                setPayment(result);
+                setPayment(
+                    result
+                );
+
                 const history =
                     await getPaymentHistory(
                         paymentId
@@ -289,144 +310,261 @@ useEffect(() =>
                 setPaymentTimeline(
                     history
                 );
+
             }
             catch {
+
                 alert(
                     "Payment Not Found"
                 );
+
             }
         };
+
+
+    /*
+     * ================================
+     * STATUS CHIP
+     * ================================
+     */
 
     const getStatusChip =
         (
             status: number
         ) => {
+
             switch (status) {
+
                 case 1:
+
                     return (
                         <Chip
                             label="Pending"
                             color="warning"
+                            size="small"
                         />
                     );
 
                 case 2:
+
                     return (
                         <Chip
                             label="Success"
                             color="success"
+                            size="small"
                         />
                     );
 
                 case 3:
+
                     return (
                         <Chip
                             label="Failed"
                             color="error"
+                            size="small"
                         />
                     );
 
                 default:
+
                     return (
                         <Chip
                             label="Unknown"
+                            size="small"
                         />
                     );
             }
         };
 
+
+    /*
+     * ================================
+     * UI
+     * ================================
+     */
+
     return (
-        <Box>
 
-            <Typography
-                variant="h4"
-                fontWeight={700}
-                mb={1}
-            >
-                Payments
-            </Typography>
+        <Box
+            sx={{
+                width: "100%",
+                maxWidth: "100%",
+                overflow: "hidden",
+            }}
+        >
 
-            <Typography
-                color="text.secondary"
-                mb={4}
+            {/* ================================
+                PAGE HEADER
+            ================================= */}
+
+            <Box
+                sx={{
+                    mb: {
+                        xs: 3,
+                        sm: 4
+                    }
+                }}
             >
-                Create and track payments
-            </Typography>
+
+                <Typography
+                    variant="h4"
+                    sx={{
+                        fontWeight: 700,
+
+                        fontSize: {
+                            xs: "1.6rem",
+                            sm: "2rem",
+                            md: "2.2rem"
+                        }
+                    }}
+                >
+                    Payments
+                </Typography>
+
+                <Typography
+                    color="text.secondary"
+                    sx={{
+                        mt: 1
+                    }}
+                >
+                    Create and track payments
+                </Typography>
+
+            </Box>
+
+
+            {/* ================================
+                CREATE PAYMENT
+            ================================= */}
 
             <Paper
                 sx={{
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 4
+                    p: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4
+                    },
+
+                    borderRadius: {
+                        xs: 2,
+                        sm: 3
+                    },
+
+                    mb: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4
+                    }
                 }}
             >
+
                 <Typography
                     variant="h5"
-                    fontWeight={700}
-                    mb={3}
+                    sx={{
+                        fontWeight: 700,
+
+                        mb: {
+                            xs: 2,
+                            sm: 3
+                        },
+
+                        fontSize: {
+                            xs: "1.25rem",
+                            sm: "1.5rem"
+                        }
+                    }}
                 >
                     Create Payment
                 </Typography>
 
-                <Stack spacing={3}>
+
+                <Stack
+                    spacing={{
+                        xs: 2,
+                        sm: 3
+                    }}
+                >
+
+                    {/* SUCCESS */}
 
                     {
-                        success &&
-                        (
-                            <Alert severity="success">
+                        success && (
+
+                            <Alert
+                                severity="success"
+                            >
                                 {success}
                             </Alert>
+
                         )
-
-
                     }
 
+
+                    {/* CREATED PAYMENT */}
+
                     {
-                        createdPayment &&
-                        (
+                        createdPayment && (
+
                             <Alert
                                 severity="info"
+                                sx={{
+                                    overflowWrap:
+                                        "anywhere"
+                                }}
                             >
+
                                 <Typography
                                     fontWeight={700}
+                                    sx={{
+                                        mb: 1
+                                    }}
                                 >
                                     Payment Created
                                 </Typography>
 
-                                Payment ID:
-                                {" "}
-                                {
-                                    createdPayment.paymentId
-                                }
+                                <Box>
+                                    Payment ID:{" "}
+                                    {
+                                        createdPayment.paymentId
+                                    }
+                                </Box>
 
-                                <br />
+                                <Box>
+                                    Status:{" "}
+                                    {
+                                        createdPayment.status
+                                    }
+                                </Box>
 
-                                Status:
-                                {" "}
-                                {
-                                    createdPayment.status
-                                }
+                                <Box>
+                                    Amount: ₹
+                                    {
+                                        createdPayment.amount
+                                    }
+                                </Box>
 
-                                <br />
-
-                                Amount:
-                                {" "}
-                                ₹
-                                {
-                                    createdPayment.amount
-                                }
                             </Alert>
+
                         )
                     }
+
+
+                    {/* ERROR */}
 
                     {
-                        error &&
-                        (
-                            <Alert severity="error">
+                        error && (
+
+                            <Alert
+                                severity="error"
+                            >
                                 {error}
                             </Alert>
+
                         )
                     }
+
+
+                    {/* AMOUNT */}
 
                     <TextField
                         label="Amount"
@@ -441,6 +579,9 @@ useEffect(() =>
                         fullWidth
                     />
 
+
+                    {/* MERCHANT */}
+
                     <TextField
                         label="Merchant Id"
                         value={merchantId}
@@ -452,6 +593,9 @@ useEffect(() =>
                         }
                         fullWidth
                     />
+
+
+                    {/* PAYMENT METHOD */}
 
                     <TextField
                         label="Payment Method"
@@ -467,12 +611,19 @@ useEffect(() =>
                         fullWidth
                     />
 
+
+                    {/* CREATE */}
+
                     <Button
                         variant="contained"
                         size="large"
+                        fullWidth
                         onClick={
                             handleCreatePayment
                         }
+                        sx={{
+                            py: 1.3
+                        }}
                     >
                         Create Payment
                     </Button>
@@ -481,22 +632,55 @@ useEffect(() =>
 
             </Paper>
 
+
+            {/* ================================
+                TRACK PAYMENT
+            ================================= */}
+
             <Paper
                 sx={{
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 4
+                    p: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4
+                    },
+
+                    borderRadius: {
+                        xs: 2,
+                        sm: 3
+                    },
+
+                    mb: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4
+                    }
                 }}
             >
+
                 <Typography
                     variant="h5"
-                    fontWeight={700}
-                    mb={3}
+                    sx={{
+                        fontWeight: 700,
+
+                        mb: {
+                            xs: 2,
+                            sm: 3
+                        },
+
+                        fontSize: {
+                            xs: "1.25rem",
+                            sm: "1.5rem"
+                        }
+                    }}
                 >
                     Track Payment
                 </Typography>
 
-                <Stack spacing={3}>
+
+                <Stack
+                    spacing={2}
+                >
 
                     <TextField
                         label="Payment Id"
@@ -510,11 +694,16 @@ useEffect(() =>
                         fullWidth
                     />
 
+
                     <Button
                         variant="contained"
+                        fullWidth
                         onClick={
                             handleSearchPayment
                         }
+                        sx={{
+                            py: 1.2
+                        }}
                     >
                         Search Payment
                     </Button>
@@ -523,90 +712,176 @@ useEffect(() =>
 
             </Paper>
 
+
+            {/* ================================
+                PAYMENT DETAILS
+            ================================= */}
+
             {
-                payment &&
-                (
+                payment && (
+
                     <Card
                         sx={{
-                            borderRadius: 4
+                            borderRadius: {
+                                xs: 2,
+                                sm: 3
+                            },
+
+                            mb: {
+                                xs: 2,
+                                sm: 3,
+                                md: 4
+                            }
                         }}
                     >
-                        <CardContent>
+
+                        <CardContent
+                            sx={{
+                                p: {
+                                    xs: 2,
+                                    sm: 3,
+                                    md: 4
+                                }
+                            }}
+                        >
 
                             <Typography
                                 variant="h5"
-                                fontWeight={700}
-                                mb={3}
+                                sx={{
+                                    fontWeight: 700,
+
+                                    mb: {
+                                        xs: 2,
+                                        sm: 3
+                                    },
+
+                                    fontSize: {
+                                        xs: "1.25rem",
+                                        sm: "1.5rem"
+                                    }
+                                }}
                             >
                                 Payment Details
                             </Typography>
 
+
+                            {/* PAYMENT JOURNEY */}
+
                             <Paper
                                 sx={{
-                                    p: 4,
-                                    mt: 4,
-                                    borderRadius: 4
+                                    p: {
+                                        xs: 2,
+                                        sm: 3,
+                                        md: 4
+                                    },
+
+                                    borderRadius: {
+                                        xs: 2,
+                                        sm: 3
+                                    },
+
+                                    mb: 3
                                 }}
                             >
+
                                 <Typography
-                                    variant="h5"
+                                    variant="h6"
                                     sx={{
                                         fontWeight: 700,
-                                        mb: 4
+                                        mb: 3
                                     }}
                                 >
                                     Payment Journey
                                 </Typography>
 
-                                <Box>
+
+                                <Box
+                                    sx={{
+                                        width: "100%",
+                                        overflow: "hidden"
+                                    }}
+                                >
 
                                     {
-                                        paymentTimeline.map(
-                                            (
-                                                item
-                                            ) => (
-                                                <Box
-                                                    key={
-                                                        item.id
-                                                    }
-                                                    sx={{
-                                                        mb: 3,
-                                                        pl: 2,
-                                                        borderLeft:
-                                                            "4px solid #4CAF50"
-                                                    }}
-                                                >
+                                        paymentTimeline.length === 0 ? (
 
-                                                    <Typography
-                                                        fontWeight={700}
-                                                    >
-                                                        ✅ {
-                                                            item.newStatus
+                                            <Typography
+                                                color="text.secondary"
+                                            >
+                                                No payment journey
+                                                information available.
+                                            </Typography>
+
+                                        ) : (
+
+                                            paymentTimeline.map(
+                                                (
+                                                    item
+                                                ) => (
+
+                                                    <Box
+                                                        key={
+                                                            item.id
                                                         }
-                                                    </Typography>
+                                                        sx={{
+                                                            mb: 3,
 
-                                                    <Typography
-                                                        color="text.secondary"
+                                                            pl: {
+                                                                xs: 1.5,
+                                                                sm: 2
+                                                            },
+
+                                                            pr: 1,
+
+                                                            borderLeft:
+                                                                "4px solid #4CAF50",
+
+                                                            overflowWrap:
+                                                                "anywhere"
+                                                        }}
                                                     >
-                                                        {
-                                                            new Date(
-                                                                item.changedAt
-                                                            )
-                                                                .toLocaleString()
-                                                        }
-                                                    </Typography>
 
-                                                    <Typography
-                                                        color="text.secondary"
-                                                    >
-                                                        Changed By:
-                                                        {
-                                                            item.changedBy
-                                                        }
-                                                    </Typography>
+                                                        <Typography
+                                                            fontWeight={700}
+                                                        >
+                                                            ✅{" "}
+                                                            {
+                                                                item.newStatus
+                                                            }
+                                                        </Typography>
 
-                                                </Box>
+
+                                                        <Typography
+                                                            color="text.secondary"
+                                                            variant="body2"
+                                                            sx={{
+                                                                mt: 0.5
+                                                            }}
+                                                        >
+                                                            {
+                                                                new Date(
+                                                                    item.changedAt
+                                                                )
+                                                                    .toLocaleString()
+                                                            }
+                                                        </Typography>
+
+
+                                                        <Typography
+                                                            color="text.secondary"
+                                                            variant="body2"
+                                                        >
+                                                            Changed By:{" "}
+                                                            {
+                                                                item.changedBy
+                                                            }
+                                                        </Typography>
+
+                                                    </Box>
+
+                                                )
                                             )
+
                                         )
                                     }
 
@@ -614,49 +889,90 @@ useEffect(() =>
 
                             </Paper>
 
+
                             <Divider
                                 sx={{
                                     mb: 3
                                 }}
                             />
 
-                            <Stack spacing={2}>
 
-                                <Typography>
-                                    <strong>ID:</strong>
-                                    {" "}
-                                    {payment.id}
+                            {/* PAYMENT INFORMATION */}
+
+                            <Stack
+                                spacing={2}
+                            >
+
+                                <Typography
+                                    sx={{
+                                        overflowWrap:
+                                            "anywhere"
+                                    }}
+                                >
+                                    <strong>
+                                        ID:
+                                    </strong>{" "}
+                                    {
+                                        payment.id
+                                    }
                                 </Typography>
 
-                                <Typography>
-                                    <strong>User:</strong>
-                                    {" "}
-                                    {payment.userId}
-                                </Typography>
 
                                 <Typography>
-                                    <strong>Amount:</strong>
-                                    {" "}
-                                    ₹{payment.amount}
+                                    <strong>
+                                        User:
+                                    </strong>{" "}
+                                    {
+                                        payment.userId
+                                    }
                                 </Typography>
 
-                                <Typography>
-                                    <strong>Merchant:</strong>
-                                    {" "}
-                                    {payment.merchantId}
-                                </Typography>
 
                                 <Typography>
-                                    <strong>Method:</strong>
-                                    {" "}
-                                    {payment.paymentMethod}
+                                    <strong>
+                                        Amount:
+                                    </strong>{" "}
+                                    ₹
+                                    {
+                                        payment.amount
+                                    }
                                 </Typography>
 
-                                <Typography>
-                                    <strong>Currency:</strong>
-                                    {" "}
-                                    {payment.currency}
+
+                                <Typography
+                                    sx={{
+                                        overflowWrap:
+                                            "anywhere"
+                                    }}
+                                >
+                                    <strong>
+                                        Merchant:
+                                    </strong>{" "}
+                                    {
+                                        payment.merchantId
+                                    }
                                 </Typography>
+
+
+                                <Typography>
+                                    <strong>
+                                        Method:
+                                    </strong>{" "}
+                                    {
+                                        payment.paymentMethod
+                                    }
+                                </Typography>
+
+
+                                <Typography>
+                                    <strong>
+                                        Currency:
+                                    </strong>{" "}
+                                    {
+                                        payment.currency
+                                    }
+                                </Typography>
+
 
                                 <Box>
                                     {
@@ -666,9 +982,11 @@ useEffect(() =>
                                     }
                                 </Box>
 
+
                                 <Typography>
-                                    <strong>Created:</strong>
-                                    {" "}
+                                    <strong>
+                                        Created:
+                                    </strong>{" "}
                                     {
                                         new Date(
                                             payment.createdAt
@@ -682,40 +1000,140 @@ useEffect(() =>
                         </CardContent>
 
                     </Card>
+
                 )
             }
 
+
+            {/* ================================
+                PAYMENT HISTORY
+            ================================= */}
+
             <Paper
                 sx={{
-                    p: 4,
-                    mt: 4,
-                    borderRadius: 4
+                    p: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4
+                    },
+
+                    borderRadius: {
+                        xs: 2,
+                        sm: 3
+                    }
                 }}
             >
+
                 <Typography
                     variant="h5"
-                    fontWeight={700}
-                    mb={3}
+                    sx={{
+                        fontWeight: 700,
+
+                        mb: {
+                            xs: 2,
+                            sm: 3
+                        },
+
+                        fontSize: {
+                            xs: "1.25rem",
+                            sm: "1.5rem"
+                        }
+                    }}
                 >
                     Payment History
                 </Typography>
 
-                <TableContainer>
-<SearchBar
-    value={search}
-    onChange={setSearch}
-    onSearch={loadPagedPayments}
-/>
 
-<FilterPanel
-    status={status}
-    sort={sort}
-    pageSize={pageSize}
-    onStatusChange={setStatus}
-    onSortChange={setSort}
-    onPageSizeChange={setPageSize}
-/>
-                    <Table>
+                {/* SEARCH */}
+
+                <Box
+                    sx={{
+                        mb: 2
+                    }}
+                >
+
+                    <SearchBar
+                        value={search}
+
+                        onChange={(value) => {
+
+                            setPage(1);
+
+                            setSearch(value);
+
+                        }}
+
+                        onSearch={
+                            loadPagedPayments
+                        }
+                    />
+
+                </Box>
+
+
+                {/* FILTERS */}
+
+                <Box
+                    sx={{
+                        mb: 2
+                    }}
+                >
+
+                    <FilterPanel
+
+                        status={status}
+
+                        sort={sort}
+
+                        pageSize={pageSize}
+
+                        onStatusChange={(value) => {
+
+                            setPage(1);
+
+                            setStatus(value);
+
+                        }}
+
+                        onSortChange={(value) => {
+
+                            setPage(1);
+
+                            setSort(value);
+
+                        }}
+
+                        onPageSizeChange={(value) => {
+
+                            setPage(1);
+
+                            setPageSize(value);
+
+                        }}
+
+                    />
+
+                </Box>
+
+
+                {/* RESPONSIVE TABLE */}
+
+                <TableContainer
+                    component={Paper}
+                    variant="outlined"
+                    sx={{
+                        width: "100%",
+                        overflowX: "auto",
+
+                        "& table": {
+                            minWidth: 650
+                        }
+                    }}
+                >
+
+                    <Table
+                        size="small"
+                    >
 
                         <TableHead>
 
@@ -745,74 +1163,147 @@ useEffect(() =>
 
                         </TableHead>
 
+
                         <TableBody>
 
                             {
-                                paymentHistory
-                                    .map(
+                                paymentHistory.length === 0 ? (
+
+                                    <TableRow>
+
+                                        <TableCell
+                                            colSpan={5}
+                                            align="center"
+                                        >
+
+                                            <Typography
+                                                color="text.secondary"
+                                                sx={{
+                                                    py: 4
+                                                }}
+                                            >
+                                                No payments found.
+                                            </Typography>
+
+                                        </TableCell>
+
+                                    </TableRow>
+
+                                ) : (
+
+                                    paymentHistory.map(
                                         (
                                             payment
-                                        ) =>
-                                        (
+                                        ) => (
+
                                             <TableRow
+                                                hover
                                                 key={
                                                     payment.id
                                                 }
                                             >
 
-                                                <TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        whiteSpace:
+                                                            "nowrap"
+                                                    }}
+                                                >
                                                     ₹
                                                     {
                                                         payment.amount
                                                     }
                                                 </TableCell>
 
-                                                <TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        maxWidth: 180,
+                                                        overflowWrap:
+                                                            "anywhere"
+                                                    }}
+                                                >
                                                     {
                                                         payment.merchantId
                                                     }
                                                 </TableCell>
 
-                                                <TableCell>
+
+                                                <TableCell
+                                                    sx={{
+                                                        whiteSpace:
+                                                            "nowrap"
+                                                    }}
+                                                >
                                                     {
                                                         payment.paymentMethod
                                                     }
                                                 </TableCell>
-                                                <TableCell>
+
+
+                                                <TableCell
+                                                    sx={{
+                                                        whiteSpace:
+                                                            "nowrap"
+                                                    }}
+                                                >
                                                     {
                                                         new Date(
                                                             payment.createdAt
-                                                        ).toLocaleDateString()
-                                                    }
-                                                </TableCell>
-                                                <TableCell>
-                                                    {
-                                                        payment.status === 2
-                                                            ? "Pending"
-                                                            : payment.status === 5
-                                                                ? "Failed"
-                                                                : payment.status === 3
-                                                                    ? "Completed"
-                                                                    : payment.status
+                                                        )
+                                                            .toLocaleDateString()
                                                     }
                                                 </TableCell>
 
+
+                                                <TableCell
+                                                    sx={{
+                                                        whiteSpace:
+                                                            "nowrap"
+                                                    }}
+                                                >
+
+                                                    {
+                                                        payment.status === 2
+                                                            ? "Pending"
+
+                                                            : payment.status === 5
+                                                                ? "Failed"
+
+                                                                : payment.status === 3
+                                                                    ? "Completed"
+
+                                                                    : payment.status
+                                                    }
+
+                                                </TableCell>
+
                                             </TableRow>
+
                                         )
                                     )
+
+                                )
                             }
 
                         </TableBody>
 
                     </Table>
 
-                    <CommonPagination
-    page={page}
-    totalPages={totalPages}
-    onChange={setPage}
-/>
-
                 </TableContainer>
+
+
+                {/* PAGINATION */}
+
+                <CommonPagination
+
+                    page={page}
+
+                    totalPages={totalPages}
+
+                    onChange={setPage}
+
+                />
 
             </Paper>
 

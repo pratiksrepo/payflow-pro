@@ -1,66 +1,109 @@
+import { useState } from "react";
+
 import {
     AppBar,
     Toolbar,
     Typography,
     Box,
-    Button
-}
-from "@mui/material";
+    Button,
+    IconButton
+} from "@mui/material";
+
+import MenuIcon from "@mui/icons-material/Menu";
+
+import Sidebar from "./Sidebar";
 
 import {
     getEmail
-}
-from "../../utils/jwtHelper";
+} from "../../utils/jwtHelper";
 
-export default function Header()
-{
-    const handleLogout = () =>
-    {
+export default function Header() {
+
+    const [drawerOpen, setDrawerOpen] =
+        useState(false);
+
+    const handleLogout = () => {
+
         localStorage.clear();
 
-        window.location.href =
-            "/login";
+        window.location.href = "/login";
     };
 
     return (
-        <AppBar
-            position="static"
-            elevation={1}
-            color="inherit"
-        >
-            <Toolbar>
+        <>
 
-                <Typography
-                    variant="h6"
-                    sx={{
-                        fontWeight: 700
-                    }}
-                >
-                    PayFlow Pro
-                </Typography>
+            <AppBar
+                position="sticky"
+                elevation={1}
+                color="inherit"
+            >
 
-                <Box
-                    sx={{
-                        flexGrow: 1
-                    }}
-                />
+                <Toolbar>
 
-                <Typography
-                    sx={{
-                        mr: 3
-                    }}
-                >
-                    {getEmail()}
-                </Typography>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() =>
+                            setDrawerOpen(true)
+                        }
+                        sx={{
+                            mr: 2
+                        }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
 
-                <Button
-                    variant="contained"
-                    onClick={handleLogout}
-                >
-                    Logout
-                </Button>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            whiteSpace: "nowrap"
+                        }}
+                    >
+                        PayFlow Pro
+                    </Typography>
 
-            </Toolbar>
-        </AppBar>
+                    <Box
+                        sx={{
+                            flexGrow: 1
+                        }}
+                    />
+
+                    <Typography
+                        sx={{
+                            mr: 2,
+                            display: {
+                                xs: "none",
+                                sm: "block"
+                            },
+                            maxWidth: 250,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap"
+                        }}
+                    >
+                        {getEmail()}
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
+
+                </Toolbar>
+
+            </AppBar>
+
+            <Sidebar
+                open={drawerOpen}
+                onClose={() =>
+                    setDrawerOpen(false)
+                }
+            />
+
+        </>
     );
 }

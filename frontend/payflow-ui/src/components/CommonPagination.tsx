@@ -1,21 +1,22 @@
-import
-{
+import {
     Pagination,
     Stack,
-    Typography
+    Typography,
+    useMediaQuery,
+    useTheme
 }
 from "@mui/material";
 
 interface Props
 {
-    page:number;
+    page: number;
 
-    totalPages:number;
+    totalPages: number;
 
     onChange:
-    (
-        page:number
-    )=>void;
+        (
+            page: number
+        ) => void;
 }
 
 export default function CommonPagination(
@@ -23,45 +24,63 @@ export default function CommonPagination(
     page,
     totalPages,
     onChange
-}:Props)
+}: Props)
 {
-    return(
+    const theme = useTheme();
 
+    const isMobile =
+        useMediaQuery(
+            theme.breakpoints.down("sm")
+        );
+
+    return (
         <Stack
-            spacing={2}
+            spacing={{
+                xs: 1,
+                sm: 1.5
+            }}
             alignItems="center"
             sx={{
-                mt:3
+                mt: {
+                    xs: 2,
+                    sm: 3
+                },
+                mb: {
+                    xs: 1,
+                    sm: 2
+                },
+                width: "100%"
             }}
         >
 
-            <Typography>
-
-                Page {page}
-
-                of
-
-                {totalPages}
-
+            <Typography
+                variant="body2"
+                color="text.secondary"
+            >
+                Page {page} of {totalPages}
             </Typography>
 
             <Pagination
-
                 page={page}
-
                 count={totalPages}
-
                 color="primary"
-
-                onChange={
-                    (_,
-                    value)=>
-                    onChange(value)
+                size={
+                    isMobile
+                        ? "small"
+                        : "medium"
                 }
-
+                siblingCount={
+                    isMobile
+                        ? 0
+                        : 1
+                }
+                boundaryCount={1}
+                onChange={
+                    (_, value) =>
+                        onChange(value)
+                }
             />
 
         </Stack>
-
     );
 }

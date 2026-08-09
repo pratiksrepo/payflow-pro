@@ -51,8 +51,12 @@ export default function AdminUsersPage() {
         );
 
     return (
-        <Box>
-
+<Box
+    sx={{
+        width:"100%",
+        overflowX:"hidden"
+    }}
+>
             <Typography
                 variant="h4"
                 fontWeight={700}

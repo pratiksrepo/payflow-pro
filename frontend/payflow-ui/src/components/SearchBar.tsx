@@ -25,48 +25,62 @@ export default function SearchBar(
 {
     value,
     onChange,
-    // onSearch
+    onSearch
 }: Props)
 {
     return (
-
         <Stack
-
-            direction="row"
-
-            spacing={2}
-
-            sx={{
-                mb: 3
+            direction={{
+                xs: "column",
+                sm: "row"
             }}
-
+            spacing={2}
+            sx={{
+                mb: 3,
+                width: "100%"
+            }}
         >
 
             <TextField
-
                 fullWidth
                 size="small"
                 placeholder="Search..."
-
                 value={value}
-
                 onChange={(e) =>
                     onChange(
                         e.target.value
                     )
                 }
-
+                onKeyDown={(e) =>
+                {
+                    if (e.key === "Enter")
+                    {
+                        onSearch();
+                    }
+                }}
             />
 
-<Button
-    variant="contained"
-    size="large"
-    startIcon={<SearchIcon/>}
->
-    Search
-</Button>
+            <Button
+                variant="contained"
+                size="medium"
+                startIcon={
+                    <SearchIcon />
+                }
+                onClick={onSearch}
+                sx={{
+                    minWidth: {
+                        xs: "100%",
+                        sm: 120
+                    },
+                    height: {
+                        xs: 40,
+                        sm: 40
+                    }
+                }}
+            >
+                Search
+            </Button>
 
         </Stack>
-
     );
 }

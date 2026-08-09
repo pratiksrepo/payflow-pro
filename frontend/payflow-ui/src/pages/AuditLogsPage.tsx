@@ -143,8 +143,12 @@ export default function AuditLogsPage() {
 
     return (
 
-        <Box>
-
+<Box
+    sx={{
+        width:"100%",
+        overflowX:"hidden"
+    }}
+>
             <Typography
                 variant="h4"
                 fontWeight={700}
@@ -206,15 +210,17 @@ export default function AuditLogsPage() {
 
                     :
 
-                    <TableContainer
-                        component={Paper}
-                        sx={{
-                            borderRadius: 3
-                        }}
-                    >
+<TableContainer
+    component={Paper}
+    sx={{
+        overflowX: "auto",
+        borderRadius: 3,
+    }}
+>
 
-                        <Table>
-
+<Table
+    size="small"
+>
                             <TableHead>
 
                                 <TableRow>

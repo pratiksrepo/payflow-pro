@@ -10,26 +10,26 @@ from "@mui/material";
 
 interface Props
 {
-    action:string;
+    action: string;
 
-    sort:string;
+    sort: string;
 
-    pageSize:number;
+    pageSize: number;
 
     onActionChange:
-    (
-        value:string
-    )=>void;
+        (
+            value: string
+        ) => void;
 
     onSortChange:
-    (
-        value:string
-    )=>void;
+        (
+            value: string
+        ) => void;
 
     onPageSizeChange:
-    (
-        value:number
-    )=>void;
+        (
+            value: number
+        ) => void;
 }
 
 export default function AuditFilterPanel(
@@ -40,50 +40,43 @@ export default function AuditFilterPanel(
     onActionChange,
     onSortChange,
     onPageSizeChange
-}:Props)
+}: Props)
 {
-    return(
-
+    return (
         <Stack
-
-            direction="row"
-
-            spacing={2}
-
-            flexWrap="wrap"
-
-            sx={{
-                mb:3
+            direction={{
+                xs: "column",
+                sm: "row"
             }}
-
+            spacing={2}
+            flexWrap="wrap"
+            sx={{
+                mb: 3,
+                width: "100%"
+            }}
         >
 
             <FormControl
+                fullWidth
                 sx={{
-                    minWidth:220
+                    minWidth: {
+                        sm: 220
+                    }
                 }}
             >
 
                 <InputLabel>
-
                     Action
-
                 </InputLabel>
 
                 <Select
-
                     value={action}
-
                     label="Action"
-
-                    onChange={(e)=>
-
+                    onChange={(e) =>
                         onActionChange(
                             e.target.value
                         )
-
                     }
-
                 >
 
                     <MenuItem value="">
@@ -126,32 +119,28 @@ export default function AuditFilterPanel(
 
             </FormControl>
 
+
             <FormControl
+                fullWidth
                 sx={{
-                    minWidth:170
+                    minWidth: {
+                        sm: 170
+                    }
                 }}
             >
 
                 <InputLabel>
-
                     Sort
-
                 </InputLabel>
 
                 <Select
-
                     value={sort}
-
                     label="Sort"
-
-                    onChange={(e)=>
-
+                    onChange={(e) =>
                         onSortChange(
                             e.target.value
                         )
-
                     }
-
                 >
 
                     <MenuItem value="newest">
@@ -166,34 +155,30 @@ export default function AuditFilterPanel(
 
             </FormControl>
 
+
             <FormControl
+                fullWidth
                 sx={{
-                    minWidth:140
+                    minWidth: {
+                        sm: 140
+                    }
                 }}
             >
 
                 <InputLabel>
-
                     Rows
-
                 </InputLabel>
 
                 <Select
-
                     value={pageSize}
-
                     label="Rows"
-
-                    onChange={(e)=>
-
+                    onChange={(e) =>
                         onPageSizeChange(
                             Number(
                                 e.target.value
                             )
                         )
-
                     }
-
                 >
 
                     <MenuItem value={5}>
@@ -217,6 +202,5 @@ export default function AuditFilterPanel(
             </FormControl>
 
         </Stack>
-
     );
 }

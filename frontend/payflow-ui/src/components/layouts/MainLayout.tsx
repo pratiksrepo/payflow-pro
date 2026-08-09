@@ -11,7 +11,12 @@ export default function MainLayout()
 
             <Box
                 sx={{
-                    p: 3
+                    p: {
+                        xs: 2,
+                        md: 3
+                    },
+                    maxWidth: 1400,
+                    mx: "auto"
                 }}
             >
                 <Outlet />

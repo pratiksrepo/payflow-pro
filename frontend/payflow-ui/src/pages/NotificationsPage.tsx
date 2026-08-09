@@ -155,13 +155,24 @@ export default function NotificationsPage() {
 
     return (
 
-        <Box>
-
-            <Typography
-                variant="h4"
-                fontWeight={700}
-                mb={3}
-            >
+<Box
+    sx={{
+        width:"100%",
+        overflowX:"hidden"
+    }}
+>
+    <Typography
+        variant="h4"
+        sx={{
+            fontWeight: 700,
+            mb: 3,
+            fontSize: {
+                xs: "1.6rem",
+                sm: "2rem",
+                md: "2.2rem",
+            },
+        }}
+    >
                 Notifications
             </Typography>
 
@@ -218,12 +229,17 @@ export default function NotificationsPage() {
 
                     :
 
-                    <TableContainer
-                        component={Paper}
-                    >
+<TableContainer
+    component={Paper}
+    sx={{
+        overflowX: "auto",
+        borderRadius: 3,
+    }}
+>
 
-                        <Table>
-
+<Table
+    size="small"
+>
                             <TableHead>
 
                                 <TableRow>
